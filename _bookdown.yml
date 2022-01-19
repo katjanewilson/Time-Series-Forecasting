@@ -4,5 +4,3 @@ delete_merged_file: true
 edit: https://github.com/katjanewilson/Time-Series-Forecasting/edit/master/%s
 view: https://github.com/katjanewilson/Time-Series-Forecasting/blob/master/%s
 language:
-  ui:
-    chapter_name: "Chapter "

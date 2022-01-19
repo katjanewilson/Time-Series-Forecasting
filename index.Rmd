@@ -5,5 +5,199 @@ date: "`r Sys.Date()`"
 site: bookdown::bookdown_site
 ---
 
-# Down the rabbit-hole
+# basics
+
+## Decomposition Models 
+
+**Additive Decomposition Model**
+
+Where y is the response, T is the trend component (slowly varying), S is a seasonal component, and epsilon is a disturbance term:
+
+$$
+\begin{equation}
+  y_t = T_t + S_t + \epsilon_t    
+\end{equation}
+$$
+
+**Multiplicative Decomposition Model**
+
+
+$$
+\begin{equation}
+  y_t = T_t S_t \epsilon_t    
+\end{equation}
+$$
+
+**Additive Model**
+
+Logging converts the multiplicative form to additive in thel ogs of components. 
+
+$$
+\begin{equation}
+  y_t = logT_t + logS_t + log\epsilon_t     
+\end{equation}
+$$
+
+Use multiplicative model in cases of increasing volaticity as response rises, rather than additive. If volatility does not change according to response level, both additive and multiplicative can be used. 
+
+## Model assumptions
+
+Mean of 0 and constant variance for errors
+Errors are uncorrelated.
+Errors are normally distributed
+
+## Examples
+
+### Example
+
+
+```{r eval=FALSE, include=TRUE}
+usbeer <- read.csv("/cloud/project/data/beer.txt")
+attach(usbeer)
+head(usbeer)
+class(usbeer)
+usbeer.ts<-ts(beer,start=c(1987,1),freq=12)
+plot(usbeer.ts,ylab="production",main="monthly US beer production") 
+cycle(usbeer.ts) 
+boxplot(usbeer.ts~cycle(usbeer.ts)) 
+fmonth<-as.factor(month) 
+boxplot(usbeer.ts~fmonth) 
+beerexpansion<-
+c(beer[1:43],rep(NA,8),beer[52:171],rep(NA,8),beer[180:252],rep(NA,18),
+beer[271:372]) 
+beercontraction<-
+c(rep(NA,43),beer[44:51],rep(NA,120),beer[172:179],rep(NA,73),beer[253:
+270],rep(NA,102)) 
+plot(ts(beerexpansion,start=c(1987,1),freq=12),ylim=c(13,22),ylab="production",main="monthly US beer production",col="green",lwd=2) 
+lines(ts(beercontraction,start=c(1987,1),freq=12),col="red",lwd=2) 
+legend("topleft",legend=c("expansion","contraction"),col=c("green","red
+"),lty=1,cex=0.8)
+```
+
+### Example
+
+```{r eval=TRUE, message=FALSE, warning=FALSE, include=TRUE}
+ontgas <- read.csv("/cloud/project/data/Ontariogasdemand.txt")
+attach(ontgas)
+# head(ontgas)
+ontariogas.ts <- ts(ontgas[,1], start = c(1960,1), freq = 12)
+plot(ontariogas.ts, ylab = "gas demand", main = "Ontario gas demand,
+1960-1975")
+
+```
+
+
+### Example
+```{r eval=TRUE, message=FALSE, warning=FALSE, include=TRUE}
+memp <- read.csv("/cloud/project/data/Memp1619.txt")
+attach(memp)
+# head(memp)
+
+
+```
+
+
+### Example
+
+```{r eval=TRUE, message=FALSE, warning=FALSE, include=TRUE}
+pass <- read.csv("/cloud/project/data/Intair.txt")
+attach(pass)
+# head(pass)
+pass.ts <- ts(passengers, start = c(1949,1), freq = 12)
+plot(pass.ts, ylab = "passengers (1000s)", main = "monthly international airline passengers, in 1000s")
+lpass <- log(passengers)
+class(lpass)
+lpass.ts <- ts(lpass, start = c(1949,1), freq = 12)
+class(lpass.ts)
+plot(lpass.ts, ylab = "log(passengers(1000s))", main = "log monthly international airline passengers, in 1000s")
+
+monthavg <- matrix(rep(0,12), ncol = 1)
+for(i in 1:12){
+  monthavg[i] <- mean(window(pass.ts, start = c(1949,i), freq = TRUE))
+}
+monthavg
+options(digits=5)
+monthavg
+month <- rep(seq(1:12), times =12)
+matrix(tapply(passengers, month, mean), ncol = 1)
+```
+
+### Example
+```{r eval=TRUE, message=FALSE, warning=FALSE, include=TRUE}
+trappings <- read.csv("/cloud/project/data/Lynx.txt")
+attach(trappings)
+head(trappings)
+trappings[28:33,]
+lynx.ts<- ts(trappings[,1],start = 1821)
+plot(lynx.ts, ylab = "trappings", main = "annual lynx trappings")
+lynx.ts <- ts(trappings[,1], start = 1821)
+mink.ts <- ts(trappings[,4], start = 1821)
+muskrat.ts <- ts(trappings[,5], start = 1821)
+plot(cbind(lynx.ts, mink.ts, muskrat.ts))
+```
+
+
+### Example
+
+```{r eval=TRUE, message=FALSE, warning=FALSE, include=TRUE}
+garbage <- read.csv("/cloud/project/data/Garbage.txt")
+attach(garbage)
+head(garbage)
+tonnage.ts<-ts(garbage[,4])
+plot(tonnage.ts,ylab = "tonnage", main = "weekly tonnage recorded")
+```
+
+### Example
+
+```{r eval=TRUE, message=FALSE, warning=FALSE, include=TRUE}
+rain <- read.csv("/cloud/project/data/rainfall.txt")
+attach(rain)
+head(rain)
+plot(ts(rainfall, start = c(1979,1), freq =12))
+```
+
+### Example
+
+```{r eval=TRUE, message=FALSE, warning=FALSE, include=TRUE}
+nyseadv <- read.csv("/cloud/project/data/nyseadv.txt")
+attach(nyseadv)
+head(nyseadv)
+pctadvnc.ts <- ts(pctadvnc)
+plot(pctadvnc.ts, ylab = "percent advances", main = "NYSE daily percent advances")
+abline(h=mean(pctadvnc), lty = 2, col = "red")
+```
+
+### Example
+
+```{r eval=TRUE, message=FALSE, warning=FALSE, include=TRUE}
+tsa <- read.csv("/cloud/project/data/TSAnew2.txt")
+attach(tsa)
+head(tsa)
+tsa19.ts <- ts(Travelers[1:366], start = c(1), freq = 7)
+plot(tsa19.ts, ylab = "Passengers", xlab = "Week", main = "Passenger throughput, 3/1/2019-2/29/2020")
+tsa192.ts <- ts(Travelers[1:366])
+plot(tsa192.ts, ylab = "Passengers", xlab = "Time",
+     main = "Passenger throughout, 3/1/2019-2/29/2020")
+abline(v=c(32,62,93,123,154,185,215,246,276,307,338),
+       lty=2, col = "red")
+tsa20.ts <- ts(Travelers[367:731],start = c(1), freq = 7)
+plot(tsa20.ts, ylab = "Passengers", xlab = "Week", main= "Passenger throughput, 3/1/1010-2/28/2021")
+ltsa20.ts <- ts(log(Travelers)[367:731],start = c(1), freq = 7)
+plot(ltsa20.ts, ylab = "Passengers", xlab = "Week", main = "log Passenger throughput, 3/1/2020-2/28/2021")
+ltsa19.ts <- ts(log(Travelers)[1:366],start = c(1), freq = 7)
+plot(ltsa19.ts, ylab = "log Passengers", xlab = "Week", main = "Passenger throughput", ylim = c(11,16), lty = 1, lwd = 2, col= "red")
+lines(ltsa20.ts, lty=1, lwd = 2, col = "blue")
+legend("topleft", legend = c("3/1/2019-2/29/2020","3/1/2020-2/28/2021"), col = c("red", "blue"), lty = 1, cex = 0.9)
+
+tsa21.ts <- ts(Travelers[673:1037],start = c(1), freq =7)
+plot(tsa21.ts, ylab = "Passengers", xlab = "Week", main = "Passenger throughput, 1/1/2021-12/31/2021")
+weekdayav19 <- tapply(Travelers[1:366],Weekday[1:366],mean)
+dmweekdayav19 <- weekdayav19-mean(weekdayav19)
+cbind(weekdayav19,dmweekdayav19)
+weekdayav21 <- tapply(Travelers[673:1037],Weekday[673:1037], mean)
+dmweekdayav21 <- weekdayav21-mean(weekdayav21)
+cbind(weekdayav21, dmweekdayav21)
+```
+
+
 
