@@ -19,3 +19,11 @@ basics
 multiple-regression-models
 trends-and-seasonality
 examples
+distributed-lag-models
+trends-and-seasonality-1
+trends-and-seasonality-2
+arima-models
+exponential-smoothing
+combination-of-forecasts
+exponential-smoothing-1
+arch-and-garch-models
