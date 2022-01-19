@@ -2,7 +2,7 @@
 
 ### Notes
 
-[Markdown Link](https://katjanewilson.github.io/Time-Series/)
+[Markdown Link](https://katjanewilson.github.io/Time-Series-Forecasting/)
 
 [STAT 711](https://apps.wharton.upenn.edu/syllabi/2021C/STAT535401/)
 
