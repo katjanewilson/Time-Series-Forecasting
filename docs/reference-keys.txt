@@ -27,3 +27,4 @@ exponential-smoothing
 combination-of-forecasts
 exponential-smoothing-1
 arch-and-garch-models
+additivie-decomposition-model-with-a-fourth-degree-polynomial-trend

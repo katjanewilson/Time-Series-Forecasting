@@ -1,2 +1,113 @@
 # multiple regression models
 
+
+
+```{r eval=TRUE, include=TRUE}
+usbeer <- read.csv("/cloud/project/data/beernew.txt")
+attach(usbeer)
+head(usbeer)
+
+```
+
+
+### additivie decomposition model with a fourth-degree polynomial trend
+
+Seasonal indices add to 0 for all t. 
+$$
+\begin{equation}
+  y_t = \beta_0 + \beta_2t^2 +  \beta_3t^3 + \beta_4t^4 + S_t + \epsilon_t
+\end{equation}
+$$
+
+R creates dummies. 
+
+```{r}
+fmonth<-as.factor(month)
+levels(fmonth)
+class(time)
+time <- as.numeric(time)
+class(time)
+model1<- lm(beer~time+I(time^2)+I(time^3)+I(time^4)+fmonth);summary(model1)
+```
+
+examine residuals
+
+```{r}
+plot(ts(resid(model1),start=c(1987,1),freq=12),xlab="time",ylab="residu als",main="Residuals of Model 1")
+```
+
+normal quantile plot of residuals. tails are a bit long relative to normaility. But not much of a problem. Null of Shapiro Wilk is normality of residuals
+
+```{r}
+qqnorm(resid(model1))
+qqline(resid(model1))
+shapiro.test(resid(model1))
+```
+
+Calculate and interpret estimated seasonal indices from the model. Selects estimated intercpet coefficients and the estimated coefficients for the fmonth dummies, then calculates the seasonal index estimates from these. In June, production is 2.072 million barrels above the level of the trends... 
+
+```{r}
+b1<-coef(model1)[1]
+b2<-coef(model1)[6:16]+b1
+b3<-c(b1,b2)
+seas<-b3-mean(b3)
+seas
+
+```
+
+
+Variable seas to time series clas sand plot indices 
+
+```{r}
+seas.ts<-ts(seas)
+plot(seas.ts,ylab="seasonal indices",xlab="month")
+```
+
+
+Partial F tests and hypothesis. Partial F test tests the null that some of the regression coefficients are simultaneously 0. Fir two models, one with all regressers, and a reduces. In the latter, omit variables corresponding to the parameters which are hypothesized to be 0.
+
+Suppose T is number of observations. The F stat for the partial F test can be calculated from the R squared of the two models. The F statistic is:
+$$
+\begin{equation}
+ F_{r,T-k-1} = \frac{((R^2(full)-R^2(reduced))/r}{(1-R^2(full))/(T-k-1)}
+\end{equation}
+$$
+
+where numerator DF = r and T-k-1 denominator degrees of freedom. Reject null if partial F is large (p value small). 
+
+```{r}
+
+model2<-lm(beer~time+I(time^2)+I(time^3)+I(time^4))
+summary(model2)
+summary(model1)$r.squared
+summary(model2)$r.squared
+```
+$$
+\begin{equation}
+ F_{11,356} = \frac{((0.92366-0.04045)/11}{(1-0.92366)/(356)} = 374.43
+\end{equation}
+$$
+
+
+
+confirm with test
+
+```{r}
+anova(model2,model1)
+```
+
+Do residuals suggest that the model disturbance term forms an uncorrelated sequence? Measure lag 1 correlation of the residuals, correlation between residuals which are directly adjacent in time. Lag one correlation not significant.
+
+```{r}
+r<-resid(model1)[2:372]
+r1<-resid(model1)[1:371]
+cor.test(r,r1)
+```
+
+Autocorrelation structure of residuals by estimates of the correlations at multiple lags. See significant residual correlations at many lags (significance is indicates by extention beyond the blue dashed lines). 
+
+```{r}
+acf(ts(resid(model1)),36)
+```
+
+
