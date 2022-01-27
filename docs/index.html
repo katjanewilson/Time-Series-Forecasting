@@ -24,7 +24,7 @@
 <meta name="author" content="Katherine Wilson" />
 
 
-<meta name="date" content="2022-01-26" />
+<meta name="date" content="2022-01-27" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -154,7 +154,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="1.3.9" data-path="index.html"><a href="index.html#example-8"><i class="fa fa-check"></i><b>1.3.9</b> Example</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="2" data-path="multiple-regression-models.html"><a href="multiple-regression-models.html"><i class="fa fa-check"></i><b>2</b> multiple regression models</a></li>
+<li class="chapter" data-level="2" data-path="multiple-regression-models.html"><a href="multiple-regression-models.html"><i class="fa fa-check"></i><b>2</b> multiple regression models</a>
+<ul>
+<li class="chapter" data-level="2.0.1" data-path="multiple-regression-models.html"><a href="multiple-regression-models.html#additivie-decomposition-model-with-a-fourth-degree-polynomial-trend"><i class="fa fa-check"></i><b>2.0.1</b> additivie decomposition model with a fourth-degree polynomial trend</a></li>
+</ul></li>
 <li class="chapter" data-level="3" data-path="trends-and-seasonality.html"><a href="trends-and-seasonality.html"><i class="fa fa-check"></i><b>3</b> trends and seasonality</a></li>
 <li class="chapter" data-level="4" data-path="distributed-lag-models.html"><a href="distributed-lag-models.html"><i class="fa fa-check"></i><b>4</b> distributed lag models</a></li>
 <li class="chapter" data-level="5" data-path="arima-models.html"><a href="arima-models.html"><i class="fa fa-check"></i><b>5</b> ARIMA models</a></li>
@@ -183,7 +186,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="header">
 <h1 class="title">Time Series Forecasting</h1>
 <p class="author"><em>Katherine Wilson</em></p>
-<p class="date"><em>2022-01-26</em></p>
+<p class="date"><em>2022-01-27</em></p>
 </div>
 <div id="basics" class="section level1" number="1">
 <h1><span class="header-section-number">1</span> basics</h1>
@@ -221,7 +224,7 @@ Errors are normally distributed</p>
 <h2><span class="header-section-number">1.3</span> Examples</h2>
 <div id="example" class="section level3" number="1.3.1">
 <h3><span class="header-section-number">1.3.1</span> Example</h3>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="index.html#cb1-1" aria-hidden="true" tabindex="-1"></a>usbeer <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;/cloud/project/data/beer.txt&quot;</span>)</span>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="index.html#cb1-1" aria-hidden="true" tabindex="-1"></a>usbeer <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;/cloud/project/data/beernew.txt&quot;</span>)</span>
 <span id="cb1-2"><a href="index.html#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">attach</span>(usbeer)</span>
 <span id="cb1-3"><a href="index.html#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(usbeer)</span>
 <span id="cb1-4"><a href="index.html#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(usbeer)</span>
@@ -231,13 +234,13 @@ Errors are normally distributed</p>
 <span id="cb1-8"><a href="index.html#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">boxplot</span>(usbeer.ts<span class="sc">~</span><span class="fu">cycle</span>(usbeer.ts)) </span>
 <span id="cb1-9"><a href="index.html#cb1-9" aria-hidden="true" tabindex="-1"></a>fmonth<span class="ot">&lt;-</span><span class="fu">as.factor</span>(month) </span>
 <span id="cb1-10"><a href="index.html#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="fu">boxplot</span>(usbeer.ts<span class="sc">~</span>fmonth) </span>
-<span id="cb1-11"><a href="index.html#cb1-11" aria-hidden="true" tabindex="-1"></a>beerexpansion<span class="ot">&lt;-</span></span>
-<span id="cb1-12"><a href="index.html#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(beer[<span class="dv">1</span><span class="sc">:</span><span class="dv">43</span>],<span class="fu">rep</span>(<span class="cn">NA</span>,<span class="dv">8</span>),beer[<span class="dv">52</span><span class="sc">:</span><span class="dv">171</span>],<span class="fu">rep</span>(<span class="cn">NA</span>,<span class="dv">8</span>),beer[<span class="dv">180</span><span class="sc">:</span><span class="dv">252</span>],<span class="fu">rep</span>(<span class="cn">NA</span>,<span class="dv">18</span>),</span>
-<span id="cb1-13"><a href="index.html#cb1-13" aria-hidden="true" tabindex="-1"></a>beer[<span class="dv">271</span><span class="sc">:</span><span class="dv">372</span>]) </span>
-<span id="cb1-14"><a href="index.html#cb1-14" aria-hidden="true" tabindex="-1"></a>beercontraction<span class="ot">&lt;-</span></span>
-<span id="cb1-15"><a href="index.html#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="fu">rep</span>(<span class="cn">NA</span>,<span class="dv">43</span>),beer[<span class="dv">44</span><span class="sc">:</span><span class="dv">51</span>],<span class="fu">rep</span>(<span class="cn">NA</span>,<span class="dv">120</span>),beer[<span class="dv">172</span><span class="sc">:</span><span class="dv">179</span>],<span class="fu">rep</span>(<span class="cn">NA</span>,<span class="dv">73</span>),beer[<span class="dv">253</span><span class="sc">:</span></span>
-<span id="cb1-16"><a href="index.html#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="dv">270</span>],<span class="fu">rep</span>(<span class="cn">NA</span>,<span class="dv">102</span>)) </span>
-<span id="cb1-17"><a href="index.html#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">ts</span>(beerexpansion,<span class="at">start=</span><span class="fu">c</span>(<span class="dv">1987</span>,<span class="dv">1</span>),<span class="at">freq=</span><span class="dv">12</span>),<span class="at">ylim=</span><span class="fu">c</span>(<span class="dv">13</span>,<span class="dv">22</span>),<span class="at">ylab=</span><span class="st">&quot;production&quot;</span>,<span class="at">main=</span><span class="st">&quot;monthly US beer production&quot;</span>,<span class="at">col=</span><span class="st">&quot;green&quot;</span>,<span class="at">lwd=</span><span class="dv">2</span>) </span>
+<span id="cb1-11"><a href="index.html#cb1-11" aria-hidden="true" tabindex="-1"></a>beerexpansion<span class="ot">&lt;-</span> <span class="fu">c</span>(beer[<span class="dv">1</span><span class="sc">:</span><span class="dv">43</span>],<span class="fu">rep</span>(<span class="cn">NA</span>,<span class="dv">8</span>),beer[<span class="dv">52</span><span class="sc">:</span><span class="dv">171</span>],<span class="fu">rep</span>(<span class="cn">NA</span>,<span class="dv">8</span>),beer[<span class="dv">180</span><span class="sc">:</span><span class="dv">252</span>],<span class="fu">rep</span>(<span class="cn">NA</span>,<span class="dv">18</span>),</span>
+<span id="cb1-12"><a href="index.html#cb1-12" aria-hidden="true" tabindex="-1"></a>beer[<span class="dv">271</span><span class="sc">:</span><span class="dv">372</span>]) </span>
+<span id="cb1-13"><a href="index.html#cb1-13" aria-hidden="true" tabindex="-1"></a>beercontraction<span class="ot">&lt;-</span></span>
+<span id="cb1-14"><a href="index.html#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="fu">rep</span>(<span class="cn">NA</span>,<span class="dv">43</span>),beer[<span class="dv">44</span><span class="sc">:</span><span class="dv">51</span>],<span class="fu">rep</span>(<span class="cn">NA</span>,<span class="dv">120</span>),beer[<span class="dv">172</span><span class="sc">:</span><span class="dv">179</span>],<span class="fu">rep</span>(<span class="cn">NA</span>,<span class="dv">73</span>),beer[<span class="dv">253</span><span class="sc">:</span></span>
+<span id="cb1-15"><a href="index.html#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="dv">270</span>],<span class="fu">rep</span>(<span class="cn">NA</span>,<span class="dv">102</span>)) </span>
+<span id="cb1-16"><a href="index.html#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">ts</span>(beerexpansion,<span class="at">start=</span><span class="fu">c</span>(<span class="dv">1987</span>,<span class="dv">1</span>),<span class="at">freq=</span><span class="dv">12</span>),<span class="at">ylim=</span><span class="fu">c</span>(<span class="dv">13</span>,<span class="dv">22</span>),<span class="at">ylab=</span><span class="st">&quot;production&quot;</span>,<span class="at">main=</span><span class="st">&quot;monthly US beer production&quot;</span>,<span class="at">col=</span><span class="st">&quot;green&quot;</span>,<span class="at">lwd=</span><span class="dv">2</span>) </span>
+<span id="cb1-17"><a href="index.html#cb1-17" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-18"><a href="index.html#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(<span class="fu">ts</span>(beercontraction,<span class="at">start=</span><span class="fu">c</span>(<span class="dv">1987</span>,<span class="dv">1</span>),<span class="at">freq=</span><span class="dv">12</span>),<span class="at">col=</span><span class="st">&quot;red&quot;</span>,<span class="at">lwd=</span><span class="dv">2</span>) </span>
 <span id="cb1-19"><a href="index.html#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">&quot;topleft&quot;</span>,<span class="at">legend=</span><span class="fu">c</span>(<span class="st">&quot;expansion&quot;</span>,<span class="st">&quot;contraction&quot;</span>),<span class="at">col=</span><span class="fu">c</span>(<span class="st">&quot;green&quot;</span>,<span class="st">&quot;red</span></span>
 <span id="cb1-20"><a href="index.html#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="st">&quot;</span>),<span class="at">lty=</span><span class="dv">1</span>,<span class="at">cex=</span><span class="fl">0.8</span>)</span></code></pre></div>

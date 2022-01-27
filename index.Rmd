@@ -52,7 +52,7 @@ Errors are normally distributed
 
 
 ```{r eval=FALSE, include=TRUE}
-usbeer <- read.csv("/cloud/project/data/beer.txt")
+usbeer <- read.csv("/cloud/project/data/beernew.txt")
 attach(usbeer)
 head(usbeer)
 class(usbeer)
@@ -62,13 +62,13 @@ cycle(usbeer.ts)
 boxplot(usbeer.ts~cycle(usbeer.ts)) 
 fmonth<-as.factor(month) 
 boxplot(usbeer.ts~fmonth) 
-beerexpansion<-
-c(beer[1:43],rep(NA,8),beer[52:171],rep(NA,8),beer[180:252],rep(NA,18),
+beerexpansion<- c(beer[1:43],rep(NA,8),beer[52:171],rep(NA,8),beer[180:252],rep(NA,18),
 beer[271:372]) 
 beercontraction<-
 c(rep(NA,43),beer[44:51],rep(NA,120),beer[172:179],rep(NA,73),beer[253:
 270],rep(NA,102)) 
 plot(ts(beerexpansion,start=c(1987,1),freq=12),ylim=c(13,22),ylab="production",main="monthly US beer production",col="green",lwd=2) 
+
 lines(ts(beercontraction,start=c(1987,1),freq=12),col="red",lwd=2) 
 legend("topleft",legend=c("expansion","contraction"),col=c("green","red
 "),lty=1,cex=0.8)
