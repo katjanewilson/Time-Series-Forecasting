@@ -24,7 +24,7 @@
 <meta name="author" content="Katherine Wilson" />
 
 
-<meta name="date" content="2022-01-26" />
+<meta name="date" content="2022-01-31" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -157,6 +157,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="2" data-path="multiple-regression-models.html"><a href="multiple-regression-models.html"><i class="fa fa-check"></i><b>2</b> multiple regression models</a>
 <ul>
 <li class="chapter" data-level="2.0.1" data-path="multiple-regression-models.html"><a href="multiple-regression-models.html#additivie-decomposition-model-with-a-fourth-degree-polynomial-trend"><i class="fa fa-check"></i><b>2.0.1</b> additivie decomposition model with a fourth-degree polynomial trend</a></li>
+<li class="chapter" data-level="2.0.2" data-path="multiple-regression-models.html"><a href="multiple-regression-models.html#additive-decomposition-model-with-cosine-and-sine-seasonal-dummies-and-inclusion-of-an-intercept"><i class="fa fa-check"></i><b>2.0.2</b> Additive decomposition model with cosine and sine seasonal dummies and inclusion of an intercept</a></li>
+<li class="chapter" data-level="2.0.3" data-path="multiple-regression-models.html"><a href="multiple-regression-models.html#australian-beer"><i class="fa fa-check"></i><b>2.0.3</b> Australian beer</a></li>
 </ul></li>
 <li class="chapter" data-level="3" data-path="trends-and-seasonality.html"><a href="trends-and-seasonality.html"><i class="fa fa-check"></i><b>3</b> trends and seasonality</a></li>
 <li class="chapter" data-level="4" data-path="distributed-lag-models.html"><a href="distributed-lag-models.html"><i class="fa fa-check"></i><b>4</b> distributed lag models</a></li>
@@ -342,6 +344,196 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>Autocorrelation structure of residuals by estimates of the correlations at multiple lags. See significant residual correlations at many lags (significance is indicates by extention beyond the blue dashed lines).</p>
 <div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="multiple-regression-models.html#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">acf</span>(<span class="fu">ts</span>(<span class="fu">resid</span>(model1)),<span class="dv">36</span>)</span></code></pre></div>
 <p><img src="bookdownproj_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+</div>
+<div id="additive-decomposition-model-with-cosine-and-sine-seasonal-dummies-and-inclusion-of-an-intercept" class="section level3" number="2.0.2">
+<h3><span class="header-section-number">2.0.2</span> Additive decomposition model with cosine and sine seasonal dummies and inclusion of an intercept</h3>
+<p><span class="math display">\[
+\begin{equation}
+  y_t = \beta_0 + \beta_1t +  \beta_2t^2 + \beta_3t^3 + \beta_4t^4 + \sum_{j=1}^{5}(\gamma_j cos\frac{2\pi jt}{12} + \delta_j \frac{2\pi jt}{12}) + \gamma_6(-1)^{t} + \epsilon_t
+\end{equation}
+\]</span></p>
+<p>Seasonal is now written as the sum of a fundamental component with period 12 and its five overtones. The jth component has amplitude</p>
+<p><span class="math display">\[
+\sqrt{\gamma_j^2 + \delta_j^2}, j = 1,...,5
+\]</span></p>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="multiple-regression-models.html#cb29-1" aria-hidden="true" tabindex="-1"></a>cosm<span class="ot">&lt;-</span><span class="fu">matrix</span>(<span class="at">nrow=</span><span class="fu">length</span>(time),<span class="at">ncol=</span><span class="dv">6</span>)</span>
+<span id="cb29-2"><a href="multiple-regression-models.html#cb29-2" aria-hidden="true" tabindex="-1"></a>sinm<span class="ot">&lt;-</span><span class="fu">matrix</span>(<span class="at">nrow=</span><span class="fu">length</span>(time),<span class="at">ncol=</span><span class="dv">5</span>)</span>
+<span id="cb29-3"><a href="multiple-regression-models.html#cb29-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>){cosm[,i]<span class="ot">&lt;-</span><span class="fu">cos</span>(<span class="dv">2</span><span class="sc">*</span>pi<span class="sc">*</span>i<span class="sc">*</span>time<span class="sc">/</span><span class="dv">12</span>)</span>
+<span id="cb29-4"><a href="multiple-regression-models.html#cb29-4" aria-hidden="true" tabindex="-1"></a> sinm[,i]<span class="ot">&lt;-</span><span class="fu">sin</span>(<span class="dv">2</span><span class="sc">*</span>pi<span class="sc">*</span>i<span class="sc">*</span>time<span class="sc">/</span><span class="dv">12</span>)}</span>
+<span id="cb29-5"><a href="multiple-regression-models.html#cb29-5" aria-hidden="true" tabindex="-1"></a>cosm[,<span class="dv">6</span>]<span class="ot">&lt;-</span><span class="fu">cos</span>(pi<span class="sc">*</span>time)</span>
+<span id="cb29-6"><a href="multiple-regression-models.html#cb29-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-7"><a href="multiple-regression-models.html#cb29-7" aria-hidden="true" tabindex="-1"></a>model6<span class="ot">&lt;-</span> <span class="fu">lm</span>(beer<span class="sc">~</span>time<span class="sc">+</span><span class="fu">I</span>(time<span class="sc">^</span><span class="dv">2</span>)<span class="sc">+</span><span class="fu">I</span>(time<span class="sc">^</span><span class="dv">3</span>)<span class="sc">+</span><span class="fu">I</span>(time<span class="sc">^</span><span class="dv">4</span>)<span class="sc">+</span>cosm[,<span class="dv">1</span>]<span class="sc">+</span>sinm[,<span class="dv">1</span>]<span class="sc">+</span>cosm[,<span class="dv">2</span>]<span class="sc">+</span>sinm[,<span class="dv">2</span>]<span class="sc">+</span>cosm[,<span class="dv">3</span>]<span class="sc">+</span>sinm[,<span class="dv">3</span>]<span class="sc">+</span>cosm[,<span class="dv">4</span>]<span class="sc">+</span>sinm[,<span class="dv">4</span>]<span class="sc">+</span>cosm[,<span class="dv">5</span>]<span class="sc">+</span>sinm[,<span class="dv">5</span>]<span class="sc">+</span>cosm[,<span class="dv">6</span>])</span>
+<span id="cb29-8"><a href="multiple-regression-models.html#cb29-8" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">digits=</span><span class="dv">10</span>)</span>
+<span id="cb29-9"><a href="multiple-regression-models.html#cb29-9" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model6)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = beer ~ time + I(time^2) + I(time^3) + I(time^4) + 
+##     cosm[, 1] + sinm[, 1] + cosm[, 2] + sinm[, 2] + cosm[, 3] + 
+##     sinm[, 3] + cosm[, 4] + sinm[, 4] + cosm[, 5] + sinm[, 5] + 
+##     cosm[, 6])
+## 
+## Residuals:
+##         Min          1Q      Median          3Q         Max 
+## -1.33863334 -0.26964756  0.01011539  0.25978076  1.52951509 
+## 
+## Coefficients:
+##                  Estimate    Std. Error   t value   Pr(&gt;|t|)    
+## (Intercept)  1.634990e+01  1.174717e-01 139.18164 &lt; 2.22e-16 ***
+## time         1.523140e-02  4.349744e-03   3.50168 0.00052115 ***
+## I(time^2)   -1.675209e-04  4.732317e-05  -3.53993 0.00045335 ***
+## I(time^3)    6.496385e-07  1.904884e-07   3.41038 0.00072317 ***
+## I(time^4)   -8.780189e-10  2.533498e-10  -3.46564 0.00059359 ***
+## cosm[, 1]   -1.994269e+00  3.267171e-02 -61.03962 &lt; 2.22e-16 ***
+## sinm[, 1]    1.738916e-01  3.270197e-02   5.31747 1.8626e-07 ***
+## cosm[, 2]   -3.919055e-02  3.267142e-02  -1.19954 0.23111728    
+## sinm[, 2]    1.273539e-01  3.267614e-02   3.89746 0.00011615 ***
+## cosm[, 3]   -8.882959e-02  3.267141e-02  -2.71888 0.00687115 ** 
+## sinm[, 3]    3.354931e-02  3.267141e-02   1.02687 0.30517856    
+## cosm[, 4]   -3.403903e-02  3.267141e-02  -1.04186 0.29818368    
+## sinm[, 4]    1.703934e-01  3.266983e-02   5.21562 3.1153e-07 ***
+## cosm[, 5]   -1.982014e-01  3.267141e-02  -6.06651 3.3427e-09 ***
+## sinm[, 5]    5.071124e-01  3.266921e-02  15.52264 &lt; 2.22e-16 ***
+## cosm[, 6]   -1.358850e-01  2.310134e-02  -5.88213 9.3415e-09 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.4455463 on 356 degrees of freedom
+## Multiple R-squared:  0.9236588,  Adjusted R-squared:  0.9204422 
+## F-statistic: 287.1518 on 15 and 356 DF,  p-value: &lt; 2.2204e-16</code></pre>
+</div>
+<div id="australian-beer" class="section level3" number="2.0.3">
+<h3><span class="header-section-number">2.0.3</span> Australian beer</h3>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="multiple-regression-models.html#cb31-1" aria-hidden="true" tabindex="-1"></a>ausbeer <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;/cloud/project/data/beeraustralia.txt&quot;</span>)</span>
+<span id="cb31-2"><a href="multiple-regression-models.html#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="fu">attach</span>(ausbeer)</span></code></pre></div>
+<pre><code>## The following objects are masked from usbeer:
+## 
+##     beer, month, year</code></pre>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="multiple-regression-models.html#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(ausbeer)</span></code></pre></div>
+<pre><code>##   year month beer      dlogbeer obs317 obs318
+## 1 1956     1 93.2            NA      0      0
+## 2 1956     2 96.0  0.0296004698      0      0
+## 3 1956     3 95.2 -0.0083682500      0      0
+## 4 1956     4 77.1 -0.2108766610      0      0
+## 5 1956     5 70.9 -0.0838328470      0      0
+## 6 1956     6 64.8 -0.0899648300      0      0</code></pre>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="multiple-regression-models.html#cb35-1" aria-hidden="true" tabindex="-1"></a>fmonth<span class="ot">&lt;-</span> <span class="fu">as.factor</span>(month)</span>
+<span id="cb35-2"><a href="multiple-regression-models.html#cb35-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">ts</span>(beer,<span class="at">start=</span><span class="fu">c</span>(<span class="dv">1956</span>,<span class="dv">1</span>),<span class="at">freq=</span><span class="dv">12</span>),<span class="at">xlab=</span><span class="st">&quot;time&quot;</span>,<span class="at">ylab=</span><span class="st">&quot;beer production&quot;</span>,<span class="at">main=</span><span class="st">&quot;Australia monthly beer production&quot;</span>)</span></code></pre></div>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="multiple-regression-models.html#cb36-1" aria-hidden="true" tabindex="-1"></a>time<span class="ot">&lt;-</span><span class="fu">as.numeric</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(beer)) </span>
+<span id="cb36-2"><a href="multiple-regression-models.html#cb36-2" aria-hidden="true" tabindex="-1"></a>modela1<span class="ot">&lt;-</span><span class="fu">lm</span>(<span class="fu">log</span>(beer)<span class="sc">~</span><span class="fu">poly</span>(time,<span class="dv">5</span>)<span class="sc">+</span>fmonth);<span class="fu">summary</span>(modela1) </span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = log(beer) ~ poly(time, 5) + fmonth)
+## 
+## Residuals:
+##          Min           1Q       Median           3Q          Max 
+## -0.262121447 -0.039685223  0.003353281  0.045376012  0.189701314 
+## 
+## Coefficients:
+##                   Estimate  Std. Error   t value   Pr(&gt;|t|)    
+## (Intercept)     4.91985407  0.01092600 450.28878 &lt; 2.22e-16 ***
+## poly(time, 5)1  4.22453048  0.06909104  61.14440 &lt; 2.22e-16 ***
+## poly(time, 5)2 -2.42218832  0.06910805 -35.04929 &lt; 2.22e-16 ***
+## poly(time, 5)3 -0.40300589  0.06910164  -5.83207 1.0340e-08 ***
+## poly(time, 5)4  0.75754529  0.06912559  10.95897 &lt; 2.22e-16 ***
+## poly(time, 5)5 -0.21520612  0.06911476  -3.11375  0.0019628 ** 
+## fmonth2        -0.06588789  0.01544775  -4.26521 2.4264e-05 ***
+## fmonth3         0.01500563  0.01544817   0.97135  0.3318841    
+## fmonth4        -0.08996734  0.01544887  -5.82356 1.0843e-08 ***
+## fmonth5        -0.12130718  0.01544984  -7.85168 2.9262e-14 ***
+## fmonth6        -0.23583124  0.01545109 -15.26309 &lt; 2.22e-16 ***
+## fmonth7        -0.15681336  0.01545261 -10.14802 &lt; 2.22e-16 ***
+## fmonth8        -0.10091698  0.01545442  -6.52997 1.7473e-10 ***
+## fmonth9        -0.06956163  0.01554996  -4.47343 9.7165e-06 ***
+## fmonth10        0.06736856  0.01555057   4.33222 1.8146e-05 ***
+## fmonth11        0.12355807  0.01555133   7.94518 1.5121e-14 ***
+## fmonth12        0.19610076  0.01555224  12.60917 &lt; 2.22e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.06908382 on 459 degrees of freedom
+## Multiple R-squared:  0.9341762,  Adjusted R-squared:  0.9318817 
+## F-statistic: 407.1352 on 16 and 459 DF,  p-value: &lt; 2.2204e-16</code></pre>
+<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="multiple-regression-models.html#cb38-1" aria-hidden="true" tabindex="-1"></a>b1<span class="ot">&lt;-</span><span class="fu">coef</span>(modela1)[<span class="dv">1</span>]</span>
+<span id="cb38-2"><a href="multiple-regression-models.html#cb38-2" aria-hidden="true" tabindex="-1"></a>b2<span class="ot">&lt;-</span><span class="fu">coef</span>(modela1)[<span class="dv">7</span><span class="sc">:</span><span class="dv">17</span>]<span class="sc">+</span>b1</span>
+<span id="cb38-3"><a href="multiple-regression-models.html#cb38-3" aria-hidden="true" tabindex="-1"></a>b3<span class="ot">&lt;-</span><span class="fu">c</span>(b1,b2)</span>
+<span id="cb38-4"><a href="multiple-regression-models.html#cb38-4" aria-hidden="true" tabindex="-1"></a>seasa1<span class="ot">&lt;-</span><span class="fu">exp</span>(b3<span class="sc">-</span><span class="fu">mean</span>(b3))</span>
+<span id="cb38-5"><a href="multiple-regression-models.html#cb38-5" aria-hidden="true" tabindex="-1"></a>seasa1</span></code></pre></div>
+<pre><code>##  (Intercept)      fmonth2      fmonth3      fmonth4      fmonth5      fmonth6 
+## 1.0371961363 0.9710601714 1.0528772762 0.9479568581 0.9187087427 0.8192957166 
+##      fmonth7      fmonth8      fmonth9     fmonth10     fmonth11     fmonth12 
+## 0.8866612193 0.9376336898 0.9674993016 1.1094779767 1.1736037190 1.2619041504</code></pre>
+<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="multiple-regression-models.html#cb40-1" aria-hidden="true" tabindex="-1"></a>modela2<span class="ot">&lt;-</span><span class="fu">lm</span>(dlogbeer<span class="sc">~</span>fmonth);<span class="fu">summary</span>(modela2) </span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = dlogbeer ~ fmonth)
+## 
+## Residuals:
+##         Min          1Q      Median          3Q         Max 
+## -0.31502521 -0.06119002 -0.00417386  0.06318444  0.44469835 
+## 
+## Coefficients:
+##                Estimate  Std. Error   t value   Pr(&gt;|t|)    
+## (Intercept) -0.19534363  0.01553995 -12.57041 &lt; 2.22e-16 ***
+## fmonth2      0.13047997  0.02183902   5.97462 4.6038e-09 ***
+## fmonth3      0.27726796  0.02183902  12.69599 &lt; 2.22e-16 ***
+## fmonth4      0.09140771  0.02183902   4.18552 3.4057e-05 ***
+## fmonth5      0.16504675  0.02183902   7.55742 2.2202e-13 ***
+## fmonth6      0.08186816  0.02183902   3.74871 0.00020024 ***
+## fmonth7      0.27541539  0.02183902  12.61116 &lt; 2.22e-16 ***
+## fmonth8      0.25229888  0.02183902  11.55266 &lt; 2.22e-16 ***
+## fmonth9      0.23040808  0.02197681  10.48415 &lt; 2.22e-16 ***
+## fmonth10     0.33338558  0.02197681  15.16988 &lt; 2.22e-16 ***
+## fmonth11     0.25264919  0.02197681  11.49617 &lt; 2.22e-16 ***
+## fmonth12     0.26900638  0.02197681  12.24047 &lt; 2.22e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.09704697 on 463 degrees of freedom
+##   (1 observation deleted due to missingness)
+## Multiple R-squared:  0.5036864,  Adjusted R-squared:  0.4918949 
+## F-statistic: 42.71618 on 11 and 463 DF,  p-value: &lt; 2.2204e-16</code></pre>
+<div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb42-1"><a href="multiple-regression-models.html#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(modela2, <span class="at">which =</span> <span class="dv">2</span>)</span></code></pre></div>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-12-2.png" width="672" /></p>
+<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="multiple-regression-models.html#cb43-1" aria-hidden="true" tabindex="-1"></a>dlogbeer[<span class="dv">316</span><span class="sc">:</span><span class="dv">319</span>]</span></code></pre></div>
+<pre><code>## [1] -0.0829522240 -0.3236756750  0.3312228807  0.0006263702</code></pre>
+<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb45-1"><a href="multiple-regression-models.html#cb45-1" aria-hidden="true" tabindex="-1"></a>beer[<span class="dv">316</span><span class="sc">:</span><span class="dv">319</span>]</span></code></pre></div>
+<pre><code>## [1] 158.4 114.6 159.6 159.7</code></pre>
+<div class="sourceCode" id="cb47"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb47-1"><a href="multiple-regression-models.html#cb47-1" aria-hidden="true" tabindex="-1"></a>modela3<span class="ot">&lt;-</span><span class="fu">lm</span>(dlogbeer<span class="sc">~</span>fmonth<span class="sc">+</span>obs318);<span class="fu">summary</span>(modela3)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = dlogbeer ~ fmonth + obs318)
+## 
+## Residuals:
+##          Min           1Q       Median           3Q          Max 
+## -0.303622687 -0.060298529 -0.003619992  0.063353566  0.310079112 
+## 
+## Coefficients:
+##                Estimate  Std. Error   t value   Pr(&gt;|t|)    
+## (Intercept) -0.19534363  0.01519065 -12.85946 &lt; 2.22e-16 ***
+## fmonth2      0.13047997  0.02134813   6.11201 2.0937e-09 ***
+## fmonth3      0.27726796  0.02134813  12.98792 &lt; 2.22e-16 ***
+## fmonth4      0.09140771  0.02134813   4.28177 2.2563e-05 ***
+## fmonth5      0.16504675  0.02134813   7.73120 6.7183e-14 ***
+## fmonth6      0.07046563  0.02148282   3.28009  0.0011162 ** 
+## fmonth7      0.27541539  0.02134813  12.90115 &lt; 2.22e-16 ***
+## fmonth8      0.25229888  0.02134813  11.81831 &lt; 2.22e-16 ***
+## fmonth9      0.23040808  0.02148282  10.72522 &lt; 2.22e-16 ***
+## fmonth10     0.33338558  0.02148282  15.51870 &lt; 2.22e-16 ***
+## fmonth11     0.25264919  0.02148282  11.76052 &lt; 2.22e-16 ***
+## fmonth12     0.26900638  0.02148282  12.52193 &lt; 2.22e-16 ***
+## obs318       0.45610087  0.09607411   4.74739 2.7529e-06 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.09486559 on 462 degrees of freedom
+##   (1 observation deleted due to missingness)
+## Multiple R-squared:  0.5267718,  Adjusted R-squared:  0.5144802 
+## F-statistic:  42.8561 on 12 and 462 DF,  p-value: &lt; 2.2204e-16</code></pre>
+<div class="sourceCode" id="cb49"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb49-1"><a href="multiple-regression-models.html#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(modela3, <span class="at">which =</span> <span class="dv">2</span>)</span></code></pre></div>
+<pre><code>## Warning: not plotting observations with leverage one:
+##   317</code></pre>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-12-3.png" width="672" /></p>
 
 </div>
 </div>

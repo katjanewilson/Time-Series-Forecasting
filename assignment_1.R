@@ -12,21 +12,32 @@ sales.ts<- ts(sales_vector, start = c(1992,1), freq = 12)
 plot(sales.ts, xlab = "time", ylab = "Sales", main = "Sales vs. time")
 lsales<- log(sales_vector)
 sales.ts<- ts(lsales, start = c(1992,1), freq = 12)
-plot(sales.ts, xlab = "time", ylab = "Log Sales", main = "Sales vs. time")
+plot(sales.ts, xlab = "time", ylab = "Log Sales", main = "Sales vs. time", col = "red")
+plot(ts(lsales, start(c(1992,1), freq = 12)), xlab = "time", ylab = "Log Sales", main = "Sales vs. time", col = "black")
+
 ## contraction
 salescontraction<-
-  c(rep(NA,110),sales_vector[111:119], rep(NA,73) ,sales_vector[193:210],
+  c(rep(NA,111),sales_vector[112:119], rep(NA,73) ,sales_vector[193:210],
     rep(NA,128),sales_vector[339:340],rep(NA,20))
 salescontraction
 sales_regular<-
   c(sales_vector[1:111],rep(NA,8), sales_vector[120:192] ,rep(NA,18),
-   sales_vector[211:338],rep(NA,1),sales_vector[340:360])
+   sales_vector[211:338],rep(NA,2),sales_vector[341:360])
 sales_regular
-plot(ts(salescontraction,start = c(1992,1), freq = 12), col = "red", lwd = 2)
+test<- cbind(salescontraction, sales_regular)
+plot(ts(salescontraction,start = c(1992,1), freq = 12), 
+     col = "red", lwd = 2, ylab = "Sales", 
+     main = "Sales vs. time")
 lines(ts(sales_regular, start = c(1992,1), freq = 12), col = "black")
+## log
+plot(ts(log(salescontraction),start = c(1992,1), freq = 12), 
+     col = "red", lwd = 2, ylab = "Log Sales", 
+     main = "Sales vs. time")
+lines(ts(log(sales_regular), start = c(1992,1), freq = 12), col = "black")
+
 
 ### question 2
-model1 <- lm(logSales~poly(Time,4) + fMonth + 
+model1 <- lm(sales$logSales~poly(Time,4) + fMonth + 
                c348+s348+c432+s432)
 summary(model1)
 ## part a
@@ -41,19 +52,31 @@ plot(seas.ts, ylab = "seasonal indices", xlab = "month")
 ## part b
 qqnorm(resid(model1))
 qqline(resid(model1))
-plot(ts(resid(model1), start = c(1992,1),
-        freq = 12), ylab = "Model 1 residuals")
+plot(model1, which = 2)
+shapiro.test(resid(model1))
 acf(ts(resid(model1)))
 
 
+## add a dummy
+sales$obs339 <- ifelse(Sales == 73901, 1, 0)
+sales$obs340 <- ifelse(Sales == 64383, 1, 0)
+sales$obs341 <- ifelse(Sales == 68436, 1, 0)
+model1 <- lm(sales$logSales~poly(Time,4) + fMonth + 
+               c348+s348+c432+s432 +
+               sales$obs339+ sales$obs340 + sales$obs341)
+summary(model1)
+
+
 ### question 3
-sales.ts <- ts(sales, freq=12)
-sales.decmps <- decompose(sales.ts)
+sales.ts <- ts(logSales, freq=12)
+sales.decmps <- decompose(sales.ts, type = "mult")
 seasd <- sales.decmps$seasonal
 seasd[1:12]
 # compare to index estimates from model 1
 options(digits =5)
 cbind(seas, seasd[1:12])
+plot(ts(sales.decmps$random[7:360]))
+acf(ts(sales.decmps$random[7:300]),36)
 
 
 ### question 4

@@ -110,4 +110,66 @@ Autocorrelation structure of residuals by estimates of the correlations at multi
 acf(ts(resid(model1)),36)
 ```
 
+### Additive decomposition model with cosine and sine seasonal dummies and inclusion of an intercept
+
+$$
+\begin{equation}
+  y_t = \beta_0 + \beta_1t +  \beta_2t^2 + \beta_3t^3 + \beta_4t^4 + \sum_{j=1}^{5}(\gamma_j cos\frac{2\pi jt}{12} + \delta_j \frac{2\pi jt}{12}) + \gamma_6(-1)^{t} + \epsilon_t
+\end{equation}
+$$
+
+Seasonal is now written as the sum of a fundamental component with period 12 and its five overtones. The jth component has amplitude
+
+$$
+\sqrt{\gamma_j^2 + \delta_j^2}, j = 1,...,5
+$$
+
+
+```{r}
+cosm<-matrix(nrow=length(time),ncol=6)
+sinm<-matrix(nrow=length(time),ncol=5)
+for(i in 1:5){cosm[,i]<-cos(2*pi*i*time/12)
+ sinm[,i]<-sin(2*pi*i*time/12)}
+cosm[,6]<-cos(pi*time)
+
+model6<- lm(beer~time+I(time^2)+I(time^3)+I(time^4)+cosm[,1]+sinm[,1]+cosm[,2]+sinm[,2]+cosm[,3]+sinm[,3]+cosm[,4]+sinm[,4]+cosm[,5]+sinm[,5]+cosm[,6])
+options(digits=10)
+summary(model6)
+```
+
+
+
+
+
+### Australian beer
+
+```{r}
+ausbeer <- read.csv("/cloud/project/data/beeraustralia.txt")
+attach(ausbeer)
+head(ausbeer)
+fmonth<- as.factor(month)
+plot(ts(beer,start=c(1956,1),freq=12),xlab="time",ylab="beer production",main="Australia monthly beer production")
+time<-as.numeric(1:length(beer)) 
+modela1<-lm(log(beer)~poly(time,5)+fmonth);summary(modela1) 
+
+b1<-coef(modela1)[1]
+b2<-coef(modela1)[7:17]+b1
+b3<-c(b1,b2)
+seasa1<-exp(b3-mean(b3))
+seasa1
+
+
+
+
+modela2<-lm(dlogbeer~fmonth);summary(modela2) 
+plot(modela2, which = 2)
+dlogbeer[316:319]
+beer[316:319]
+modela3<-lm(dlogbeer~fmonth+obs318);summary(modela3)
+plot(modela3, which = 2)
+```
+
+
+
+
 
