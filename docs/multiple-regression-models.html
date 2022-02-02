@@ -720,6 +720,7 @@ Now, add calendar structure. R squared has jumped, even though this model has on
 </div>
 <div id="ontario-gas" class="section level2" number="2.1">
 <h2><span class="header-section-number">2.1</span> Ontario gas</h2>
+<p>Not clear from the data is additive or multiplicative. Is the vertical increasing as it rises? Yes, a little bit but mild. Seasonal pattern is expected. Model1: demand for gas is fit with polynomial degree 4. Notice that the fourth degree term in polynomial is marginally sig. The purpose of residuals is to judge whether we can stick with an additive model or not. Residuals are fanning, meaning that there is changing volatility as the level of the time series rises. Notice how the residuals have much more vertical dispersion at the end of the time series over the beginning.</p>
 <div class="sourceCode" id="cb68"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb68-1"><a href="multiple-regression-models.html#cb68-1" aria-hidden="true" tabindex="-1"></a>ontgas<span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;/cloud/project/data/Ontariogasdemand.txt&quot;</span>)</span>
 <span id="cb68-2"><a href="multiple-regression-models.html#cb68-2" aria-hidden="true" tabindex="-1"></a><span class="fu">attach</span>(ontgas)</span></code></pre></div>
 <pre><code>## The following objects are masked _by_ .GlobalEnv:
@@ -739,6 +740,50 @@ Now, add calendar structure. R squared has jumped, even though this model has on
 ## 4     98133        11.49 1960     4     0      0      0 -0.77846  0.6277
 ## 5    113615        11.64 1960     5     0      0      0 -0.06279 -0.9980
 ## 6    123924        11.73 1960     6     0      0      0  0.85099  0.5252</code></pre>
+<div class="sourceCode" id="cb74"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb74-1"><a href="multiple-regression-models.html#cb74-1" aria-hidden="true" tabindex="-1"></a>ontariogas.ts<span class="ot">&lt;-</span><span class="fu">ts</span>(ontgas[,<span class="dv">1</span>],<span class="at">start=</span><span class="fu">c</span>(<span class="dv">1960</span>,<span class="dv">1</span>),<span class="at">freq=</span><span class="dv">12</span>) </span>
+<span id="cb74-2"><a href="multiple-regression-models.html#cb74-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(ontariogas.ts,<span class="at">ylab=</span><span class="st">&quot;gas demand&quot;</span>,<span class="at">main=</span><span class="st">&quot;Ontario gas demand, 1960-</span></span>
+<span id="cb74-3"><a href="multiple-regression-models.html#cb74-3" aria-hidden="true" tabindex="-1"></a><span class="st">1975&quot;</span>) </span></code></pre></div>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
+<div class="sourceCode" id="cb75"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb75-1"><a href="multiple-regression-models.html#cb75-1" aria-hidden="true" tabindex="-1"></a>time<span class="ot">&lt;-</span><span class="fu">as.numeric</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(gasdemand)) </span>
+<span id="cb75-2"><a href="multiple-regression-models.html#cb75-2" aria-hidden="true" tabindex="-1"></a>fmonth<span class="ot">&lt;-</span><span class="fu">as.factor</span>(month) </span>
+<span id="cb75-3"><a href="multiple-regression-models.html#cb75-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb75-4"><a href="multiple-regression-models.html#cb75-4" aria-hidden="true" tabindex="-1"></a>model1<span class="ot">&lt;-</span><span class="fu">lm</span>(gasdemand<span class="sc">~</span><span class="fu">poly</span>(time,<span class="dv">4</span>)<span class="sc">+</span>obs125<span class="sc">+</span>fmonth);<span class="fu">summary</span>(model1) </span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = gasdemand ~ poly(time, 4) + obs125 + fmonth)
+## 
+## Residuals:
+##    Min     1Q Median     3Q    Max 
+## -19237  -3609   -134   3182  18779 
+## 
+## Coefficients:
+##                Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)      140924       1421   99.16  &lt; 2e-16 ***
+## poly(time, 4)1   516032       5692   90.66  &lt; 2e-16 ***
+## poly(time, 4)2    57343       5687   10.08  &lt; 2e-16 ***
+## poly(time, 4)3   -10939       5717   -1.91   0.0573 .  
+## poly(time, 4)4   -14312       5678   -2.52   0.0126 *  
+## obs125           -23616       5895   -4.01  9.1e-05 ***
+## fmonth2           -4961       2007   -2.47   0.0144 *  
+## fmonth3            5629       2007    2.80   0.0056 ** 
+## fmonth4            9811       2007    4.89  2.3e-06 ***
+## fmonth5           32668       2042   16.00  &lt; 2e-16 ***
+## fmonth6           32266       2008   16.07  &lt; 2e-16 ***
+## fmonth7           45213       2009   22.51  &lt; 2e-16 ***
+## fmonth8           46642       2009   23.21  &lt; 2e-16 ***
+## fmonth9           26062       2010   12.97  &lt; 2e-16 ***
+## fmonth10          28640       2011   14.24  &lt; 2e-16 ***
+## fmonth11          15855       2012    7.88  3.3e-13 ***
+## fmonth12          17324       2012    8.61  4.2e-15 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 5680 on 175 degrees of freedom
+## Multiple R-squared:  0.983,  Adjusted R-squared:  0.981 
+## F-statistic:  632 on 16 and 175 DF,  p-value: &lt;2e-16</code></pre>
+<div class="sourceCode" id="cb77"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb77-1"><a href="multiple-regression-models.html#cb77-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">predict</span>(model1),<span class="fu">resid</span>(model1),<span class="at">xlab=</span><span class="st">&quot;predicted </span></span>
+<span id="cb77-2"><a href="multiple-regression-models.html#cb77-2" aria-hidden="true" tabindex="-1"></a><span class="st">gasdemand&quot;</span>,<span class="at">ylab=</span><span class="st">&quot;gasdemand residual&quot;</span>,<span class="at">main=</span><span class="st">&quot;Residual by Predicted Plot&quot;</span>) </span></code></pre></div>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-17-2.png" width="672" /></p>
 
 </div>
 </div>

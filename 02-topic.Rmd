@@ -246,7 +246,7 @@ acf(ts(resid(modela6)))
 
 ## Ontario gas 
 
-Not clear from the data is additive or multiplicative. Is the vertical increasing as it rises? Yes, a little bit but mild. 
+Not clear from the data is additive or multiplicative. Is the vertical increasing as it rises? Yes, a little bit but mild. Seasonal pattern is expected. Model1: demand for gas is fit with polynomial degree 4. Notice that the fourth degree term in polynomial is marginally sig. The purpose of residuals is to judge whether we can stick with an additive model or not. Residuals are fanning, meaning that there is changing volatility as the level of the time series rises. Notice how the residuals have much more vertical dispersion at the end of the time series over the beginning. 
 
 ```{r}
 
@@ -256,6 +256,12 @@ head(ontgas)
 ontariogas.ts<-ts(ontgas[,1],start=c(1960,1),freq=12) 
 plot(ontariogas.ts,ylab="gas demand",main="Ontario gas demand, 1960-
 1975") 
+time<-as.numeric(1:length(gasdemand)) 
+fmonth<-as.factor(month) 
+
+model1<-lm(gasdemand~poly(time,4)+obs125+fmonth);summary(model1) 
+plot(predict(model1),resid(model1),xlab="predicted 
+gasdemand",ylab="gasdemand residual",main="Residual by Predicted Plot") 
 
 ```
 
