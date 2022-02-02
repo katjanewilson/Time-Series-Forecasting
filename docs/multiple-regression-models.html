@@ -159,6 +159,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="2.0.1" data-path="multiple-regression-models.html"><a href="multiple-regression-models.html#additivie-decomposition-model-with-a-fourth-degree-polynomial-trend"><i class="fa fa-check"></i><b>2.0.1</b> additivie decomposition model with a fourth-degree polynomial trend</a></li>
 <li class="chapter" data-level="2.0.2" data-path="multiple-regression-models.html"><a href="multiple-regression-models.html#additive-decomposition-model-with-cosine-and-sine-seasonal-dummies-and-inclusion-of-an-intercept"><i class="fa fa-check"></i><b>2.0.2</b> Additive decomposition model with cosine and sine seasonal dummies and inclusion of an intercept</a></li>
 <li class="chapter" data-level="2.0.3" data-path="multiple-regression-models.html"><a href="multiple-regression-models.html#australian-beer"><i class="fa fa-check"></i><b>2.0.3</b> Australian beer</a></li>
+<li class="chapter" data-level="2.1" data-path="multiple-regression-models.html"><a href="multiple-regression-models.html#ontario-gas"><i class="fa fa-check"></i><b>2.1</b> Ontario gas</a></li>
 </ul></li>
 <li class="chapter" data-level="3" data-path="trends-and-seasonality.html"><a href="trends-and-seasonality.html"><i class="fa fa-check"></i><b>3</b> trends and seasonality</a></li>
 <li class="chapter" data-level="4" data-path="distributed-lag-models.html"><a href="distributed-lag-models.html"><i class="fa fa-check"></i><b>4</b> distributed lag models</a></li>
@@ -629,7 +630,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ## fmonth11    1.1736 1.1741 1.1729
 ## fmonth12    1.2619 1.2635 1.2612</code></pre>
 <p>Two cosine sin pairs with frequencies 0.348 and 0.432. Polynomial of degree 5, the fmonth that is defined, the dummy for the outlier, and the two cosine sin pairs. Cosine sin pairs are significant. The 348 pair is highly sig. 432 pair also sig.</p>
-<p>In autocorrelation plots, there is additional seasonal structure in the beer data, and that is dynamic structure. We have extracted the static, and that is dynamic. That lag 1 is suggesting that there is a tiny bit of trend that we haven’t captured with the model.</p>
+<p>In autocorrelation plots, there is additional seasonal structure in the beer data, and that is dynamic structure. We have extracted the static, and that is dynamic. That lag 1 is suggesting that there is a tiny bit of trend that we haven’t captured with the model. There is a little bit of dynamic seasonal structure.</p>
 <div class="sourceCode" id="cb62"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb62-1"><a href="multiple-regression-models.html#cb62-1" aria-hidden="true" tabindex="-1"></a>c348<span class="ot">&lt;-</span><span class="fu">cos</span>(<span class="fl">0.696</span><span class="sc">*</span>pi<span class="sc">*</span>time);s348<span class="ot">&lt;-</span><span class="fu">sin</span>(<span class="fl">0.696</span><span class="sc">*</span>pi<span class="sc">*</span>time) </span>
 <span id="cb62-2"><a href="multiple-regression-models.html#cb62-2" aria-hidden="true" tabindex="-1"></a>c432<span class="ot">&lt;-</span><span class="fu">cos</span>(<span class="fl">0.864</span><span class="sc">*</span>pi<span class="sc">*</span>time);s432<span class="ot">&lt;-</span><span class="fu">sin</span>(<span class="fl">0.864</span><span class="sc">*</span>pi<span class="sc">*</span>time) </span>
 <span id="cb62-3"><a href="multiple-regression-models.html#cb62-3" aria-hidden="true" tabindex="-1"></a> </span>
@@ -675,7 +676,69 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ## Multiple R-squared:  0.949,  Adjusted R-squared:  0.947 
 ## F-statistic:  402 on 21 and 454 DF,  p-value: &lt;2e-16</code></pre>
 <div class="sourceCode" id="cb64"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb64-1"><a href="multiple-regression-models.html#cb64-1" aria-hidden="true" tabindex="-1"></a><span class="fu">acf</span>(<span class="fu">ts</span>(<span class="fu">resid</span>(modela5)))</span></code></pre></div>
-<p><img src="bookdownproj_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-15-1.png" width="672" />
+Now, add calendar structure. R squared has jumped, even though this model has only added in two cosine-sine pairs. Notice at lag 2… this is an artifact introduced by the differencing calculation. The log differences, and that introduces this lag correlation in the residuals. This lag 1, this significant negative lag 1 correlation of the residuals is not reflecting structure of the original time series. It is an artifact of the differencing operation.</p>
+<div class="sourceCode" id="cb65"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb65-1"><a href="multiple-regression-models.html#cb65-1" aria-hidden="true" tabindex="-1"></a>modela6<span class="ot">&lt;-</span> <span class="fu">lm</span>(dlogbeer<span class="sc">~</span>fmonth<span class="sc">+</span>obs318<span class="sc">+</span>c348<span class="sc">+</span>s348<span class="sc">+</span>c432<span class="sc">+</span>s432)</span>
+<span id="cb65-2"><a href="multiple-regression-models.html#cb65-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(modela6) </span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = dlogbeer ~ fmonth + obs318 + c348 + s348 + c432 + 
+##     s432)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -0.26005 -0.04817 -0.00502  0.05162  0.27002 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) -0.19519    0.01258  -15.52  &lt; 2e-16 ***
+## fmonth2      0.13094    0.01768    7.41  6.3e-13 ***
+## fmonth3      0.27637    0.01768   15.63  &lt; 2e-16 ***
+## fmonth4      0.09219    0.01768    5.22  2.8e-07 ***
+## fmonth5      0.16392    0.01768    9.27  &lt; 2e-16 ***
+## fmonth6      0.07314    0.01779    4.11  4.7e-05 ***
+## fmonth7      0.27543    0.01768   15.58  &lt; 2e-16 ***
+## fmonth8      0.25119    0.01768   14.21  &lt; 2e-16 ***
+## fmonth9      0.22977    0.01779   12.92  &lt; 2e-16 ***
+## fmonth10     0.33260    0.01779   18.70  &lt; 2e-16 ***
+## fmonth11     0.25406    0.01779   14.28  &lt; 2e-16 ***
+## fmonth12     0.26742    0.01779   15.03  &lt; 2e-16 ***
+## obs318       0.36615    0.07990    4.58  5.9e-06 ***
+## c348        -0.06124    0.00510  -12.00  &lt; 2e-16 ***
+## s348        -0.03506    0.00510   -6.87  2.1e-11 ***
+## c432        -0.02105    0.00512   -4.11  4.6e-05 ***
+## s432         0.01506    0.00509    2.96   0.0033 ** 
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.0786 on 458 degrees of freedom
+##   (1 observation deleted due to missingness)
+## Multiple R-squared:  0.678,  Adjusted R-squared:  0.667 
+## F-statistic: 60.4 on 16 and 458 DF,  p-value: &lt;2e-16</code></pre>
+<div class="sourceCode" id="cb67"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb67-1"><a href="multiple-regression-models.html#cb67-1" aria-hidden="true" tabindex="-1"></a><span class="fu">acf</span>(<span class="fu">ts</span>(<span class="fu">resid</span>(modela6)))</span></code></pre></div>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
+</div>
+<div id="ontario-gas" class="section level2" number="2.1">
+<h2><span class="header-section-number">2.1</span> Ontario gas</h2>
+<div class="sourceCode" id="cb68"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb68-1"><a href="multiple-regression-models.html#cb68-1" aria-hidden="true" tabindex="-1"></a>ontgas<span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;/cloud/project/data/Ontariogasdemand.txt&quot;</span>)</span>
+<span id="cb68-2"><a href="multiple-regression-models.html#cb68-2" aria-hidden="true" tabindex="-1"></a><span class="fu">attach</span>(ontgas)</span></code></pre></div>
+<pre><code>## The following objects are masked _by_ .GlobalEnv:
+## 
+##     c348, s348</code></pre>
+<pre><code>## The following objects are masked from ausbeer:
+## 
+##     month, year</code></pre>
+<pre><code>## The following objects are masked from usbeer:
+## 
+##     c348, month, s348, year</code></pre>
+<div class="sourceCode" id="cb72"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb72-1"><a href="multiple-regression-models.html#cb72-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(ontgas)</span></code></pre></div>
+<pre><code>##   gasdemand loggasdemand year month obs61 obs125 obs177     c348    s348
+## 1     87695        11.38 1960     1     0      0      0 -0.57757  0.8163
+## 2     86890        11.37 1960     2     0      0      0 -0.33282 -0.9430
+## 3     96442        11.48 1960     3     0      0      0  0.96203  0.2730
+## 4     98133        11.49 1960     4     0      0      0 -0.77846  0.6277
+## 5    113615        11.64 1960     5     0      0      0 -0.06279 -0.9980
+## 6    123924        11.73 1960     6     0      0      0  0.85099  0.5252</code></pre>
 
 </div>
 </div>

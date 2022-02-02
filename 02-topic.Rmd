@@ -234,6 +234,33 @@ lm(log(beer)~poly(time,5)+fmonth+obs317+c348+s348+c432+s432);summary(modela5)
 acf(ts(resid(modela5)))
 
 ```
+Now, add calendar structure. R squared has jumped, even though this model has only added in two cosine-sine pairs. Notice at lag 2... this is an artifact introduced by the differencing calculation. The log differences, and that introduces this lag correlation in the residuals. This lag 1, this significant negative lag 1 correlation of the residuals is not reflecting structure of the original time series. It is an artifact of the differencing operation.
+
+```{r}
+
+modela6<- lm(dlogbeer~fmonth+obs318+c348+s348+c432+s432)
+summary(modela6) 
+acf(ts(resid(modela6)))
+ 
+```
+
+## Ontario gas 
+
+Not clear from the data is additive or multiplicative. Is the vertical increasing as it rises? Yes, a little bit but mild. 
+
+```{r}
+
+ontgas<- read.csv("/cloud/project/data/Ontariogasdemand.txt")
+attach(ontgas)
+head(ontgas)
+ontariogas.ts<-ts(ontgas[,1],start=c(1960,1),freq=12) 
+plot(ontariogas.ts,ylab="gas demand",main="Ontario gas demand, 1960-
+1975") 
+
+```
+
+
+
 
 
 

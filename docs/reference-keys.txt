@@ -30,3 +30,4 @@ arch-and-garch-models
 additivie-decomposition-model-with-a-fourth-degree-polynomial-trend
 australian-beer
 additive-decomposition-model-with-cosine-and-sine-seasonal-dummies-and-inclusion-of-an-intercept
+ontario-gas
