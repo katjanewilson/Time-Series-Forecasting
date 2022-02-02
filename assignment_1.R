@@ -25,9 +25,11 @@ sales_regular<-
    sales_vector[211:338],rep(NA,2),sales_vector[341:360])
 sales_regular
 test<- cbind(salescontraction, sales_regular)
+## if you plot the black part first, wouldn't happen, plot most vertical spread first
+# then add others to that range
 plot(ts(salescontraction,start = c(1992,1), freq = 12), 
      col = "red", lwd = 2, ylab = "Sales", 
-     main = "Sales vs. time")
+     main = "Sales vs. time", ylim = c(20000,80000))
 lines(ts(sales_regular, start = c(1992,1), freq = 12), col = "black")
 ## log
 plot(ts(log(salescontraction),start = c(1992,1), freq = 12), 
@@ -42,7 +44,7 @@ model1 <- lm(sales$logSales~poly(Time,4) + fMonth +
 summary(model1)
 ## part a
 b1 <- coef(model1)[1]
-b2 <- coef(model1)[6:16]+b1
+b2 <- coef(model1)[4:14]+b1
 b3<- c(b1,b2)
 seas <- exp(b3-mean(b3))
 seas

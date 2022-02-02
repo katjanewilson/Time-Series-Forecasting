@@ -24,7 +24,7 @@
 <meta name="author" content="Katherine Wilson" />
 
 
-<meta name="date" content="2022-01-31" />
+<meta name="date" content="2022-02-02" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -463,7 +463,19 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ## 1.0371961363 0.9710601714 1.0528772762 0.9479568581 0.9187087427 0.8192957166 
 ##      fmonth7      fmonth8      fmonth9     fmonth10     fmonth11     fmonth12 
 ## 0.8866612193 0.9376336898 0.9674993016 1.1094779767 1.1736037190 1.2619041504</code></pre>
-<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="multiple-regression-models.html#cb40-1" aria-hidden="true" tabindex="-1"></a>modela2<span class="ot">&lt;-</span><span class="fu">lm</span>(dlogbeer<span class="sc">~</span>fmonth);<span class="fu">summary</span>(modela2) </span></code></pre></div>
+<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="multiple-regression-models.html#cb40-1" aria-hidden="true" tabindex="-1"></a>usseas.ts<span class="ot">&lt;-</span><span class="fu">ts</span>(<span class="fu">exp</span>(seasa1)) </span>
+<span id="cb40-2"><a href="multiple-regression-models.html#cb40-2" aria-hidden="true" tabindex="-1"></a>ausseas.ts<span class="ot">&lt;-</span><span class="fu">ts</span>(seasa1) </span>
+<span id="cb40-3"><a href="multiple-regression-models.html#cb40-3" aria-hidden="true" tabindex="-1"></a>ausseas.ts<span class="ot">&lt;-</span><span class="fu">c</span>(ausseas.ts,ausseas.ts)[<span class="dv">7</span><span class="sc">:</span><span class="dv">18</span>] </span>
+<span id="cb40-4"><a href="multiple-regression-models.html#cb40-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(usseas.ts,<span class="at">ylim=</span><span class="fu">c</span>(<span class="fl">0.8</span>,<span class="fl">1.3</span>),<span class="at">xlab=</span><span class="st">&quot;month&quot;</span>,<span class="at">ylab=</span><span class="st">&quot;seasonal </span></span>
+<span id="cb40-5"><a href="multiple-regression-models.html#cb40-5" aria-hidden="true" tabindex="-1"></a><span class="st">indices&quot;</span>,<span class="at">main=</span><span class="st">&quot;comparison of estimated seasonal </span></span>
+<span id="cb40-6"><a href="multiple-regression-models.html#cb40-6" aria-hidden="true" tabindex="-1"></a><span class="st">indices&quot;</span>,<span class="at">col=</span><span class="st">&quot;green&quot;</span>,<span class="at">lwd=</span><span class="dv">2</span>) </span>
+<span id="cb40-7"><a href="multiple-regression-models.html#cb40-7" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(ausseas.ts,<span class="at">col=</span><span class="st">&quot;red&quot;</span>,<span class="at">lwd=</span><span class="dv">2</span>) </span>
+<span id="cb40-8"><a href="multiple-regression-models.html#cb40-8" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">&quot;topleft&quot;</span>,<span class="at">legend=</span><span class="fu">c</span>(<span class="st">&quot;US&quot;</span>,<span class="st">&quot;Australia&quot;</span>),<span class="at">col=</span><span class="fu">c</span>(<span class="st">&quot;green&quot;</span>,<span class="st">&quot;red&quot;</span>),<span class="at">lty=</span><span class="dv">1</span>,</span>
+<span id="cb40-9"><a href="multiple-regression-models.html#cb40-9" aria-hidden="true" tabindex="-1"></a><span class="at">cex=</span><span class="fl">0.8</span>) </span></code></pre></div>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-12-2.png" width="672" /></p>
+<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="multiple-regression-models.html#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">acf</span>(<span class="fu">ts</span>(<span class="fu">resid</span>(modela1)))</span></code></pre></div>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-12-3.png" width="672" /></p>
+<div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb42-1"><a href="multiple-regression-models.html#cb42-1" aria-hidden="true" tabindex="-1"></a>modela2<span class="ot">&lt;-</span><span class="fu">lm</span>(dlogbeer<span class="sc">~</span>fmonth);<span class="fu">summary</span>(modela2) </span></code></pre></div>
 <pre><code>## 
 ## Call:
 ## lm(formula = dlogbeer ~ fmonth)
@@ -493,13 +505,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ##   (1 observation deleted due to missingness)
 ## Multiple R-squared:  0.5036864,  Adjusted R-squared:  0.4918949 
 ## F-statistic: 42.71618 on 11 and 463 DF,  p-value: &lt; 2.2204e-16</code></pre>
-<div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb42-1"><a href="multiple-regression-models.html#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(modela2, <span class="at">which =</span> <span class="dv">2</span>)</span></code></pre></div>
-<p><img src="bookdownproj_files/figure-html/unnamed-chunk-12-2.png" width="672" /></p>
-<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="multiple-regression-models.html#cb43-1" aria-hidden="true" tabindex="-1"></a>dlogbeer[<span class="dv">316</span><span class="sc">:</span><span class="dv">319</span>]</span></code></pre></div>
+<div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb44-1"><a href="multiple-regression-models.html#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(modela2, <span class="at">which =</span> <span class="dv">2</span>)</span></code></pre></div>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-12-4.png" width="672" /></p>
+<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb45-1"><a href="multiple-regression-models.html#cb45-1" aria-hidden="true" tabindex="-1"></a>dlogbeer[<span class="dv">316</span><span class="sc">:</span><span class="dv">319</span>]</span></code></pre></div>
 <pre><code>## [1] -0.0829522240 -0.3236756750  0.3312228807  0.0006263702</code></pre>
-<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb45-1"><a href="multiple-regression-models.html#cb45-1" aria-hidden="true" tabindex="-1"></a>beer[<span class="dv">316</span><span class="sc">:</span><span class="dv">319</span>]</span></code></pre></div>
+<div class="sourceCode" id="cb47"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb47-1"><a href="multiple-regression-models.html#cb47-1" aria-hidden="true" tabindex="-1"></a>beer[<span class="dv">316</span><span class="sc">:</span><span class="dv">319</span>]</span></code></pre></div>
 <pre><code>## [1] 158.4 114.6 159.6 159.7</code></pre>
-<div class="sourceCode" id="cb47"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb47-1"><a href="multiple-regression-models.html#cb47-1" aria-hidden="true" tabindex="-1"></a>modela3<span class="ot">&lt;-</span><span class="fu">lm</span>(dlogbeer<span class="sc">~</span>fmonth<span class="sc">+</span>obs318);<span class="fu">summary</span>(modela3)</span></code></pre></div>
+<div class="sourceCode" id="cb49"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb49-1"><a href="multiple-regression-models.html#cb49-1" aria-hidden="true" tabindex="-1"></a>modela3<span class="ot">&lt;-</span><span class="fu">lm</span>(dlogbeer<span class="sc">~</span>fmonth<span class="sc">+</span>obs318);<span class="fu">summary</span>(modela3)</span></code></pre></div>
 <pre><code>## 
 ## Call:
 ## lm(formula = dlogbeer ~ fmonth + obs318)
@@ -530,10 +542,140 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ##   (1 observation deleted due to missingness)
 ## Multiple R-squared:  0.5267718,  Adjusted R-squared:  0.5144802 
 ## F-statistic:  42.8561 on 12 and 462 DF,  p-value: &lt; 2.2204e-16</code></pre>
-<div class="sourceCode" id="cb49"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb49-1"><a href="multiple-regression-models.html#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(modela3, <span class="at">which =</span> <span class="dv">2</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb51"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb51-1"><a href="multiple-regression-models.html#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(modela3, <span class="at">which =</span> <span class="dv">2</span>)</span></code></pre></div>
 <pre><code>## Warning: not plotting observations with leverage one:
 ##   317</code></pre>
-<p><img src="bookdownproj_files/figure-html/unnamed-chunk-12-3.png" width="672" /></p>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-12-5.png" width="672" /></p>
+<div class="sourceCode" id="cb53"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb53-1"><a href="multiple-regression-models.html#cb53-1" aria-hidden="true" tabindex="-1"></a>b1<span class="ot">&lt;-</span><span class="fu">coef</span>(modela3)[<span class="dv">1</span>] </span>
+<span id="cb53-2"><a href="multiple-regression-models.html#cb53-2" aria-hidden="true" tabindex="-1"></a>b2<span class="ot">&lt;-</span><span class="fu">coef</span>(modela3)[<span class="dv">2</span><span class="sc">:</span><span class="dv">12</span>]<span class="sc">+</span>b1 </span>
+<span id="cb53-3"><a href="multiple-regression-models.html#cb53-3" aria-hidden="true" tabindex="-1"></a>b3<span class="ot">&lt;-</span><span class="fu">c</span>(b1,b2) </span>
+<span id="cb53-4"><a href="multiple-regression-models.html#cb53-4" aria-hidden="true" tabindex="-1"></a>x<span class="ot">&lt;-</span>b3<span class="sc">-</span><span class="fu">mean</span>(b3) </span></code></pre></div>
+<p>Getting the changes in the log S values.</p>
+<div class="sourceCode" id="cb54"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb54-1"><a href="multiple-regression-models.html#cb54-1" aria-hidden="true" tabindex="-1"></a>s12<span class="ot">&lt;-</span><span class="dv">0</span> </span>
+<span id="cb54-2"><a href="multiple-regression-models.html#cb54-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(j <span class="cf">in</span> <span class="dv">2</span><span class="sc">:</span><span class="dv">12</span>){ </span>
+<span id="cb54-3"><a href="multiple-regression-models.html#cb54-3" aria-hidden="true" tabindex="-1"></a> xsub<span class="ot">&lt;-</span>x[j<span class="sc">:</span><span class="dv">12</span>] </span>
+<span id="cb54-4"><a href="multiple-regression-models.html#cb54-4" aria-hidden="true" tabindex="-1"></a> s12<span class="ot">&lt;-</span>s12<span class="sc">+</span><span class="fu">sum</span>(xsub) </span>
+<span id="cb54-5"><a href="multiple-regression-models.html#cb54-5" aria-hidden="true" tabindex="-1"></a> } </span>
+<span id="cb54-6"><a href="multiple-regression-models.html#cb54-6" aria-hidden="true" tabindex="-1"></a>s12<span class="ot">&lt;-</span>s12<span class="sc">/</span><span class="dv">12</span> </span>
+<span id="cb54-7"><a href="multiple-regression-models.html#cb54-7" aria-hidden="true" tabindex="-1"></a> s<span class="ot">&lt;-</span><span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">0</span>,<span class="at">times=</span><span class="dv">12</span>)) </span>
+<span id="cb54-8"><a href="multiple-regression-models.html#cb54-8" aria-hidden="true" tabindex="-1"></a> s[<span class="dv">12</span>]<span class="ot">&lt;-</span>s12 </span>
+<span id="cb54-9"><a href="multiple-regression-models.html#cb54-9" aria-hidden="true" tabindex="-1"></a> <span class="cf">for</span>(j <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">11</span>){ </span>
+<span id="cb54-10"><a href="multiple-regression-models.html#cb54-10" aria-hidden="true" tabindex="-1"></a> xsub<span class="ot">&lt;-</span>x[<span class="dv">1</span><span class="sc">:</span>j] </span>
+<span id="cb54-11"><a href="multiple-regression-models.html#cb54-11" aria-hidden="true" tabindex="-1"></a> s[j]<span class="ot">&lt;-</span>s[<span class="dv">12</span>]<span class="sc">+</span><span class="fu">sum</span>(xsub) </span>
+<span id="cb54-12"><a href="multiple-regression-models.html#cb54-12" aria-hidden="true" tabindex="-1"></a> } </span>
+<span id="cb54-13"><a href="multiple-regression-models.html#cb54-13" aria-hidden="true" tabindex="-1"></a>s<span class="ot">&lt;-</span><span class="fu">exp</span>(s) </span>
+<span id="cb54-14"><a href="multiple-regression-models.html#cb54-14" aria-hidden="true" tabindex="-1"></a>s </span></code></pre></div>
+<pre><code>##  [1] 1.0389676316 0.9734146870 1.0561922650 0.9516340901 0.9229496910
+##  [6] 0.8143479520 0.8819633438 0.9333653810 0.9663752272 1.1090789150
+## [11] 1.1741288026 1.2634930971</code></pre>
+<div class="sourceCode" id="cb56"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb56-1"><a href="multiple-regression-models.html#cb56-1" aria-hidden="true" tabindex="-1"></a>modela4<span class="ot">&lt;-</span><span class="fu">lm</span>(<span class="fu">log</span>(beer)<span class="sc">~</span><span class="fu">poly</span>(time,<span class="dv">5</span>)<span class="sc">+</span>fmonth<span class="sc">+</span>obs317);<span class="fu">summary</span>(modela4) </span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = log(beer) ~ poly(time, 5) + fmonth + obs317)
+## 
+## Residuals:
+##          Min           1Q       Median           3Q          Max 
+## -0.228843010 -0.039053681  0.002929649  0.045585512  0.187850511 
+## 
+## Coefficients:
+##                   Estimate  Std. Error   t value   Pr(&gt;|t|)    
+## (Intercept)     4.91987940  0.01075927 457.26878 &lt; 2.22e-16 ***
+## poly(time, 5)1  4.23157831  0.06806053  62.17375 &lt; 2.22e-16 ***
+## poly(time, 5)2 -2.43176727  0.06809743 -35.71012 &lt; 2.22e-16 ***
+## poly(time, 5)3 -0.41637292  0.06813273  -6.11120 2.1167e-09 ***
+## poly(time, 5)4  0.75795333  0.06807084  11.13477 &lt; 2.22e-16 ***
+## poly(time, 5)5 -0.20149792  0.06815006  -2.95668  0.0032704 ** 
+## fmonth2        -0.06589306  0.01521203  -4.33164 1.8200e-05 ***
+## fmonth3         0.01499537  0.01521244   0.98573  0.3247856    
+## fmonth4        -0.08998262  0.01521312  -5.91480 6.5082e-09 ***
+## fmonth5        -0.11455827  0.01531138  -7.48190 3.7761e-13 ***
+## fmonth6        -0.23585644  0.01521531 -15.50126 &lt; 2.22e-16 ***
+## fmonth7        -0.15684348  0.01521681 -10.30725 &lt; 2.22e-16 ***
+## fmonth8        -0.10095202  0.01521859  -6.63347 9.2690e-11 ***
+## fmonth9        -0.06959840  0.01531267  -4.54515 7.0336e-06 ***
+## fmonth10        0.06732892  0.01531328   4.39677 1.3674e-05 ***
+## fmonth11        0.12351560  0.01531403   8.06552 6.4387e-15 ***
+## fmonth12        0.19605552  0.01531492  12.80160 &lt; 2.22e-16 ***
+## obs317         -0.27076709  0.06914245  -3.91608  0.0001037 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.06802963 on 458 degrees of freedom
+## Multiple R-squared:  0.9363088,  Adjusted R-squared:  0.9339448 
+## F-statistic:  396.056 on 17 and 458 DF,  p-value: &lt; 2.2204e-16</code></pre>
+<div class="sourceCode" id="cb58"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb58-1"><a href="multiple-regression-models.html#cb58-1" aria-hidden="true" tabindex="-1"></a>b1<span class="ot">&lt;-</span><span class="fu">coef</span>(modela4)[<span class="dv">1</span>] </span>
+<span id="cb58-2"><a href="multiple-regression-models.html#cb58-2" aria-hidden="true" tabindex="-1"></a>b2<span class="ot">&lt;-</span><span class="fu">coef</span>(modela4)[<span class="dv">7</span><span class="sc">:</span><span class="dv">17</span>]<span class="sc">+</span>b1</span>
+<span id="cb58-3"><a href="multiple-regression-models.html#cb58-3" aria-hidden="true" tabindex="-1"></a>b3<span class="ot">&lt;-</span><span class="fu">c</span>(b1,b2) </span>
+<span id="cb58-4"><a href="multiple-regression-models.html#cb58-4" aria-hidden="true" tabindex="-1"></a>seasa4<span class="ot">&lt;-</span><span class="fu">exp</span>(b3<span class="sc">-</span><span class="fu">mean</span>(b3))</span>
+<span id="cb58-5"><a href="multiple-regression-models.html#cb58-5" aria-hidden="true" tabindex="-1"></a>seasa4</span></code></pre></div>
+<pre><code>##  (Intercept)      fmonth2      fmonth3      fmonth4      fmonth5      fmonth6 
+## 1.0366376093 0.9705322422 1.0522995103 0.9474319058 0.9244319298 0.8188338919 
+##      fmonth7      fmonth8      fmonth9     fmonth10     fmonth11     fmonth12 
+## 0.8861570596 0.9370959387 0.9669427424 1.1088365642 1.1729219291 1.2611675551</code></pre>
+<div class="sourceCode" id="cb60"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb60-1"><a href="multiple-regression-models.html#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="do">## May has the biggest difference</span></span>
+<span id="cb60-2"><a href="multiple-regression-models.html#cb60-2" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">digits=</span><span class="dv">4</span>) </span>
+<span id="cb60-3"><a href="multiple-regression-models.html#cb60-3" aria-hidden="true" tabindex="-1"></a><span class="fu">cbind</span>(seasa1,s,seasa4) </span></code></pre></div>
+<pre><code>##             seasa1      s seasa4
+## (Intercept) 1.0372 1.0390 1.0366
+## fmonth2     0.9711 0.9734 0.9705
+## fmonth3     1.0529 1.0562 1.0523
+## fmonth4     0.9480 0.9516 0.9474
+## fmonth5     0.9187 0.9229 0.9244
+## fmonth6     0.8193 0.8143 0.8188
+## fmonth7     0.8867 0.8820 0.8862
+## fmonth8     0.9376 0.9334 0.9371
+## fmonth9     0.9675 0.9664 0.9669
+## fmonth10    1.1095 1.1091 1.1088
+## fmonth11    1.1736 1.1741 1.1729
+## fmonth12    1.2619 1.2635 1.2612</code></pre>
+<p>Two cosine sin pairs with frequencies 0.348 and 0.432. Polynomial of degree 5, the fmonth that is defined, the dummy for the outlier, and the two cosine sin pairs. Cosine sin pairs are significant. The 348 pair is highly sig. 432 pair also sig.</p>
+<p>In autocorrelation plots, there is additional seasonal structure in the beer data, and that is dynamic structure. We have extracted the static, and that is dynamic. That lag 1 is suggesting that there is a tiny bit of trend that we haven’t captured with the model.</p>
+<div class="sourceCode" id="cb62"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb62-1"><a href="multiple-regression-models.html#cb62-1" aria-hidden="true" tabindex="-1"></a>c348<span class="ot">&lt;-</span><span class="fu">cos</span>(<span class="fl">0.696</span><span class="sc">*</span>pi<span class="sc">*</span>time);s348<span class="ot">&lt;-</span><span class="fu">sin</span>(<span class="fl">0.696</span><span class="sc">*</span>pi<span class="sc">*</span>time) </span>
+<span id="cb62-2"><a href="multiple-regression-models.html#cb62-2" aria-hidden="true" tabindex="-1"></a>c432<span class="ot">&lt;-</span><span class="fu">cos</span>(<span class="fl">0.864</span><span class="sc">*</span>pi<span class="sc">*</span>time);s432<span class="ot">&lt;-</span><span class="fu">sin</span>(<span class="fl">0.864</span><span class="sc">*</span>pi<span class="sc">*</span>time) </span>
+<span id="cb62-3"><a href="multiple-regression-models.html#cb62-3" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb62-4"><a href="multiple-regression-models.html#cb62-4" aria-hidden="true" tabindex="-1"></a>modela5<span class="ot">&lt;-</span></span>
+<span id="cb62-5"><a href="multiple-regression-models.html#cb62-5" aria-hidden="true" tabindex="-1"></a><span class="fu">lm</span>(<span class="fu">log</span>(beer)<span class="sc">~</span><span class="fu">poly</span>(time,<span class="dv">5</span>)<span class="sc">+</span>fmonth<span class="sc">+</span>obs317<span class="sc">+</span>c348<span class="sc">+</span>s348<span class="sc">+</span>c432<span class="sc">+</span>s432);<span class="fu">summary</span>(modela5)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = log(beer) ~ poly(time, 5) + fmonth + obs317 + c348 + 
+##     s348 + c432 + s432)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -0.19857 -0.03784 -0.00056  0.04013  0.16549 
+## 
+## Coefficients:
+##                Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)     4.91958    0.00967  508.53  &lt; 2e-16 ***
+## poly(time, 5)1  4.22954    0.06119   69.12  &lt; 2e-16 ***
+## poly(time, 5)2 -2.43376    0.06122  -39.75  &lt; 2e-16 ***
+## poly(time, 5)3 -0.41628    0.06125   -6.80  3.4e-11 ***
+## poly(time, 5)4  0.75352    0.06120   12.31  &lt; 2e-16 ***
+## poly(time, 5)5 -0.20550    0.06127   -3.35  0.00086 ***
+## fmonth2        -0.06529    0.01368   -4.77  2.5e-06 ***
+## fmonth3         0.01488    0.01368    1.09  0.27711    
+## fmonth4        -0.08916    0.01368   -6.52  1.9e-10 ***
+## fmonth5        -0.11560    0.01377   -8.40  5.9e-16 ***
+## fmonth6        -0.23540    0.01368  -17.21  &lt; 2e-16 ***
+## fmonth7        -0.15623    0.01368  -11.42  &lt; 2e-16 ***
+## fmonth8        -0.10127    0.01368   -7.40  6.6e-13 ***
+## fmonth9        -0.06935    0.01377   -5.04  6.8e-07 ***
+## fmonth10        0.06697    0.01377    4.86  1.6e-06 ***
+## fmonth11        0.12474    0.01377    9.06  &lt; 2e-16 ***
+## fmonth12        0.19583    0.01377   14.22  &lt; 2e-16 ***
+## obs317         -0.23449    0.06244   -3.76  0.00020 ***
+## c348           -0.02217    0.00397   -5.58  4.1e-08 ***
+## s348           -0.03338    0.00397   -8.41  5.3e-16 ***
+## c432           -0.01203    0.00398   -3.02  0.00266 ** 
+## s432            0.00525    0.00396    1.32  0.18593    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.0612 on 454 degrees of freedom
+## Multiple R-squared:  0.949,  Adjusted R-squared:  0.947 
+## F-statistic:  402 on 21 and 454 DF,  p-value: &lt;2e-16</code></pre>
+<div class="sourceCode" id="cb64"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb64-1"><a href="multiple-regression-models.html#cb64-1" aria-hidden="true" tabindex="-1"></a><span class="fu">acf</span>(<span class="fu">ts</span>(<span class="fu">resid</span>(modela5)))</span></code></pre></div>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
 
 </div>
 </div>

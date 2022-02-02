@@ -157,7 +157,16 @@ b2<-coef(modela1)[7:17]+b1
 b3<-c(b1,b2)
 seasa1<-exp(b3-mean(b3))
 seasa1
-
+usseas.ts<-ts(exp(seasa1)) 
+ausseas.ts<-ts(seasa1) 
+ausseas.ts<-c(ausseas.ts,ausseas.ts)[7:18] 
+plot(usseas.ts,ylim=c(0.8,1.3),xlab="month",ylab="seasonal 
+indices",main="comparison of estimated seasonal 
+indices",col="green",lwd=2) 
+lines(ausseas.ts,col="red",lwd=2) 
+legend("topleft",legend=c("US","Australia"),col=c("green","red"),lty=1,
+cex=0.8) 
+acf(ts(resid(modela1)))
 
 
 
@@ -167,6 +176,63 @@ dlogbeer[316:319]
 beer[316:319]
 modela3<-lm(dlogbeer~fmonth+obs318);summary(modela3)
 plot(modela3, which = 2)
+
+b1<-coef(modela3)[1] 
+b2<-coef(modela3)[2:12]+b1 
+b3<-c(b1,b2) 
+x<-b3-mean(b3) 
+```
+
+Getting the changes in the log S values. 
+```{r}
+s12<-0 
+for(j in 2:12){ 
+ xsub<-x[j:12] 
+ s12<-s12+sum(xsub) 
+ } 
+s12<-s12/12 
+ s<-c(rep(0,times=12)) 
+ s[12]<-s12 
+ for(j in 1:11){ 
+ xsub<-x[1:j] 
+ s[j]<-s[12]+sum(xsub) 
+ } 
+s<-exp(s) 
+s 
+ 
+```
+
+```{r}
+
+modela4<-lm(log(beer)~poly(time,5)+fmonth+obs317);summary(modela4) 
+
+b1<-coef(modela4)[1] 
+b2<-coef(modela4)[7:17]+b1
+b3<-c(b1,b2) 
+seasa4<-exp(b3-mean(b3))
+seasa4
+
+## May has the biggest difference
+options(digits=4) 
+cbind(seasa1,s,seasa4) 
+
+
+
+```
+
+Two cosine sin pairs with frequencies 0.348 and 0.432. Polynomial of degree 5, the fmonth that is defined, the dummy for the outlier, and the two cosine sin pairs. Cosine sin pairs are significant. The 348 pair is highly sig. 432 pair also sig.
+
+In autocorrelation plots, there is additional seasonal structure in the beer data, and that is dynamic structure. We have extracted the static, and that is dynamic. That lag 1 is suggesting that there is a tiny bit of trend that we haven't captured with the model. There is a little bit of dynamic seasonal structure. 
+
+```{r}
+c348<-cos(0.696*pi*time);s348<-sin(0.696*pi*time) 
+c432<-cos(0.864*pi*time);s432<-sin(0.864*pi*time) 
+ 
+modela5<-
+lm(log(beer)~poly(time,5)+fmonth+obs317+c348+s348+c432+s432);summary(modela5)
+
+acf(ts(resid(modela5)))
+
 ```
 
 
