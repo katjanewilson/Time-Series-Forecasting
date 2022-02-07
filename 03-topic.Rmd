@@ -2,8 +2,88 @@
 
 Partial slopes (change in y for each unit change in x, holding others constant) vs. marginal slopes (simple regression, only one x). Collinearity makes these values different...
 
+For time series, the trigonometric dummies for seasonal strucure and those for calender effects tend to have no correlation with eachother. Also tend to have no correlation with the dummies of seasonality. So, time series presents an interesting case where partial slopes and marginal slopes are almost exactly the same.
+
+If you have a model with seasonal structure with dummies, and a trend, you'll get certain partial slopes for the seasonal structure. If you add trigonometric pairs for calendar effects, then the dummy variables for calendar effects are barely correalted with seasonal structure, so the variables don't change that much when you introduce calendar effects.
+
+Use a second regression to remove their influence on the previous X's. Strip out of X1 the influence of the other X's. So ,the partial slope of X1 is the same of the slope in simple regression. So, a partial slope is the effect AFTER you have taken into account the other x's. 
+
+Each t test tests the influence of a single predictor beyond the other predictors. What does that x contribute to the model beyond the contributions of all the other X's taken sequentially. A "last in" test. Same interpretation holds for a partial F test. This assess variables being tested beyond that.
+
+## Example
+
+Simple regression. Sorted ~ Line. If one more line is added, the number of sorts/hour will increase by 1,4446. Other variables not inlcluded are free to vary.
+
+$$
+Sorts/Hour = 2,960 + 1,446Lines
+$$
+
+Lines, sorters, and hours. Now, the interpretation of the partial slope (826)... is that if you add one more line, and hold fixed the number of sorts and truckers, you increase sorts/hours by 826. Don't hire more workings, just add one more line. Borrow sorts and truckers from existing lines to form the new line. Partial and marginal slope are greatly different.
+
+$$
+Sorts/Hour = 739 + 826Lines + 95Sorters + 118Truckers
+$$
+
+In time series, the partial slopes we saw prior to the variables added are different. The partial slopes will change as more variables are added. 
+
+### Interaction
+
+Example: salaries for account level 1. Let y be salary, $x_1$ timeinposition, and $x-2$ a dummy for gender (0 for males and 1 for females). Regress y on $x_1$ for males only and a seperate regression for females. Examine two fitted lines, comparing their intercepts and their slopes. A difference in intercepts signals a difference in entry level salaries, and difference in slopes indicate difference rates of pay increase for two sexes. A difference in slopes signals interaction. That is, the relationship between y (salary) and one of the independent variables, $x_1$, time in position, differs according to the value of the other independent variable, $x_2$. 
+
+In this example, there is interaction if the relationship between salary and time in position differs according to the other x variable (gender).
+
+Instead of fitting two lines seperately, pool the male and female data to estimate a common erro variables with more degrees of freedom than seperate regressions permit. Leads to more powerful tests, narrower confidence intervals and prediction intervals. 
+
+Why is the product the proper method to incorporate interaction? See:
+
+$$
+y = \beta_0 + \beta_1x_1 + \beta_2x_2 + \beta_sx_ax_2 + \epsilon \\
+= \beta_0 + \beta_1timeinposition + \beta_2gender + \beta_3timeinposition*gender + \epsilon
+$$
+
+For males this model is 
+
+$$
+y = \beta_0+\beta_1timeinposition + \epsilon
+$$
+
+
+For females this model is 
+
+$$
+y = \beta_0+\beta_2 + (\beta_1+\beta_3)timeinposition + \epsilon
+$$
+For males, the intercept is $\beta_0$ and the slope attached to timeinposition is $\beta_1$. For females, these are the $\beta_0 + \beta_2$ and $\beta_1 +\beta_3$ respectively. If the paraemter $\beta_3$ is present, then we say that there is interaction between timeinposition and gender. This means that the impact of timeinposition upon salary depends on gender. 
+
+This allows us to test whether the same or entry level salaries are same, and whether rates of pay increase are the same. If we test if entry level salaries are equal, then hyp = B2 = 0. If not, then females sig differently. For rate of pay increase, B1 is for males, but females if B1 + B3, so test whether B3 is equal to 0 or not in the alternative. 
+
+Interaction means that the relationship between ssalary and time in position, if interaction is present, then that relationship is sig. different for the two genders. That is the case when $B_3$ is sig different from 0. 
+
+
+### garbage case
+
+
+
+### Durbin-Watson statistic
+
+
+## Code
+
 ```{r}
-garbage <- read.csv("/cloud/project/data/Garbage.txt")
+garbage <- read.csv("/cloud/project/data/Garbage (1).txt")
 attach(garbage)
 head(garbage)
+freq <- 14*pi/365
+time <- as.numeric(1:length(tonnage))
+time2 <- time*time; time3 <- time*time2
+cosm <- matrix(nrow = length(tonnage), ncol = 8)
+sinm <- matrix(nrow = length(tonnage), ncol = 8)
+for (j in 1:8){
+  cosm[,j]<- cos(freq*j*time)
+  sinm[,j] <- sin(freq*j*time)
+}
+model1 <- lm(tonnage~time+time2+time3+marlene+george+mg+cosm[,1]+sinm[,1]+cosm[,2
+]+sinm[,2]+cosm[,3]+sinm[,3]+cosm[,4]+sinm[,4]);summary(model1)
+
+
 ```

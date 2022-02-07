@@ -161,7 +161,14 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="2.0.3" data-path="multiple-regression-models.html"><a href="multiple-regression-models.html#australian-beer"><i class="fa fa-check"></i><b>2.0.3</b> Australian beer</a></li>
 <li class="chapter" data-level="2.1" data-path="multiple-regression-models.html"><a href="multiple-regression-models.html#ontario-gas"><i class="fa fa-check"></i><b>2.1</b> Ontario gas</a></li>
 </ul></li>
-<li class="chapter" data-level="3" data-path="t-tests-and-partial-f-tests.html"><a href="t-tests-and-partial-f-tests.html"><i class="fa fa-check"></i><b>3</b> t tests and partial F tests</a></li>
+<li class="chapter" data-level="3" data-path="t-tests-and-partial-f-tests.html"><a href="t-tests-and-partial-f-tests.html"><i class="fa fa-check"></i><b>3</b> t tests and partial F tests</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="t-tests-and-partial-f-tests.html"><a href="t-tests-and-partial-f-tests.html#example-9"><i class="fa fa-check"></i><b>3.1</b> Example</a>
+<ul>
+<li class="chapter" data-level="3.1.1" data-path="t-tests-and-partial-f-tests.html"><a href="t-tests-and-partial-f-tests.html#interaction"><i class="fa fa-check"></i><b>3.1.1</b> Interaction</a></li>
+</ul></li>
+<li class="chapter" data-level="3.2" data-path="t-tests-and-partial-f-tests.html"><a href="t-tests-and-partial-f-tests.html#code"><i class="fa fa-check"></i><b>3.2</b> Code</a></li>
+</ul></li>
 <li class="chapter" data-level="4" data-path="distributed-lag-models.html"><a href="distributed-lag-models.html"><i class="fa fa-check"></i><b>4</b> distributed lag models</a></li>
 <li class="chapter" data-level="5" data-path="arima-models.html"><a href="arima-models.html"><i class="fa fa-check"></i><b>5</b> ARIMA models</a></li>
 <li class="chapter" data-level="6" data-path="exponential-smoothing.html"><a href="exponential-smoothing.html"><i class="fa fa-check"></i><b>6</b> exponential smoothing</a></li>
@@ -189,7 +196,28 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="t-tests-and-partial-f-tests" class="section level1" number="3">
 <h1><span class="header-section-number">3</span> t tests and partial F tests</h1>
 <p>Partial slopes (change in y for each unit change in x, holding others constant) vs. marginal slopes (simple regression, only one x). Collinearity makes these values different…</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="t-tests-and-partial-f-tests.html#cb1-1" aria-hidden="true" tabindex="-1"></a>garbage <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;/cloud/project/data/Garbage.txt&quot;</span>)</span>
+<p>For time series, the trigonometric dummies for seasonal strucure and those for calender effects tend to have no correlation with eachother. Also tend to have no correlation with the dummies of seasonality. So, time series presents an interesting case where partial slopes and marginal slopes are almost exactly the same.</p>
+<p>If you have a model with seasonal structure with dummies, and a trend, you’ll get certain partial slopes for the seasonal structure. If you add trigonometric pairs for calendar effects, then the dummy variables for calendar effects are barely correalted with seasonal structure, so the variables don’t change that much when you introduce calendar effects.</p>
+<p>Use a second regression to remove their influence on the previous X’s. Strip out of X1 the influence of the other X’s. So ,the partial slope of X1 is the same of the slope in simple regression. So, a partial slope is the effect AFTER you have taken into account the other x’s.</p>
+<p>Each t test tests the influence of a single predictor beyond the other predictors. What does that x contribute to the model beyond the contributions of all the other X’s taken sequentially. A “last in” test. Same interpretation holds for a partial F test. This assess variables being tested beyond that.</p>
+<div id="example-9" class="section level2" number="3.1">
+<h2><span class="header-section-number">3.1</span> Example</h2>
+<p>Simple regression. Sorted ~ Line. If one more line is added, the number of sorts/hour will increase by 1,4446. Other variables not inlcluded are free to vary.</p>
+<p><span class="math display">\[
+Sorts/Hour = 2,960 + 1,446Lines
+\]</span></p>
+<p>Lines, sorters, and hours. Now, the interpretation of the partial slope (826)… is that if you add one more line, and hold fixed the number of sorts and truckers, you increase sorts/hours by 826. Don’t hire more workings, just add one more line. Borrow sorts and truckers from existing lines to form the new line. Partial and marginal slope are greatly different.</p>
+<p><span class="math display">\[
+Sorts/Hour = 739 + 826Lines + 95Sorters + 118Truckers
+\]</span></p>
+<p>In time series, the partial slopes we saw prior to the variables added are different. The partial slopes will change as more variables are added.</p>
+<div id="interaction" class="section level3" number="3.1.1">
+<h3><span class="header-section-number">3.1.1</span> Interaction</h3>
+</div>
+</div>
+<div id="code" class="section level2" number="3.2">
+<h2><span class="header-section-number">3.2</span> Code</h2>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="t-tests-and-partial-f-tests.html#cb1-1" aria-hidden="true" tabindex="-1"></a>garbage <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;/cloud/project/data/Garbage (1).txt&quot;</span>)</span>
 <span id="cb1-2"><a href="t-tests-and-partial-f-tests.html#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">attach</span>(garbage)</span>
 <span id="cb1-3"><a href="t-tests-and-partial-f-tests.html#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(garbage)</span></code></pre></div>
 <pre><code>##     date fiscalyr   fee tonnage marlene george mg
@@ -199,7 +227,52 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ## 4  12085       85 28.26  151.59       1      0  0
 ## 5  12785       85 28.26  137.98       0      1  0
 ## 6  20385       85 28.26  106.76       0      1  0</code></pre>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="t-tests-and-partial-f-tests.html#cb3-1" aria-hidden="true" tabindex="-1"></a>freq <span class="ot">&lt;-</span> <span class="dv">14</span><span class="sc">*</span>pi<span class="sc">/</span><span class="dv">365</span></span>
+<span id="cb3-2"><a href="t-tests-and-partial-f-tests.html#cb3-2" aria-hidden="true" tabindex="-1"></a>time <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(tonnage))</span>
+<span id="cb3-3"><a href="t-tests-and-partial-f-tests.html#cb3-3" aria-hidden="true" tabindex="-1"></a>time2 <span class="ot">&lt;-</span> time<span class="sc">*</span>time; time3 <span class="ot">&lt;-</span> time<span class="sc">*</span>time2</span>
+<span id="cb3-4"><a href="t-tests-and-partial-f-tests.html#cb3-4" aria-hidden="true" tabindex="-1"></a>cosm <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="at">nrow =</span> <span class="fu">length</span>(tonnage), <span class="at">ncol =</span> <span class="dv">8</span>)</span>
+<span id="cb3-5"><a href="t-tests-and-partial-f-tests.html#cb3-5" aria-hidden="true" tabindex="-1"></a>sinm <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="at">nrow =</span> <span class="fu">length</span>(tonnage), <span class="at">ncol =</span> <span class="dv">8</span>)</span>
+<span id="cb3-6"><a href="t-tests-and-partial-f-tests.html#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (j <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">8</span>){</span>
+<span id="cb3-7"><a href="t-tests-and-partial-f-tests.html#cb3-7" aria-hidden="true" tabindex="-1"></a>  cosm[,j]<span class="ot">&lt;-</span> <span class="fu">cos</span>(freq<span class="sc">*</span>j<span class="sc">*</span>time)</span>
+<span id="cb3-8"><a href="t-tests-and-partial-f-tests.html#cb3-8" aria-hidden="true" tabindex="-1"></a>  sinm[,j] <span class="ot">&lt;-</span> <span class="fu">sin</span>(freq<span class="sc">*</span>j<span class="sc">*</span>time)</span>
+<span id="cb3-9"><a href="t-tests-and-partial-f-tests.html#cb3-9" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb3-10"><a href="t-tests-and-partial-f-tests.html#cb3-10" aria-hidden="true" tabindex="-1"></a>model1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(tonnage<span class="sc">~</span>time<span class="sc">+</span>time2<span class="sc">+</span>time3<span class="sc">+</span>marlene<span class="sc">+</span>george<span class="sc">+</span>mg<span class="sc">+</span>cosm[,<span class="dv">1</span>]<span class="sc">+</span>sinm[,<span class="dv">1</span>]<span class="sc">+</span>cosm[,<span class="dv">2</span></span>
+<span id="cb3-11"><a href="t-tests-and-partial-f-tests.html#cb3-11" aria-hidden="true" tabindex="-1"></a>]<span class="sc">+</span>sinm[,<span class="dv">2</span>]<span class="sc">+</span>cosm[,<span class="dv">3</span>]<span class="sc">+</span>sinm[,<span class="dv">3</span>]<span class="sc">+</span>cosm[,<span class="dv">4</span>]<span class="sc">+</span>sinm[,<span class="dv">4</span>]);<span class="fu">summary</span>(model1)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = tonnage ~ time + time2 + time3 + marlene + george + 
+##     mg + cosm[, 1] + sinm[, 1] + cosm[, 2] + sinm[, 2] + cosm[, 
+##     3] + sinm[, 3] + cosm[, 4] + sinm[, 4])
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -163.84  -43.74   -5.90   46.93  202.97 
+## 
+## Coefficients:
+##               Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  3.936e+02  2.925e+01  13.456  &lt; 2e-16 ***
+## time         6.567e-01  1.463e+00   0.449 0.654308    
+## time2       -2.851e-02  2.176e-02  -1.311 0.192157    
+## time3        1.753e-04  9.197e-05   1.906 0.058641 .  
+## marlene     -1.649e+02  1.595e+01 -10.337  &lt; 2e-16 ***
+## george      -1.525e+02  1.584e+01  -9.629  &lt; 2e-16 ***
+## mg           1.455e+02  4.147e+01   3.509 0.000606 ***
+## cosm[, 1]   -7.276e+00  8.179e+00  -0.890 0.375205    
+## sinm[, 1]   -2.373e+01  9.201e+00  -2.579 0.010943 *  
+## cosm[, 2]   -8.517e-01  8.164e+00  -0.104 0.917058    
+## sinm[, 2]   -5.748e+01  8.422e+00  -6.824 2.46e-10 ***
+## cosm[, 3]    9.862e+00  8.188e+00   1.204 0.230464    
+## sinm[, 3]   -3.512e+01  8.245e+00  -4.260 3.73e-05 ***
+## cosm[, 4]   -2.748e+01  8.205e+00  -3.349 0.001041 ** 
+## sinm[, 4]    4.516e+00  8.163e+00   0.553 0.581010    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 71.33 on 140 degrees of freedom
+## Multiple R-squared:  0.639,  Adjusted R-squared:  0.6029 
+## F-statistic:  17.7 on 14 and 140 DF,  p-value: &lt; 2.2e-16</code></pre>
 
+</div>
 </div>
             </section>
 
@@ -261,6 +334,20 @@ gitbook.start({
 });
 </script>
 
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
 </body>
 
 </html>

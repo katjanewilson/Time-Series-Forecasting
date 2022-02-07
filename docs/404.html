@@ -161,7 +161,14 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="2.0.3" data-path="multiple-regression-models.html"><a href="multiple-regression-models.html#australian-beer"><i class="fa fa-check"></i><b>2.0.3</b> Australian beer</a></li>
 <li class="chapter" data-level="2.1" data-path="multiple-regression-models.html"><a href="multiple-regression-models.html#ontario-gas"><i class="fa fa-check"></i><b>2.1</b> Ontario gas</a></li>
 </ul></li>
-<li class="chapter" data-level="3" data-path="t-tests-and-partial-f-tests.html"><a href="t-tests-and-partial-f-tests.html"><i class="fa fa-check"></i><b>3</b> t tests and partial F tests</a></li>
+<li class="chapter" data-level="3" data-path="t-tests-and-partial-f-tests.html"><a href="t-tests-and-partial-f-tests.html"><i class="fa fa-check"></i><b>3</b> t tests and partial F tests</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="t-tests-and-partial-f-tests.html"><a href="t-tests-and-partial-f-tests.html#example-9"><i class="fa fa-check"></i><b>3.1</b> Example</a>
+<ul>
+<li class="chapter" data-level="3.1.1" data-path="t-tests-and-partial-f-tests.html"><a href="t-tests-and-partial-f-tests.html#interaction"><i class="fa fa-check"></i><b>3.1.1</b> Interaction</a></li>
+</ul></li>
+<li class="chapter" data-level="3.2" data-path="t-tests-and-partial-f-tests.html"><a href="t-tests-and-partial-f-tests.html#code"><i class="fa fa-check"></i><b>3.2</b> Code</a></li>
+</ul></li>
 <li class="chapter" data-level="4" data-path="distributed-lag-models.html"><a href="distributed-lag-models.html"><i class="fa fa-check"></i><b>4</b> distributed lag models</a></li>
 <li class="chapter" data-level="5" data-path="arima-models.html"><a href="arima-models.html"><i class="fa fa-check"></i><b>5</b> ARIMA models</a></li>
 <li class="chapter" data-level="6" data-path="exponential-smoothing.html"><a href="exponential-smoothing.html"><i class="fa fa-check"></i><b>6</b> exponential smoothing</a></li>
@@ -252,6 +259,20 @@ gitbook.start({
 });
 </script>
 
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
 </body>
 
 </html>

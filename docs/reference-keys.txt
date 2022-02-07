@@ -32,3 +32,6 @@ australian-beer
 additive-decomposition-model-with-cosine-and-sine-seasonal-dummies-and-inclusion-of-an-intercept
 ontario-gas
 t-tests-and-partial-f-tests
+example-9
+code
+interaction
