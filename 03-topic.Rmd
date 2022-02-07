@@ -1,2 +1,9 @@
 # t tests and partial F tests
 
+Partial slopes (change in y for each unit change in x, holding others constant) vs. marginal slopes (simple regression, only one x). Collinearity makes these values different...
+
+```{r}
+garbage <- read.csv("/cloud/project/data/Garbage.txt")
+attach(garbage)
+head(garbage)
+```
