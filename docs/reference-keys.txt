@@ -39,3 +39,6 @@ example-10
 durbin-watson-statistic
 weekly-garbage-deposites
 simple-model
+model-3
+calculating-the-six-interaction-terms.
+visualizing-three-trends

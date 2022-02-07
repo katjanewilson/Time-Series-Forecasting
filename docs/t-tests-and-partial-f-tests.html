@@ -172,6 +172,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="3.2" data-path="t-tests-and-partial-f-tests.html"><a href="t-tests-and-partial-f-tests.html#weekly-garbage-deposites"><i class="fa fa-check"></i><b>3.2</b> Weekly Garbage Deposites</a>
 <ul>
 <li class="chapter" data-level="3.2.1" data-path="t-tests-and-partial-f-tests.html"><a href="t-tests-and-partial-f-tests.html#simple-model"><i class="fa fa-check"></i><b>3.2.1</b> Simple model</a></li>
+<li class="chapter" data-level="3.2.2" data-path="t-tests-and-partial-f-tests.html"><a href="t-tests-and-partial-f-tests.html#model-3"><i class="fa fa-check"></i><b>3.2.2</b> model 3</a></li>
+<li class="chapter" data-level="3.2.3" data-path="t-tests-and-partial-f-tests.html"><a href="t-tests-and-partial-f-tests.html#calculating-the-six-interaction-terms."><i class="fa fa-check"></i><b>3.2.3</b> Calculating the six interaction terms.</a></li>
+<li class="chapter" data-level="3.2.4" data-path="t-tests-and-partial-f-tests.html"><a href="t-tests-and-partial-f-tests.html#visualizing-three-trends"><i class="fa fa-check"></i><b>3.2.4</b> Visualizing Three Trends</a></li>
 </ul></li>
 </ul></li>
 <li class="chapter" data-level="4" data-path="distributed-lag-models.html"><a href="distributed-lag-models.html"><i class="fa fa-check"></i><b>4</b> distributed lag models</a></li>
@@ -348,6 +351,7 @@ y_t = \beta_0 + \beta_t + \beta_2t^2 + \beta_3t^3 + \beta_4M_t + \beta_5G_t + \b
 <p><img src="bookdownproj_files/figure-html/unnamed-chunk-2-2.png" width="672" /></p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="t-tests-and-partial-f-tests.html#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">acf</span>(<span class="fu">ts</span>(resids))</span></code></pre></div>
 <p><img src="bookdownproj_files/figure-html/unnamed-chunk-2-3.png" width="672" /></p>
+<p>Estimate of the seasonal pattern. Sicne the data start at end of 84, there is a dip in collection at early Jan, then reach a peak in the spring, smaller peak in the summer. Then, big peak in the fall, and the peak in the fall is more substantial than in the spring. This is the static seasonal estimation, and static because we have the same pattern from one year to the next. We need 157 to have three complete years.</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="t-tests-and-partial-f-tests.html#cb8-1" aria-hidden="true" tabindex="-1"></a>xmatrix<span class="ot">&lt;-</span></span>
 <span id="cb8-2"><a href="t-tests-and-partial-f-tests.html#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">matrix</span>(<span class="fu">c</span>(cosm[,<span class="dv">1</span>],sinm[,<span class="dv">1</span>],cosm[,<span class="dv">2</span>],sinm[,<span class="dv">2</span>],cosm[,<span class="dv">3</span>],sinm[,<span class="dv">3</span>],cosm[,<span class="dv">4</span>]</span>
 <span id="cb8-3"><a href="t-tests-and-partial-f-tests.html#cb8-3" aria-hidden="true" tabindex="-1"></a>,sinm[,<span class="dv">4</span>]),<span class="at">ncol=</span><span class="dv">8</span>) </span>
@@ -356,6 +360,153 @@ y_t = \beta_0 + \beta_t + \beta_2t^2 + \beta_3t^3 + \beta_4M_t + \beta_5G_t + \b
 <span id="cb8-6"><a href="t-tests-and-partial-f-tests.html#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">ts</span>(xmatrix<span class="sc">%*%</span>betaest),<span class="at">xlab=</span><span class="st">&quot;Time&quot;</span>,<span class="at">ylab=</span><span class="st">&quot;Seasonal&quot;</span>,<span class="at">main=</span><span class="st">&quot;Estimated </span></span>
 <span id="cb8-7"><a href="t-tests-and-partial-f-tests.html#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="st">Seasonal from Model 1&quot;</span>) </span></code></pre></div>
 <p><img src="bookdownproj_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<p>In next fit, model 2, we add four more overtone pairs to the seasonal component. Are these significant beyond the original four? Keep time cubed, and for the additional trig pairs, none are sig. R squared raised by about 3.25% from previous model.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="t-tests-and-partial-f-tests.html#cb9-1" aria-hidden="true" tabindex="-1"></a>model2<span class="ot">&lt;-</span> <span class="fu">lm</span>(tonnage<span class="sc">~</span>time<span class="sc">+</span>time2<span class="sc">+</span>time3<span class="sc">+</span>marlene<span class="sc">+</span>george<span class="sc">+</span>mg<span class="sc">+</span>cosm[,<span class="dv">1</span>]<span class="sc">+</span>sinm[,<span class="dv">1</span>]<span class="sc">+</span>cosm[,</span>
+<span id="cb9-2"><a href="t-tests-and-partial-f-tests.html#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="dv">2</span>]<span class="sc">+</span>sinm[,<span class="dv">2</span>]<span class="sc">+</span>cosm[,<span class="dv">3</span>]<span class="sc">+</span>sinm[,<span class="dv">3</span>]<span class="sc">+</span>cosm[,<span class="dv">4</span>]<span class="sc">+</span>sinm[,<span class="dv">4</span>]<span class="sc">+</span>cosm[,<span class="dv">5</span>]<span class="sc">+</span>sinm[,<span class="dv">5</span>]<span class="sc">+</span>cosm</span>
+<span id="cb9-3"><a href="t-tests-and-partial-f-tests.html#cb9-3" aria-hidden="true" tabindex="-1"></a>[,<span class="dv">6</span>]<span class="sc">+</span>sinm[,<span class="dv">6</span>]<span class="sc">+</span>cosm[,<span class="dv">7</span>]<span class="sc">+</span>sinm[,<span class="dv">7</span>]<span class="sc">+</span>cosm[,<span class="dv">8</span>]<span class="sc">+</span>sinm[,<span class="dv">8</span>]);<span class="fu">summary</span>(model2) </span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = tonnage ~ time + time2 + time3 + marlene + george + 
+##     mg + cosm[, 1] + sinm[, 1] + cosm[, 2] + sinm[, 2] + cosm[, 
+##     3] + sinm[, 3] + cosm[, 4] + sinm[, 4] + cosm[, 5] + sinm[, 
+##     5] + cosm[, 6] + sinm[, 6] + cosm[, 7] + sinm[, 7] + cosm[, 
+##     8] + sinm[, 8])
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -159.800  -44.346   -5.717   46.003  193.304 
+## 
+## Coefficients:
+##               Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  3.904e+02  2.892e+01  13.499  &lt; 2e-16 ***
+## time         8.096e-01  1.451e+00   0.558 0.577700    
+## time2       -3.007e-02  2.157e-02  -1.394 0.165651    
+## time3        1.798e-04  9.119e-05   1.972 0.050723 .  
+## marlene     -1.669e+02  1.578e+01 -10.576  &lt; 2e-16 ***
+## george      -1.533e+02  1.560e+01  -9.831  &lt; 2e-16 ***
+## mg           1.554e+02  4.132e+01   3.761 0.000254 ***
+## cosm[, 1]   -8.123e+00  8.027e+00  -1.012 0.313382    
+## sinm[, 1]   -2.306e+01  9.057e+00  -2.546 0.012059 *  
+## cosm[, 2]   -1.841e+00  8.014e+00  -0.230 0.818646    
+## sinm[, 2]   -5.747e+01  8.270e+00  -6.949 1.52e-10 ***
+## cosm[, 3]    8.664e+00  8.043e+00   1.077 0.283352    
+## sinm[, 3]   -3.498e+01  8.091e+00  -4.323 3.01e-05 ***
+## cosm[, 4]   -2.870e+01  8.061e+00  -3.560 0.000516 ***
+## sinm[, 4]    4.633e+00  8.009e+00   0.579 0.563898    
+## cosm[, 5]   -1.277e+01  8.023e+00  -1.591 0.113912    
+## sinm[, 5]   -5.617e+00  8.005e+00  -0.702 0.484070    
+## cosm[, 6]   -1.055e+01  8.003e+00  -1.318 0.189744    
+## sinm[, 6]    6.238e+00  7.953e+00   0.784 0.434210    
+## cosm[, 7]   -1.559e+01  8.022e+00  -1.943 0.054104 .  
+## sinm[, 7]    7.110e+00  7.952e+00   0.894 0.372864    
+## cosm[, 8]   -9.858e+00  8.036e+00  -1.227 0.222149    
+## sinm[, 8]    1.298e+01  7.948e+00   1.634 0.104717    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 69.96 on 132 degrees of freedom
+## Multiple R-squared:  0.6726, Adjusted R-squared:  0.618 
+## F-statistic: 12.32 on 22 and 132 DF,  p-value: &lt; 2.2e-16</code></pre>
+<p>Partial F test to compare model 1 and model 2. This tests the eight additional variables in the four additional cosine/sin pairs.</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="t-tests-and-partial-f-tests.html#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">anova</span>(model1, model2)</span></code></pre></div>
+<pre><code>## Analysis of Variance Table
+## 
+## Model 1: tonnage ~ time + time2 + time3 + marlene + george + mg + cosm[, 
+##     1] + sinm[, 1] + cosm[, 2] + sinm[, 2] + cosm[, 3] + sinm[, 
+##     3] + cosm[, 4] + sinm[, 4]
+## Model 2: tonnage ~ time + time2 + time3 + marlene + george + mg + cosm[, 
+##     1] + sinm[, 1] + cosm[, 2] + sinm[, 2] + cosm[, 3] + sinm[, 
+##     3] + cosm[, 4] + sinm[, 4] + cosm[, 5] + sinm[, 5] + cosm[, 
+##     6] + sinm[, 6] + cosm[, 7] + sinm[, 7] + cosm[, 8] + sinm[, 
+##     8]
+##   Res.Df    RSS Df Sum of Sq      F Pr(&gt;F)
+## 1    140 712345                           
+## 2    132 646145  8     66200 1.6905 0.1063</code></pre>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="t-tests-and-partial-f-tests.html#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model1)<span class="sc">$</span>r.squared</span></code></pre></div>
+<pre><code>## [1] 0.6390179</code></pre>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="t-tests-and-partial-f-tests.html#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model2)<span class="sc">$</span>r.squared</span></code></pre></div>
+<pre><code>## [1] 0.672565</code></pre>
+<p>Partial F stat calcualted with</p>
+<p><span class="math display">\[
+\frac{0.63902 -0.63902/8}{(1-0.63902)/(155-22-1)}
+\]</span>
+The addition of the 4 trigonometric pairs gives this nuance.</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="t-tests-and-partial-f-tests.html#cb17-1" aria-hidden="true" tabindex="-1"></a>xmatrix3<span class="ot">&lt;-</span></span>
+<span id="cb17-2"><a href="t-tests-and-partial-f-tests.html#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="fu">matrix</span>(<span class="fu">c</span>(cosm[,<span class="dv">1</span>],sinm[,<span class="dv">1</span>],cosm[,<span class="dv">2</span>],sinm[,<span class="dv">2</span>],cosm[,<span class="dv">3</span>],sinm[,<span class="dv">3</span>],cosm[,<span class="dv">4</span>]</span>
+<span id="cb17-3"><a href="t-tests-and-partial-f-tests.html#cb17-3" aria-hidden="true" tabindex="-1"></a>,sinm[,<span class="dv">4</span>],cosm[,<span class="dv">5</span>],sinm[,<span class="dv">5</span>],cosm[,<span class="dv">6</span>],sinm[,<span class="dv">6</span>],cosm[,<span class="dv">7</span>],sinm[,<span class="dv">7</span>],cosm[,<span class="dv">8</span></span>
+<span id="cb17-4"><a href="t-tests-and-partial-f-tests.html#cb17-4" aria-hidden="true" tabindex="-1"></a>],sinm[,<span class="dv">8</span>]),<span class="at">ncol=</span><span class="dv">16</span>) </span>
+<span id="cb17-5"><a href="t-tests-and-partial-f-tests.html#cb17-5" aria-hidden="true" tabindex="-1"></a>betaest<span class="ot">&lt;-</span><span class="fu">coef</span>(model2)[<span class="dv">8</span><span class="sc">:</span><span class="dv">23</span>] </span>
+<span id="cb17-6"><a href="t-tests-and-partial-f-tests.html#cb17-6" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">ts</span>(xmatrix3<span class="sc">%*%</span>betaest),<span class="at">xlab=</span><span class="st">&quot;Time&quot;</span>,<span class="at">ylab=</span><span class="st">&quot;Seasonal&quot;</span>,<span class="at">main=</span><span class="st">&quot;Estimated </span></span>
+<span id="cb17-7"><a href="t-tests-and-partial-f-tests.html#cb17-7" aria-hidden="true" tabindex="-1"></a><span class="st">Seasonal from Model 2&quot;</span>) </span></code></pre></div>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+</div>
+<div id="model-3" class="section level3" number="3.2.2">
+<h3><span class="header-section-number">3.2.2</span> model 3</h3>
+<p>Back to 4 cosine sin pairs, but this is include interaction of M, G and the trend and MG.</p>
+<p>In the weeks when marele on duty, time:marleene is adjustment to time. The line time2:marlene is an adjustment to the value of time2. Likewise for George and MG. We get four different trends, a trend when nither of them is on duty, one when Marlene alone on duty, and one when George alone on duty.</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="t-tests-and-partial-f-tests.html#cb18-1" aria-hidden="true" tabindex="-1"></a>model3<span class="ot">&lt;-</span> <span class="fu">lm</span>(tonnage<span class="sc">~</span>time<span class="sc">+</span>time2<span class="sc">+</span>time3<span class="sc">+</span>marlene<span class="sc">+</span>george<span class="sc">+</span>mg<span class="sc">+</span>cosm[,<span class="dv">1</span>]<span class="sc">+</span>sinm[,<span class="dv">1</span>]</span>
+<span id="cb18-2"><a href="t-tests-and-partial-f-tests.html#cb18-2" aria-hidden="true" tabindex="-1"></a>            <span class="sc">+</span>cosm[,<span class="dv">2</span>]<span class="sc">+</span>sinm[,<span class="dv">2</span>]<span class="sc">+</span>cosm[,<span class="dv">3</span>]<span class="sc">+</span>sinm[,<span class="dv">3</span>]<span class="sc">+</span>cosm[,<span class="dv">4</span>]<span class="sc">+</span>sinm[,<span class="dv">4</span>]<span class="sc">+</span></span>
+<span id="cb18-3"><a href="t-tests-and-partial-f-tests.html#cb18-3" aria-hidden="true" tabindex="-1"></a>              marlene<span class="sc">*</span>time<span class="sc">+</span>marlene<span class="sc">*</span>time2<span class="sc">+</span>george<span class="sc">*</span>time<span class="sc">+</span>george<span class="sc">*</span>time2<span class="sc">+</span>mg<span class="sc">*</span>time<span class="sc">+</span>mg<span class="sc">*</span>time2)</span>
+<span id="cb18-4"><a href="t-tests-and-partial-f-tests.html#cb18-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-5"><a href="t-tests-and-partial-f-tests.html#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model3) </span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = tonnage ~ time + time2 + time3 + marlene + george + 
+##     mg + cosm[, 1] + sinm[, 1] + cosm[, 2] + sinm[, 2] + cosm[, 
+##     3] + sinm[, 3] + cosm[, 4] + sinm[, 4] + marlene * time + 
+##     marlene * time2 + george * time + george * time2 + mg * time + 
+##     mg * time2)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -165.393  -37.033    1.136   43.853  210.728 
+## 
+## Coefficients:
+##                 Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)    3.251e+02  4.589e+01   7.084 7.18e-11 ***
+## time           2.583e+00  1.805e+00   1.431  0.15481    
+## time2         -3.712e-02  2.265e-02  -1.639  0.10355    
+## time3          1.611e-04  9.126e-05   1.766  0.07970 .  
+## marlene       -9.766e+01  4.949e+01  -1.973  0.05052 .  
+## george        -5.181e+01  4.954e+01  -1.046  0.29746    
+## mg             1.044e+03  5.181e+02   2.016  0.04581 *  
+## cosm[, 1]     -4.710e+00  8.160e+00  -0.577  0.56481    
+## sinm[, 1]     -2.563e+01  9.080e+00  -2.823  0.00548 ** 
+## cosm[, 2]     -3.089e+00  8.162e+00  -0.378  0.70572    
+## sinm[, 2]     -5.918e+01  8.287e+00  -7.141 5.31e-11 ***
+## cosm[, 3]      1.023e+01  8.076e+00   1.267  0.20728    
+## sinm[, 3]     -3.180e+01  8.185e+00  -3.885  0.00016 ***
+## cosm[, 4]     -2.648e+01  8.100e+00  -3.269  0.00137 ** 
+## sinm[, 4]      4.637e+00  8.063e+00   0.575  0.56617    
+## time:marlene  -2.437e+00  1.408e+00  -1.731  0.08575 .  
+## time2:marlene  1.540e-02  8.499e-03   1.812  0.07229 .  
+## time:george   -2.622e+00  1.420e+00  -1.847  0.06695 .  
+## time2:george   1.299e-02  8.625e-03   1.506  0.13437    
+## time:mg       -3.524e+01  2.027e+01  -1.738  0.08443 .  
+## time2:mg       2.543e-01  1.477e-01   1.721  0.08749 .  
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 69.85 on 134 degrees of freedom
+## Multiple R-squared:  0.6686, Adjusted R-squared:  0.6192 
+## F-statistic: 13.52 on 20 and 134 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+<div id="calculating-the-six-interaction-terms." class="section level3" number="3.2.3">
+<h3><span class="header-section-number">3.2.3</span> Calculating the six interaction terms.</h3>
+</div>
+<div id="visualizing-three-trends" class="section level3" number="3.2.4">
+<h3><span class="header-section-number">3.2.4</span> Visualizing Three Trends</h3>
+<p>Blue trend is G, Red is Marlene. At the far left, Marlene usually stealing more than George. As time goes on, G stealing more.</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="t-tests-and-partial-f-tests.html#cb20-1" aria-hidden="true" tabindex="-1"></a>nmatrix<span class="ot">&lt;-</span><span class="fu">matrix</span>(<span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">1</span>,<span class="fu">length</span>(tonnage)),time,time2,time3),<span class="at">ncol=</span><span class="dv">4</span>) </span>
+<span id="cb20-2"><a href="t-tests-and-partial-f-tests.html#cb20-2" aria-hidden="true" tabindex="-1"></a>nbeta<span class="ot">&lt;-</span><span class="fu">c</span>(<span class="fl">325.082</span>,<span class="fl">2.5825</span>,<span class="sc">-</span><span class="fl">0.0371196</span>,<span class="fl">0.00016114</span>) </span>
+<span id="cb20-3"><a href="t-tests-and-partial-f-tests.html#cb20-3" aria-hidden="true" tabindex="-1"></a>mbeta<span class="ot">&lt;-</span><span class="fu">c</span>(<span class="fl">227.422</span>,<span class="fl">0.14524</span>,<span class="sc">-</span><span class="fl">0.021722</span>,<span class="fl">0.00016114</span>) </span>
+<span id="cb20-4"><a href="t-tests-and-partial-f-tests.html#cb20-4" aria-hidden="true" tabindex="-1"></a>gbeta<span class="ot">&lt;-</span><span class="fu">c</span>(<span class="fl">273.269</span>,<span class="sc">-</span><span class="fl">0.03985</span>,<span class="sc">-</span><span class="fl">0.024129</span>,<span class="fl">0.00016114</span>) </span>
+<span id="cb20-5"><a href="t-tests-and-partial-f-tests.html#cb20-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-6"><a href="t-tests-and-partial-f-tests.html#cb20-6" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">ts</span>(nmatrix<span class="sc">%*%</span>nbeta),<span class="at">type=</span><span class="st">&quot;l&quot;</span>,<span class="at">lty=</span><span class="dv">1</span>,<span class="at">lwd=</span><span class="dv">2</span>,<span class="at">col=</span><span class="st">&quot;black&quot;</span>,<span class="at">ylim=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">500</span></span>
+<span id="cb20-7"><a href="t-tests-and-partial-f-tests.html#cb20-7" aria-hidden="true" tabindex="-1"></a>),<span class="at">xlab=</span><span class="st">&quot;Time&quot;</span>,<span class="at">ylab=</span><span class="st">&quot;Trend&quot;</span>,<span class="at">main=</span><span class="st">&quot;Estimated Trends from Model 3&quot;</span>) </span>
+<span id="cb20-8"><a href="t-tests-and-partial-f-tests.html#cb20-8" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(<span class="fu">ts</span>(nmatrix<span class="sc">%*%</span>mbeta),<span class="at">type=</span><span class="st">&quot;l&quot;</span>,<span class="at">lty=</span><span class="dv">2</span>,<span class="at">lwd=</span><span class="dv">2</span>,<span class="at">col=</span><span class="st">&quot;red&quot;</span>) </span>
+<span id="cb20-9"><a href="t-tests-and-partial-f-tests.html#cb20-9" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(<span class="fu">ts</span>(nmatrix<span class="sc">%*%</span>gbeta),<span class="at">type=</span><span class="st">&quot;l&quot;</span>,<span class="at">lty=</span><span class="dv">3</span>,<span class="at">lwd=</span><span class="dv">2</span>,<span class="at">col=</span><span class="st">&quot;blue&quot;</span>) </span></code></pre></div>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
 
 </div>
 </div>

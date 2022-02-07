@@ -153,7 +153,7 @@ acf(ts(resids))
 
 ```
 
-
+Estimate of the seasonal pattern. Sicne the data start at end of 84, there is a dip in collection at early Jan, then reach a peak in the spring, smaller peak in the summer. Then, big peak in the fall, and the peak in the fall is more substantial than in the spring. This is the static seasonal estimation, and static because we have the same pattern from one year to the next. We need 157 to have three complete years.
 ```{r}
 xmatrix<-
 matrix(c(cosm[,1],sinm[,1],cosm[,2],sinm[,2],cosm[,3],sinm[,3],cosm[,4]
@@ -165,3 +165,84 @@ Seasonal from Model 1")
  
 
 ```
+
+In next fit, model 2, we add four more overtone pairs to the seasonal component. Are these significant beyond the original four? Keep time cubed, and for the additional trig pairs, none are sig. R squared raised by about 3.25% from previous model. 
+
+```{r}
+model2<- lm(tonnage~time+time2+time3+marlene+george+mg+cosm[,1]+sinm[,1]+cosm[,
+2]+sinm[,2]+cosm[,3]+sinm[,3]+cosm[,4]+sinm[,4]+cosm[,5]+sinm[,5]+cosm
+[,6]+sinm[,6]+cosm[,7]+sinm[,7]+cosm[,8]+sinm[,8]);summary(model2) 
+```
+
+Partial F test to compare model 1 and model 2. This tests the eight additional variables in the four additional cosine/sin pairs. 
+
+```{r}
+anova(model1, model2)
+summary(model1)$r.squared
+summary(model2)$r.squared
+```
+
+Partial F stat calcualted with
+
+$$
+\frac{0.63902 -0.63902/8}{(1-0.63902)/(155-22-1)}
+$$
+The addition of the 4 trigonometric pairs gives this nuance. 
+
+```{r}
+xmatrix3<-
+matrix(c(cosm[,1],sinm[,1],cosm[,2],sinm[,2],cosm[,3],sinm[,3],cosm[,4]
+,sinm[,4],cosm[,5],sinm[,5],cosm[,6],sinm[,6],cosm[,7],sinm[,7],cosm[,8
+],sinm[,8]),ncol=16) 
+betaest<-coef(model2)[8:23] 
+plot(ts(xmatrix3%*%betaest),xlab="Time",ylab="Seasonal",main="Estimated 
+Seasonal from Model 2") 
+```
+
+
+### model 3
+
+Back to 4 cosine sin pairs, but this is include interaction of M, G and the trend and MG.
+
+In the weeks when marele on duty, time:marleene is adjustment to time. The line time2:marlene is an adjustment to the value of time2. Likewise for George and MG. We get four different trends, a trend when nither of them is on duty, one when Marlene alone on duty, and one when George alone on duty.
+
+```{r}
+model3<- lm(tonnage~time+time2+time3+marlene+george+mg+cosm[,1]+sinm[,1]
+            +cosm[,2]+sinm[,2]+cosm[,3]+sinm[,3]+cosm[,4]+sinm[,4]+
+              marlene*time+marlene*time2+george*time+george*time2+mg*time+mg*time2)
+
+summary(model3) 
+
+```
+
+
+
+### Calculating the six interaction terms.
+
+
+### Visualizing Three Trends
+
+Blue trend is G, Red is Marlene. At the far left, Marlene usually stealing more than George. As time goes on, G stealing more.
+```{r}
+nmatrix<-matrix(c(rep(1,length(tonnage)),time,time2,time3),ncol=4) 
+nbeta<-c(325.082,2.5825,-0.0371196,0.00016114) 
+mbeta<-c(227.422,0.14524,-0.021722,0.00016114) 
+gbeta<-c(273.269,-0.03985,-0.024129,0.00016114) 
+
+plot(ts(nmatrix%*%nbeta),type="l",lty=1,lwd=2,col="black",ylim=c(0,500
+),xlab="Time",ylab="Trend",main="Estimated Trends from Model 3") 
+lines(ts(nmatrix%*%mbeta),type="l",lty=2,lwd=2,col="red") 
+lines(ts(nmatrix%*%gbeta),type="l",lty=3,lwd=2,col="blue") 
+
+```
+
+
+
+
+
+
+
+
+
+
+
