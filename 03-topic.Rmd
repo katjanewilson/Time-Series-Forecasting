@@ -1,1 +1,2 @@
-# trends and seasonality
+# t tests and partial F tests
+
