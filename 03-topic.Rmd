@@ -118,7 +118,11 @@ $$
 Dummy variables use the 0,1 convension, where M is 1 is Marlene on during week t, and 0 otherwise... MG for both Marleen and George on duty during week 1. 
 ## Code
 
-Purpose is to estimate how much stolen
+Purpose is to estimate how much stolen. The value attached to marlene suggests that the amount of shortage on the tonnage was 164.9, and for George, was 152.5. When two working together, we add these three, and the coefficient is positive, same order of magnitude. Some of the cosine/sin terms are sig...
+
+From this week, we can get week by week losses in tonnage. Interpretation: in a week when Marlone alone working, the amount lost is 1.64... Add them up to get estimate of total amount of loss tonnage, and revenue...
+
+Modestly significant lag 15 residual autocorrelaiton. Otherwise, the plot reveals no remaining autocorrelation. The next plots show the estimated seasonal and trend structures.
 
 ```{r}
 garbage <- read.csv("/cloud/project/data/Garbage (1).txt")
@@ -135,6 +139,29 @@ for (j in 1:8){
 }
 model1 <- lm(tonnage~time+time2+time3+marlene+george+mg+cosm[,1]+sinm[,1]+cosm[,2
 ]+sinm[,2]+cosm[,3]+sinm[,3]+cosm[,4]+sinm[,4]);summary(model1)
+```
 
+No strong outliers. Not that much trending.. and don't go to higher order polynomial. Minor heteroskedasticity. Volatility changes a bit.. Week 50 to week 80, it is common in terms of up and down motion. Modest amount of change in volatility. 
+
+ACF of residuals: have we reduced to white noise? Significant lag 15 correlation, but not very far... Model essentially reduces to white noise. No remaining autocorrelation structure. 
+```{r}
+resids <- resid(model1)
+qqnorm(resids)
+qqline(resids)
+plot(ts(resids))
+acf(ts(resids))
+
+```
+
+
+```{r}
+xmatrix<-
+matrix(c(cosm[,1],sinm[,1],cosm[,2],sinm[,2],cosm[,3],sinm[,3],cosm[,4]
+,sinm[,4]),ncol=8) 
+betaest<-coef(model1)[8:15] 
+
+plot(ts(xmatrix%*%betaest),xlab="Time",ylab="Seasonal",main="Estimated 
+Seasonal from Model 1") 
+ 
 
 ```

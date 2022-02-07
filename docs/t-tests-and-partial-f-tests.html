@@ -281,7 +281,9 @@ y_t = \beta_0 + \beta_t + \beta_2t^2 + \beta_3t^3 + \beta_4M_t + \beta_5G_t + \b
 \]</span></p>
 <p>Dummy variables use the 0,1 convension, where M is 1 is Marlene on during week t, and 0 otherwise… MG for both Marleen and George on duty during week 1.
 ## Code</p>
-<p>Purpose is to estimate how much stolen</p>
+<p>Purpose is to estimate how much stolen. The value attached to marlene suggests that the amount of shortage on the tonnage was 164.9, and for George, was 152.5. When two working together, we add these three, and the coefficient is positive, same order of magnitude. Some of the cosine/sin terms are sig…</p>
+<p>From this week, we can get week by week losses in tonnage. Interpretation: in a week when Marlone alone working, the amount lost is 1.64… Add them up to get estimate of total amount of loss tonnage, and revenue…</p>
+<p>Modestly significant lag 15 residual autocorrelaiton. Otherwise, the plot reveals no remaining autocorrelation. The next plots show the estimated seasonal and trend structures.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="t-tests-and-partial-f-tests.html#cb1-1" aria-hidden="true" tabindex="-1"></a>garbage <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;/cloud/project/data/Garbage (1).txt&quot;</span>)</span>
 <span id="cb1-2"><a href="t-tests-and-partial-f-tests.html#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">attach</span>(garbage)</span>
 <span id="cb1-3"><a href="t-tests-and-partial-f-tests.html#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(garbage)</span></code></pre></div>
@@ -336,6 +338,24 @@ y_t = \beta_0 + \beta_t + \beta_2t^2 + \beta_3t^3 + \beta_4M_t + \beta_5G_t + \b
 ## Residual standard error: 71.33 on 140 degrees of freedom
 ## Multiple R-squared:  0.639,  Adjusted R-squared:  0.6029 
 ## F-statistic:  17.7 on 14 and 140 DF,  p-value: &lt; 2.2e-16</code></pre>
+<p>No strong outliers. Not that much trending.. and don’t go to higher order polynomial. Minor heteroskedasticity. Volatility changes a bit.. Week 50 to week 80, it is common in terms of up and down motion. Modest amount of change in volatility.</p>
+<p>ACF of residuals: have we reduced to white noise? Significant lag 15 correlation, but not very far… Model essentially reduces to white noise. No remaining autocorrelation structure.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="t-tests-and-partial-f-tests.html#cb5-1" aria-hidden="true" tabindex="-1"></a>resids <span class="ot">&lt;-</span> <span class="fu">resid</span>(model1)</span>
+<span id="cb5-2"><a href="t-tests-and-partial-f-tests.html#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">qqnorm</span>(resids)</span>
+<span id="cb5-3"><a href="t-tests-and-partial-f-tests.html#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">qqline</span>(resids)</span></code></pre></div>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="t-tests-and-partial-f-tests.html#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">ts</span>(resids))</span></code></pre></div>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-2-2.png" width="672" /></p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="t-tests-and-partial-f-tests.html#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">acf</span>(<span class="fu">ts</span>(resids))</span></code></pre></div>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-2-3.png" width="672" /></p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="t-tests-and-partial-f-tests.html#cb8-1" aria-hidden="true" tabindex="-1"></a>xmatrix<span class="ot">&lt;-</span></span>
+<span id="cb8-2"><a href="t-tests-and-partial-f-tests.html#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">matrix</span>(<span class="fu">c</span>(cosm[,<span class="dv">1</span>],sinm[,<span class="dv">1</span>],cosm[,<span class="dv">2</span>],sinm[,<span class="dv">2</span>],cosm[,<span class="dv">3</span>],sinm[,<span class="dv">3</span>],cosm[,<span class="dv">4</span>]</span>
+<span id="cb8-3"><a href="t-tests-and-partial-f-tests.html#cb8-3" aria-hidden="true" tabindex="-1"></a>,sinm[,<span class="dv">4</span>]),<span class="at">ncol=</span><span class="dv">8</span>) </span>
+<span id="cb8-4"><a href="t-tests-and-partial-f-tests.html#cb8-4" aria-hidden="true" tabindex="-1"></a>betaest<span class="ot">&lt;-</span><span class="fu">coef</span>(model1)[<span class="dv">8</span><span class="sc">:</span><span class="dv">15</span>] </span>
+<span id="cb8-5"><a href="t-tests-and-partial-f-tests.html#cb8-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-6"><a href="t-tests-and-partial-f-tests.html#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">ts</span>(xmatrix<span class="sc">%*%</span>betaest),<span class="at">xlab=</span><span class="st">&quot;Time&quot;</span>,<span class="at">ylab=</span><span class="st">&quot;Seasonal&quot;</span>,<span class="at">main=</span><span class="st">&quot;Estimated </span></span>
+<span id="cb8-7"><a href="t-tests-and-partial-f-tests.html#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="st">Seasonal from Model 1&quot;</span>) </span></code></pre></div>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
 
 </div>
 </div>
