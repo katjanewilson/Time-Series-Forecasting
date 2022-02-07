@@ -166,8 +166,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="3.1" data-path="t-tests-and-partial-f-tests.html"><a href="t-tests-and-partial-f-tests.html#example-9"><i class="fa fa-check"></i><b>3.1</b> Example</a>
 <ul>
 <li class="chapter" data-level="3.1.1" data-path="t-tests-and-partial-f-tests.html"><a href="t-tests-and-partial-f-tests.html#interaction"><i class="fa fa-check"></i><b>3.1.1</b> Interaction</a></li>
+<li class="chapter" data-level="3.1.2" data-path="t-tests-and-partial-f-tests.html"><a href="t-tests-and-partial-f-tests.html#example-10"><i class="fa fa-check"></i><b>3.1.2</b> example</a></li>
+<li class="chapter" data-level="3.1.3" data-path="t-tests-and-partial-f-tests.html"><a href="t-tests-and-partial-f-tests.html#durbin-watson-statistic"><i class="fa fa-check"></i><b>3.1.3</b> Durbin-Watson statistic</a></li>
 </ul></li>
-<li class="chapter" data-level="3.2" data-path="t-tests-and-partial-f-tests.html"><a href="t-tests-and-partial-f-tests.html#code"><i class="fa fa-check"></i><b>3.2</b> Code</a></li>
+<li class="chapter" data-level="3.2" data-path="t-tests-and-partial-f-tests.html"><a href="t-tests-and-partial-f-tests.html#weekly-garbage-deposites"><i class="fa fa-check"></i><b>3.2</b> Weekly Garbage Deposites</a>
+<ul>
+<li class="chapter" data-level="3.2.1" data-path="t-tests-and-partial-f-tests.html"><a href="t-tests-and-partial-f-tests.html#simple-model"><i class="fa fa-check"></i><b>3.2.1</b> Simple model</a></li>
+</ul></li>
 </ul></li>
 <li class="chapter" data-level="4" data-path="distributed-lag-models.html"><a href="distributed-lag-models.html"><i class="fa fa-check"></i><b>4</b> distributed lag models</a></li>
 <li class="chapter" data-level="5" data-path="arima-models.html"><a href="arima-models.html"><i class="fa fa-check"></i><b>5</b> ARIMA models</a></li>
@@ -213,10 +218,70 @@ Sorts/Hour = 739 + 826Lines + 95Sorters + 118Truckers
 <p>In time series, the partial slopes we saw prior to the variables added are different. The partial slopes will change as more variables are added.</p>
 <div id="interaction" class="section level3" number="3.1.1">
 <h3><span class="header-section-number">3.1.1</span> Interaction</h3>
+<p>Example: salaries for account level 1. Let y be salary, <span class="math inline">\(x_1\)</span> timeinposition, and <span class="math inline">\(x-2\)</span> a dummy for gender (0 for males and 1 for females). Regress y on <span class="math inline">\(x_1\)</span> for males only and a seperate regression for females. Examine two fitted lines, comparing their intercepts and their slopes. A difference in intercepts signals a difference in entry level salaries, and difference in slopes indicate difference rates of pay increase for two sexes. A difference in slopes signals interaction. That is, the relationship between y (salary) and one of the independent variables, <span class="math inline">\(x_1\)</span>, time in position, differs according to the value of the other independent variable, <span class="math inline">\(x_2\)</span>.</p>
+<p>In this example, there is interaction if the relationship between salary and time in position differs according to the other x variable (gender).</p>
+<p>Instead of fitting two lines seperately, pool the male and female data to estimate a common erro variables with more degrees of freedom than seperate regressions permit. Leads to more powerful tests, narrower confidence intervals and prediction intervals.</p>
+<p>Why is the product the proper method to incorporate interaction? See:</p>
+<p><span class="math display">\[
+y = \beta_0 + \beta_1x_1 + \beta_2x_2 + \beta_sx_ax_2 + \epsilon \\
+= \beta_0 + \beta_1timeinposition + \beta_2gender + \beta_3timeinposition*gender + \epsilon
+\]</span></p>
+<p>For males this model is</p>
+<p><span class="math display">\[
+y = \beta_0+\beta_1timeinposition + \epsilon
+\]</span></p>
+<p>For females this model is</p>
+<p><span class="math display">\[
+y = \beta_0+\beta_2 + (\beta_1+\beta_3)timeinposition + \epsilon
+\]</span>
+For males, the intercept is <span class="math inline">\(\beta_0\)</span> and the slope attached to timeinposition is <span class="math inline">\(\beta_1\)</span>. For females, these are the <span class="math inline">\(\beta_0 + \beta_2\)</span> and <span class="math inline">\(\beta_1 +\beta_3\)</span> respectively. If the paraemter <span class="math inline">\(\beta_3\)</span> is present, then we say that there is interaction between timeinposition and gender. This means that the impact of timeinposition upon salary depends on gender.</p>
+<p>This allows us to test whether the same or entry level salaries are same, and whether rates of pay increase are the same. If we test if entry level salaries are equal, then hyp = B2 = 0. If not, then females sig differently. For rate of pay increase, B1 is for males, but females if B1 + B3, so test whether B3 is equal to 0 or not in the alternative.</p>
+<p>Interaction means that the relationship between ssalary and time in position, if interaction is present, then that relationship is sig. different for the two genders. That is the case when <span class="math inline">\(B_3\)</span> is sig different from 0.</p>
+</div>
+<div id="example-10" class="section level3" number="3.1.2">
+<h3><span class="header-section-number">3.1.2</span> example</h3>
+<p>The baseline trend is when neither one of them is on duty. The interactions show when they are or are not on duty (add example)</p>
+</div>
+<div id="durbin-watson-statistic" class="section level3" number="3.1.3">
+<h3><span class="header-section-number">3.1.3</span> Durbin-Watson statistic</h3>
+<p>Used to test the null of uncorrelated errors in a time series regression model, against the alternative that errors follow a first-order autoregression with positive lag one correlation</p>
+<p><span class="math display">\[
+y_ = \beta_0 + \beta_1x_{1t} + \beta_2x_{2t} + ...+ \beta_kx_{kt} + \epsilon_t
+\]</span></p>
+<p>where the errors <span class="math inline">\(\epsilon_t\)</span> follows a first-order autoregressive model</p>
+<p><span class="math display">\[
+\epsilon_t = \rho\epsilon_{t-1} + \alpha_t, -1 &lt; \rho &lt;1
+\]</span>
+<span class="math display">\[
+\epsilon_t = \rho\epsilon_{t-1} + \alpha_t, -1 &lt; \rho &lt;1
+\]</span></p>
+<p>Durbin-Watson tests the null <span class="math inline">\(H_0: \rho = 0\)</span> against the alternatie that <span class="math inline">\(\rho\)</span> is positive.</p>
+<p>Calculated with Durbin-Watson statistic:</p>
+<p><span class="math display">\[
+DW = \frac{\sum_{t=2}^{n}(e_t - e_{t-1})^2}{\sum_{t=1}^{n}e_t^2}
+\]</span></p>
+<p>and this is approximately equal to 2(1-r) where</p>
+<p><span class="math display">\[
+r = \frac{\sum_{t=2}^{n}e_te_{t-1}}{\sum_{t=1}^{n}e_t^2}
+\]</span></p>
+<p>is the sample correlation between adjacent residuals and is an estimate of <span class="math inline">\(\rho\)</span>. The null is rejected if</p>
+<p><span class="math display">\[
+DW &gt; d_t
+\]</span></p>
 </div>
 </div>
-<div id="code" class="section level2" number="3.2">
-<h2><span class="header-section-number">3.2</span> Code</h2>
+<div id="weekly-garbage-deposites" class="section level2" number="3.2">
+<h2><span class="header-section-number">3.2</span> Weekly Garbage Deposites</h2>
+<div id="simple-model" class="section level3" number="3.2.1">
+<h3><span class="header-section-number">3.2.1</span> Simple model</h3>
+<p>with only a trend structure, dummy variables for two people, and dummy variables to estimate seasonal structure</p>
+<p>Fundamental pair corresponds to a period of 365/7, which is 57 and 1/7. Takes 57 and 1/7 to span a week. Use 365.25 for leap year. The fundamental component has a period… the amount of time it takes to complete one cycle is. 52 1/7 weeks. First overtone inorporate j=t, then j=3, j=4…
+<span class="math display">\[
+y_t = \beta_0 + \beta_t + \beta_2t^2 + \beta_3t^3 + \beta_4M_t + \beta_5G_t + \beta_6MG_t + \sum_{j=1}^{4}(\gamma_jcos\frac{2\pi7jt}{365} + \delta_jsin\frac{2\pi7jt}{365}) + \epsilon_t
+\]</span></p>
+<p>Dummy variables use the 0,1 convension, where M is 1 is Marlene on during week t, and 0 otherwise… MG for both Marleen and George on duty during week 1.
+## Code</p>
+<p>Purpose is to estimate how much stolen</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="t-tests-and-partial-f-tests.html#cb1-1" aria-hidden="true" tabindex="-1"></a>garbage <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;/cloud/project/data/Garbage (1).txt&quot;</span>)</span>
 <span id="cb1-2"><a href="t-tests-and-partial-f-tests.html#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">attach</span>(garbage)</span>
 <span id="cb1-3"><a href="t-tests-and-partial-f-tests.html#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(garbage)</span></code></pre></div>
@@ -272,6 +337,7 @@ Sorts/Hour = 739 + 826Lines + 95Sorters + 118Truckers
 ## Multiple R-squared:  0.639,  Adjusted R-squared:  0.6029 
 ## F-statistic:  17.7 on 14 and 140 DF,  p-value: &lt; 2.2e-16</code></pre>
 
+</div>
 </div>
 </div>
             </section>

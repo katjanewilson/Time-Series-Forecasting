@@ -60,14 +60,65 @@ This allows us to test whether the same or entry level salaries are same, and wh
 Interaction means that the relationship between ssalary and time in position, if interaction is present, then that relationship is sig. different for the two genders. That is the case when $B_3$ is sig different from 0. 
 
 
-### garbage case
+### example
 
-
+The baseline trend is when neither one of them is on duty. The interactions show when they are or are not on duty (add example)
 
 ### Durbin-Watson statistic
 
+Used to test the null of uncorrelated errors in a time series regression model, against the alternative that errors follow a first-order autoregression with positive lag one correlation
 
+
+$$
+y_ = \beta_0 + \beta_1x_{1t} + \beta_2x_{2t} + ...+ \beta_kx_{kt} + \epsilon_t
+$$
+
+where the errors $\epsilon_t$ follows a first-order autoregressive model
+
+$$
+\epsilon_t = \rho\epsilon_{t-1} + \alpha_t, -1 < \rho <1
+$$
+$$
+\epsilon_t = \rho\epsilon_{t-1} + \alpha_t, -1 < \rho <1
+$$
+
+Durbin-Watson tests the null $H_0: \rho = 0$ against the alternatie that $\rho$ is positive.
+
+Calculated with Durbin-Watson statistic:
+
+$$
+DW = \frac{\sum_{t=2}^{n}(e_t - e_{t-1})^2}{\sum_{t=1}^{n}e_t^2}
+$$
+
+and this is approximately equal to 2(1-r) where
+
+$$
+r = \frac{\sum_{t=2}^{n}e_te_{t-1}}{\sum_{t=1}^{n}e_t^2}
+$$
+
+is the sample correlation between adjacent residuals and is an estimate of $\rho$. The null is rejected if 
+
+$$
+DW > d_t
+$$
+
+
+## Weekly Garbage Deposites
+
+
+### Simple model 
+
+with only a trend structure, dummy variables for two people, and dummy variables to estimate seasonal structure 
+
+Fundamental pair corresponds to a period of 365/7, which is 57 and 1/7. Takes 57 and 1/7 to span a week. Use 365.25 for leap year. The fundamental component has a period... the amount of time it takes to complete one cycle is. 52 1/7 weeks. First overtone inorporate j=t, then j=3, j=4... 
+$$
+y_t = \beta_0 + \beta_t + \beta_2t^2 + \beta_3t^3 + \beta_4M_t + \beta_5G_t + \beta_6MG_t + \sum_{j=1}^{4}(\gamma_jcos\frac{2\pi7jt}{365} + \delta_jsin\frac{2\pi7jt}{365}) + \epsilon_t
+$$
+
+Dummy variables use the 0,1 convension, where M is 1 is Marlene on during week t, and 0 otherwise... MG for both Marleen and George on duty during week 1. 
 ## Code
+
+Purpose is to estimate how much stolen
 
 ```{r}
 garbage <- read.csv("/cloud/project/data/Garbage (1).txt")
