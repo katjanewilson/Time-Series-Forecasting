@@ -140,7 +140,7 @@ plot(cbind(lynx.ts, mink.ts, muskrat.ts))
 ### Example
 
 ```{r eval=TRUE, message=FALSE, warning=FALSE, include=TRUE}
-garbage <- read.csv("/cloud/project/data/Garbage.txt")
+garbage <- read.csv("/cloud/project/data/Garbage (1).txt")
 attach(garbage)
 head(garbage)
 tonnage.ts<-ts(garbage[,4])

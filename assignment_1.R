@@ -59,21 +59,23 @@ qqline(resid(model1))
 plot(model1, which = 2)
 shapiro.test(resid(model1))
 acf(ts(resid(model1)))
+plot(ts(resid(model1), start = c(1992,1), freq = 12),
+        main = "Model 1")
 
 
 ## add a dummy
 sales$obs339 <- ifelse(Sales == 73901, 1, 0)
 sales$obs340 <- ifelse(Sales == 64383, 1, 0)
 sales$obs341 <- ifelse(Sales == 68436, 1, 0)
-model1 <- lm(sales$logSales~poly(Time,4) + fMonth + 
+model2 <- lm(sales$logSales~poly(Time,4) + fMonth + 
                c348
              # + s348 + c432 
              + s432 +
                sales$obs339+ sales$obs340 + sales$obs341)
-summary(model1)
+summary(model2)
 ## part a
-b1 <- coef(model1)[1]
-b2 <- coef(model1)[6:16]+b1
+b1 <- coef(model2)[1]
+b2 <- coef(model2)[6:16]+b1
 b3<- c(b1,b2)
 seas <- exp(b3-mean(b3))
 seas
@@ -81,12 +83,13 @@ seas.ts <- ts(seas)
 plot(seas.ts, ylab = "seasonal indices", xlab = "month")
 
 ## part b
-qqnorm(resid(model1))
-qqline(resid(model1))
-plot(model1, which = 2)
-shapiro.test(resid(model1))
-acf(ts(resid(model1)))
-plot(ts(resid(model1), start = c(1992,1), freq = 12))
+qqnorm(resid(model2))
+qqline(resid(model2))
+plot(model2, which = 2)
+shapiro.test(resid(model2))
+acf(ts(resid(model2)))
+plot(ts(resid(model2), start = c(1992,1), freq = 12),
+        main = "Model 2")
 
 
 ### question 3
@@ -102,8 +105,8 @@ cbind(seas, seasdmult[1:12])
 ## since the estimation uses a 
 plot(ts(sales.decmps$random[7:360]))
 acf(ts(sales.decmps$random[7:300]),36)
-plot(ts(seas), lty = 1, lwd=2, col= "red")
-plot(ts(seasd[1:12]), lty = 2, lwd = 2, col = "green")
+plot(ts(seas), lty = 1, lwd=2, col= "red", main = "seas")
+plot(ts(seasdmult[1:12]), lty = 2, lwd = 2, col = "green", main = "decomposed")
 
 
 ### question 4
@@ -127,19 +130,19 @@ for(i in 4:360){
   lag3resid[i]<-resid(model)[i3]
 }
 
-model2 <- lm(sales$logSales~poly(Time,4) + fMonth + 
+model3 <- lm(sales$logSales~poly(Time,4) + fMonth + 
                c348+
              + s432 +
                sales$obs339+ sales$obs340 + sales$obs341 +
                lag1resid + lag2resid +lag3resid)
-summary(model2)
+summary(model3)
 
 ## now do residuals on this new model 
-qqnorm(resid(model2))
-qqline(resid(model2))
-plot(ts(resid(model2), start = c(1992,1),
-        freq = 12), ylab = "Model 1 residuals")
-acf(ts(resid(model2)))
+qqnorm(resid(model3))
+qqline(resid(model3))
+plot(ts(resid(model3), start = c(1992,1),
+        freq = 12), ylab = "Model 3 residuals", main = "Model 3")
+acf(ts(resid(model3)))
 
 ### question 5
 
@@ -173,7 +176,9 @@ b3<- c(b1,b2)
 seas <- exp(b3-mean(b3))
 seas
 seas.ts <- ts(seas)
-plot(seas.ts, ylab = "seasonal indices", xlab = "month", main = "A")
+plot(seas.ts, ylab = "seasonal indices", xlab = "month", main = "Model A : 1992-2007")
+plot(ts(resid(modelA), start = c(1992,1), freq = 12),
+     main = "Model A")
 
 
 ##### part B
@@ -205,6 +210,8 @@ b3<- c(b1,b2)
 seas_B <- exp(b3-mean(b3))
 seas_B
 seas.ts <- ts(seas_B)
-plot(seas.ts, ylab = "seasonal indices", xlab = "month", main = "B")
+plot(seas.ts, ylab = "seasonal indices", xlab = "month", main = "Model 8: 2008-2021")
+plot(ts(resid(modelB), start = c(2008,1), freq = 12),
+     main = "Model B")
 
 cbind(seas, seas_B)

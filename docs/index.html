@@ -24,7 +24,7 @@
 <meta name="author" content="Katherine Wilson" />
 
 
-<meta name="date" content="2022-02-02" />
+<meta name="date" content="2022-02-09" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -159,8 +159,27 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="2.0.1" data-path="multiple-regression-models.html"><a href="multiple-regression-models.html#additivie-decomposition-model-with-a-fourth-degree-polynomial-trend"><i class="fa fa-check"></i><b>2.0.1</b> additivie decomposition model with a fourth-degree polynomial trend</a></li>
 <li class="chapter" data-level="2.0.2" data-path="multiple-regression-models.html"><a href="multiple-regression-models.html#additive-decomposition-model-with-cosine-and-sine-seasonal-dummies-and-inclusion-of-an-intercept"><i class="fa fa-check"></i><b>2.0.2</b> Additive decomposition model with cosine and sine seasonal dummies and inclusion of an intercept</a></li>
 <li class="chapter" data-level="2.0.3" data-path="multiple-regression-models.html"><a href="multiple-regression-models.html#australian-beer"><i class="fa fa-check"></i><b>2.0.3</b> Australian beer</a></li>
+<li class="chapter" data-level="2.1" data-path="multiple-regression-models.html"><a href="multiple-regression-models.html#ontario-gas"><i class="fa fa-check"></i><b>2.1</b> Ontario gas</a></li>
 </ul></li>
-<li class="chapter" data-level="3" data-path="trends-and-seasonality.html"><a href="trends-and-seasonality.html"><i class="fa fa-check"></i><b>3</b> trends and seasonality</a></li>
+<li class="chapter" data-level="3" data-path="interactions.html"><a href="interactions.html"><i class="fa fa-check"></i><b>3</b> interactions</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="interactions.html"><a href="interactions.html#example-9"><i class="fa fa-check"></i><b>3.1</b> Example</a>
+<ul>
+<li class="chapter" data-level="3.1.1" data-path="interactions.html"><a href="interactions.html#interaction"><i class="fa fa-check"></i><b>3.1.1</b> Interaction</a></li>
+<li class="chapter" data-level="3.1.2" data-path="interactions.html"><a href="interactions.html#example-10"><i class="fa fa-check"></i><b>3.1.2</b> example</a></li>
+<li class="chapter" data-level="3.1.3" data-path="interactions.html"><a href="interactions.html#durbin-watson-statistic"><i class="fa fa-check"></i><b>3.1.3</b> Durbin-Watson statistic</a></li>
+</ul></li>
+<li class="chapter" data-level="3.2" data-path="interactions.html"><a href="interactions.html#weekly-garbage-deposites"><i class="fa fa-check"></i><b>3.2</b> Weekly Garbage Deposites</a>
+<ul>
+<li class="chapter" data-level="3.2.1" data-path="interactions.html"><a href="interactions.html#simple-model"><i class="fa fa-check"></i><b>3.2.1</b> Simple model</a></li>
+</ul></li>
+<li class="chapter" data-level="3.3" data-path="interactions.html"><a href="interactions.html#code"><i class="fa fa-check"></i><b>3.3</b> Code</a>
+<ul>
+<li class="chapter" data-level="3.3.1" data-path="interactions.html"><a href="interactions.html#model-3"><i class="fa fa-check"></i><b>3.3.1</b> model 3</a></li>
+<li class="chapter" data-level="3.3.2" data-path="interactions.html"><a href="interactions.html#calculating-the-six-interaction-terms."><i class="fa fa-check"></i><b>3.3.2</b> Calculating the six interaction terms.</a></li>
+<li class="chapter" data-level="3.3.3" data-path="interactions.html"><a href="interactions.html#visualizing-three-trends"><i class="fa fa-check"></i><b>3.3.3</b> Visualizing Three Trends</a></li>
+</ul></li>
+</ul></li>
 <li class="chapter" data-level="4" data-path="distributed-lag-models.html"><a href="distributed-lag-models.html"><i class="fa fa-check"></i><b>4</b> distributed lag models</a></li>
 <li class="chapter" data-level="5" data-path="arima-models.html"><a href="arima-models.html"><i class="fa fa-check"></i><b>5</b> ARIMA models</a></li>
 <li class="chapter" data-level="6" data-path="exponential-smoothing.html"><a href="exponential-smoothing.html"><i class="fa fa-check"></i><b>6</b> exponential smoothing</a></li>
@@ -188,7 +207,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="header">
 <h1 class="title">Time Series Forecasting</h1>
 <p class="author"><em>Katherine Wilson</em></p>
-<p class="date"><em>2022-02-02</em></p>
+<p class="date"><em>2022-02-09</em></p>
 </div>
 <div id="basics" class="section level1" number="1">
 <h1><span class="header-section-number">1</span> basics</h1>
@@ -359,7 +378,7 @@ Errors are normally distributed</p>
 </div>
 <div id="example-5" class="section level3" number="1.3.6">
 <h3><span class="header-section-number">1.3.6</span> Example</h3>
-<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="index.html#cb22-1" aria-hidden="true" tabindex="-1"></a>garbage <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;/cloud/project/data/Garbage.txt&quot;</span>)</span>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="index.html#cb22-1" aria-hidden="true" tabindex="-1"></a>garbage <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;/cloud/project/data/Garbage (1).txt&quot;</span>)</span>
 <span id="cb22-2"><a href="index.html#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="fu">attach</span>(garbage)</span>
 <span id="cb22-3"><a href="index.html#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(garbage)</span></code></pre></div>
 <pre><code>##     date fiscalyr   fee tonnage marlene george mg

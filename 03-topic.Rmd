@@ -1,4 +1,4 @@
-# t tests and partial F tests
+# interactions
 
 Partial slopes (change in y for each unit change in x, holding others constant) vs. marginal slopes (simple regression, only one x). Collinearity makes these values different...
 
@@ -234,10 +234,46 @@ plot(ts(nmatrix%*%nbeta),type="l",lty=1,lwd=2,col="black",ylim=c(0,500
 lines(ts(nmatrix%*%mbeta),type="l",lty=2,lwd=2,col="red") 
 lines(ts(nmatrix%*%gbeta),type="l",lty=3,lwd=2,col="blue") 
 
+plot(ts(resid(model3)))
+acf(ts(resid(model3)))
+
 ```
 
+Model extension of the second and third models, including eight trigonometric pairs and the interactions
 
+```{r}
+model4<- lm(tonnage~time+time2+time3+marlene+george+mg+cosm[,1]+sinm[,1]+cosm[,
+2]+sinm[,2]+cosm[,3]+sinm[,3]+cosm[,4]+sinm[,4]+cosm[,5]+sinm[,5]+cosm
+[,6]+sinm[,6]+cosm[,7]+sinm[,7]+cosm[,8]+sinm[,8]+marlene*time+marlene
+*time2+george*time+george*time2+mg*time+mg*time2);summary(model4) 
 
+```
+
+F test comparing model 4 and model 1
+
+```{r}
+anova(model1, model4)
+plot(ts(resid(model4)))
+
+```
+
+Estimation of the lost tonnage and lost revenue, with a 95% confidence interval
+
+```{r}
+xmatrixtons <- matrix(c(marlene, george,mg), ncol = 3)
+betaesttons <- coef(model1)[5:7]
+-sum(xmatrixtons%*%betaesttons)
+
+xmatrixrev <- matrix(c(marlene*fee, george*fee, mg*fee), ncol = 3)
+-sum(xmatrixrev%*%betaesttons)
+r<-cbind(sum(marlene*fee),sum(george*fee),sum(mg*fee)) 
+sdest<-sqrt(r%*%vcov(model1)[5:7,5:7]%*%t(r)) 
+sdest 
+
+## confidence interval calculations
+lcl <--sum(xmatrixrev%*%betaesttons)-1.96*sdest
+ucl<--sum(xmatrixrev%*%betaesttons)+1.96*sdest 
+```
 
 
 

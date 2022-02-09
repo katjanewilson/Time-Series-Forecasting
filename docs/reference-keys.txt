@@ -42,3 +42,4 @@ simple-model
 model-3
 calculating-the-six-interaction-terms.
 visualizing-three-trends
+interactions
