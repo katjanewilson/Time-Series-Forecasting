@@ -1,1 +1,67 @@
-# distributed lag models
+# spectral density
+
+Spectral density is a function that you can calculative, given the autocorrelations. Spectral Density is the transform of autocorrelation. This tells you that the information content of the autocorrelation and the spectral density are the same. Overall, they give same information about the time series. 
+
+Two purposes of spectral density: plot the spectrum before you analyze the time series to see what kind of structure is there. 
+
+```{r include=FALSE}
+retail <- read.csv("/cloud/project/data/retail.txt")
+attach(retail)
+head(retail)
+sales.ts <- ts(sales, start = c(1967,1), freq = 12)
+ts.plot(sales.ts,xlab="time",ylab="sales",main="variety store monthly 
+sales, in millions") 
+
+fmonth <- as.factor(month)
+time<- as.numeric(time)
+time2 <-time*time
+model<- lm(sales~time+time2+fmonth+wtgrant+wtgrant*time+wtgrant*time2,
+           data = retail)
+summary(model)
+plot(predict(model),resid(model),xlab="predicted sales",ylab="sales 
+residual",main="Residual by Predicted Plot")
+model2<-lm(logsales~time+time2+fmonth+wtgrant+wtgrant*time+wtgrant*time2)
+summary(model2) 
+
+b1<-coef(model2)[1] 
+b2<-coef(model2)[4:14]+b1 
+b3<-c(b1,b2) 
+newintrcpt<-b1-(b3-mean(b3))[1] 
+newintrcpt 
+
+wtgrant2<-wtgrant*time;wtgrant3<-wtgrant*time2 
+xmatrix<-matrix(c(rep(1,length(sales)),time,time2,wtgrant,wtgrant2,wtgrant3),ncol=6) 
+sub<-c(2,3,15,16,17) 
+betaest<-c(newintrcpt,coef(model2)[sub]) 
+plot(ts(exp(xmatrix%*%betaest)),xlab="time",ylab="estimated 
+trend",main="estimated sales trend for model 2") 
+seas<-exp(b3-mean(b3)) 
+seas 
+# cosm<-matrix(nrow=length(sales),ncol=6) 
+# sinm<-matrix(nrow=length(sales),ncol=5) 
+# for(j in 1:5){ 
+#   cosm[,j]<-cos(freq*j*time) 
+#   sinm[,j]<-sin(freq*j*time) 
+#  } 
+# cosm[,6]<-cos(freq*6*time) 
+#  
+# model3<- lm(logsales~time+time2+wtgrant+wtgrant2+wtgrant3+cosm[,1]+sinm[,1]+cosm
+# [,2]+sinm[,2]+cosm[,3]+sinm[,3]+cosm[,4]+sinm[,4]+cosm[,5]+sinm[,5]+cos
+# m[,6]);summary(model3) 
+
+time3<-time*time2;time4<-time*time3;time5<-time*time4 
+model4<-lm(logsales~time+time2+time3+time4+time5+wtgrant+wtgrant2+wtgrant3+obs96+fmonth)
+summary(model4) 
+
+model5<-lm(logsales~time+time2+time3+time4+time5+wtgrant+obs96+fmonth) 
+anova(model5,model4) 
+```
+
+
+```{r}
+spectrum(resid(model5), span = 8)
+```
+
+
+
+

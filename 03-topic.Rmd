@@ -204,7 +204,11 @@ Seasonal from Model 2")
 
 Back to 4 cosine sin pairs, but this is include interaction of M, G and the trend and MG.
 
-In the weeks when marele on duty, time:marleene is adjustment to time. The line time2:marlene is an adjustment to the value of time2. Likewise for George and MG. We get four different trends, a trend when nither of them is on duty, one when Marlene alone on duty, and one when George alone on duty.
+In the weeks when marnele on duty, time:marlene is adjustment to time. The line time2:marlene is an adjustment to the value of time2. Likewise for George and MG. We get four different trends, a trend when neither of them is on duty, one when Marlene alone on duty, and one when George alone on duty.
+
+These product terms allow us to get different estimated trends. One estimated trend for Marlene, and one for George, and one estimated for when neither was working, and four weeks when they were working together. 
+
+Rsquared slightly less than model 2. Product terms minimally sig. Partial F sig, so keep these significant terms
 
 ```{r}
 model3<- lm(tonnage~time+time2+time3+marlene+george+mg+cosm[,1]+sinm[,1]
@@ -215,14 +219,19 @@ summary(model3)
 
 ```
 
+### Estimated Trends (calculating the interaction terms)
 
+$$
+Neither:
 
-### Calculating the six interaction terms.
+325.082 + 2.5825t - 0.0371196t^2 + 0.00016114t^3
+$$
 
 
 ### Visualizing Three Trends
 
-Blue trend is G, Red is Marlene. At the far left, Marlene usually stealing more than George. As time goes on, G stealing more.
+Black line, neither on duty, Blue trend is G, Red trend is Marlene. At the far left, Marlene usually stealing more than George. As time goes on, G stealing more. In the first few weeks, not a lot was being stolen. But at the end of two years, a lot more being stolen.
+
 ```{r}
 nmatrix<-matrix(c(rep(1,length(tonnage)),time,time2,time3),ncol=4) 
 nbeta<-c(325.082,2.5825,-0.0371196,0.00016114) 
@@ -239,7 +248,7 @@ acf(ts(resid(model3)))
 
 ```
 
-Model extension of the second and third models, including eight trigonometric pairs and the interactions
+Model extension of the second and third models, including eight trigonometric pairs and the interactions. Four additional cosine sin pairs for estimation of the seasonal pattern. Brings R squared to over 70%. The amount by which R squared goes up can be used to conduct the partial F test to see if sig.
 
 ```{r}
 model4<- lm(tonnage~time+time2+time3+marlene+george+mg+cosm[,1]+sinm[,1]+cosm[,

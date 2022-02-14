@@ -24,7 +24,7 @@
 <meta name="author" content="Katherine Wilson" />
 
 
-<meta name="date" content="2022-02-09" />
+<meta name="date" content="2022-02-14" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -173,7 +173,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <ul>
 <li class="chapter" data-level="3.2.1" data-path="interactions.html"><a href="interactions.html#simple-model"><i class="fa fa-check"></i><b>3.2.1</b> Simple model</a></li>
 <li class="chapter" data-level="3.2.2" data-path="interactions.html"><a href="interactions.html#model-3"><i class="fa fa-check"></i><b>3.2.2</b> model 3</a></li>
-<li class="chapter" data-level="3.2.3" data-path="interactions.html"><a href="interactions.html#calculating-the-six-interaction-terms."><i class="fa fa-check"></i><b>3.2.3</b> Calculating the six interaction terms.</a></li>
+<li class="chapter" data-level="3.2.3" data-path="interactions.html"><a href="interactions.html#estimated-trends-calculating-the-interaction-terms"><i class="fa fa-check"></i><b>3.2.3</b> Estimated Trends (calculating the interaction terms)</a></li>
 <li class="chapter" data-level="3.2.4" data-path="interactions.html"><a href="interactions.html#visualizing-three-trends"><i class="fa fa-check"></i><b>3.2.4</b> Visualizing Three Trends</a></li>
 </ul></li>
 </ul></li>
@@ -443,7 +443,9 @@ The addition of the 4 trigonometric pairs gives this nuance.</p>
 <div id="model-3" class="section level3" number="3.2.2">
 <h3><span class="header-section-number">3.2.2</span> model 3</h3>
 <p>Back to 4 cosine sin pairs, but this is include interaction of M, G and the trend and MG.</p>
-<p>In the weeks when marele on duty, time:marleene is adjustment to time. The line time2:marlene is an adjustment to the value of time2. Likewise for George and MG. We get four different trends, a trend when nither of them is on duty, one when Marlene alone on duty, and one when George alone on duty.</p>
+<p>In the weeks when marnele on duty, time:marlene is adjustment to time. The line time2:marlene is an adjustment to the value of time2. Likewise for George and MG. We get four different trends, a trend when neither of them is on duty, one when Marlene alone on duty, and one when George alone on duty.</p>
+<p>These product terms allow us to get different estimated trends. One estimated trend for Marlene, and one for George, and one estimated for when neither was working, and four weeks when they were working together.</p>
+<p>Rsquared slightly less than model 2. Product terms minimally sig. Partial F sig, so keep these significant terms</p>
 <div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="interactions.html#cb18-1" aria-hidden="true" tabindex="-1"></a>model3<span class="ot">&lt;-</span> <span class="fu">lm</span>(tonnage<span class="sc">~</span>time<span class="sc">+</span>time2<span class="sc">+</span>time3<span class="sc">+</span>marlene<span class="sc">+</span>george<span class="sc">+</span>mg<span class="sc">+</span>cosm[,<span class="dv">1</span>]<span class="sc">+</span>sinm[,<span class="dv">1</span>]</span>
 <span id="cb18-2"><a href="interactions.html#cb18-2" aria-hidden="true" tabindex="-1"></a>            <span class="sc">+</span>cosm[,<span class="dv">2</span>]<span class="sc">+</span>sinm[,<span class="dv">2</span>]<span class="sc">+</span>cosm[,<span class="dv">3</span>]<span class="sc">+</span>sinm[,<span class="dv">3</span>]<span class="sc">+</span>cosm[,<span class="dv">4</span>]<span class="sc">+</span>sinm[,<span class="dv">4</span>]<span class="sc">+</span></span>
 <span id="cb18-3"><a href="interactions.html#cb18-3" aria-hidden="true" tabindex="-1"></a>              marlene<span class="sc">*</span>time<span class="sc">+</span>marlene<span class="sc">*</span>time2<span class="sc">+</span>george<span class="sc">*</span>time<span class="sc">+</span>george<span class="sc">*</span>time2<span class="sc">+</span>mg<span class="sc">*</span>time<span class="sc">+</span>mg<span class="sc">*</span>time2)</span>
@@ -491,12 +493,16 @@ The addition of the 4 trigonometric pairs gives this nuance.</p>
 ## Multiple R-squared:  0.6686, Adjusted R-squared:  0.6192 
 ## F-statistic: 13.52 on 20 and 134 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
-<div id="calculating-the-six-interaction-terms." class="section level3" number="3.2.3">
-<h3><span class="header-section-number">3.2.3</span> Calculating the six interaction terms.</h3>
+<div id="estimated-trends-calculating-the-interaction-terms" class="section level3" number="3.2.3">
+<h3><span class="header-section-number">3.2.3</span> Estimated Trends (calculating the interaction terms)</h3>
+<p>$$
+Neither:</p>
+<p>325.082 + 2.5825t - 0.0371196t^2 + 0.00016114t^3
+$$</p>
 </div>
 <div id="visualizing-three-trends" class="section level3" number="3.2.4">
 <h3><span class="header-section-number">3.2.4</span> Visualizing Three Trends</h3>
-<p>Blue trend is G, Red is Marlene. At the far left, Marlene usually stealing more than George. As time goes on, G stealing more.</p>
+<p>Black line, neither on duty, Blue trend is G, Red trend is Marlene. At the far left, Marlene usually stealing more than George. As time goes on, G stealing more. In the first few weeks, not a lot was being stolen. But at the end of two years, a lot more being stolen.</p>
 <div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="interactions.html#cb20-1" aria-hidden="true" tabindex="-1"></a>nmatrix<span class="ot">&lt;-</span><span class="fu">matrix</span>(<span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">1</span>,<span class="fu">length</span>(tonnage)),time,time2,time3),<span class="at">ncol=</span><span class="dv">4</span>) </span>
 <span id="cb20-2"><a href="interactions.html#cb20-2" aria-hidden="true" tabindex="-1"></a>nbeta<span class="ot">&lt;-</span><span class="fu">c</span>(<span class="fl">325.082</span>,<span class="fl">2.5825</span>,<span class="sc">-</span><span class="fl">0.0371196</span>,<span class="fl">0.00016114</span>) </span>
 <span id="cb20-3"><a href="interactions.html#cb20-3" aria-hidden="true" tabindex="-1"></a>mbeta<span class="ot">&lt;-</span><span class="fu">c</span>(<span class="fl">227.422</span>,<span class="fl">0.14524</span>,<span class="sc">-</span><span class="fl">0.021722</span>,<span class="fl">0.00016114</span>) </span>
@@ -511,7 +517,7 @@ The addition of the 4 trigonometric pairs gives this nuance.</p>
 <p><img src="bookdownproj_files/figure-html/unnamed-chunk-8-2.png" width="672" /></p>
 <div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="interactions.html#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">acf</span>(<span class="fu">ts</span>(<span class="fu">resid</span>(model3)))</span></code></pre></div>
 <p><img src="bookdownproj_files/figure-html/unnamed-chunk-8-3.png" width="672" /></p>
-<p>Model extension of the second and third models, including eight trigonometric pairs and the interactions</p>
+<p>Model extension of the second and third models, including eight trigonometric pairs and the interactions. Four additional cosine sin pairs for estimation of the seasonal pattern. Brings R squared to over 70%. The amount by which R squared goes up can be used to conduct the partial F test to see if sig.</p>
 <div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="interactions.html#cb23-1" aria-hidden="true" tabindex="-1"></a>model4<span class="ot">&lt;-</span> <span class="fu">lm</span>(tonnage<span class="sc">~</span>time<span class="sc">+</span>time2<span class="sc">+</span>time3<span class="sc">+</span>marlene<span class="sc">+</span>george<span class="sc">+</span>mg<span class="sc">+</span>cosm[,<span class="dv">1</span>]<span class="sc">+</span>sinm[,<span class="dv">1</span>]<span class="sc">+</span>cosm[,</span>
 <span id="cb23-2"><a href="interactions.html#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="dv">2</span>]<span class="sc">+</span>sinm[,<span class="dv">2</span>]<span class="sc">+</span>cosm[,<span class="dv">3</span>]<span class="sc">+</span>sinm[,<span class="dv">3</span>]<span class="sc">+</span>cosm[,<span class="dv">4</span>]<span class="sc">+</span>sinm[,<span class="dv">4</span>]<span class="sc">+</span>cosm[,<span class="dv">5</span>]<span class="sc">+</span>sinm[,<span class="dv">5</span>]<span class="sc">+</span>cosm</span>
 <span id="cb23-3"><a href="interactions.html#cb23-3" aria-hidden="true" tabindex="-1"></a>[,<span class="dv">6</span>]<span class="sc">+</span>sinm[,<span class="dv">6</span>]<span class="sc">+</span>cosm[,<span class="dv">7</span>]<span class="sc">+</span>sinm[,<span class="dv">7</span>]<span class="sc">+</span>cosm[,<span class="dv">8</span>]<span class="sc">+</span>sinm[,<span class="dv">8</span>]<span class="sc">+</span>marlene<span class="sc">*</span>time<span class="sc">+</span>marlene</span>
