@@ -1,1 +1,10 @@
-# ARIMA models
+# periodogram 
+
+
+```{r echo=TRUE}
+emp <- read.csv("/cloud/project/data/USnonfarmemp.txt")
+attach(emp)
+head(emp)
+plot(ts(employees,start=c(1991,1),freq=12),xlab="Time",ylab="Employees",main=
+"US Nonfarm Employment, in Thousands")
+```

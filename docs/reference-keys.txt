@@ -45,3 +45,5 @@ visualizing-three-trends
 interactions
 estimated-trends-calculating-the-interaction-terms
 spectral-density
+info
+periodogram

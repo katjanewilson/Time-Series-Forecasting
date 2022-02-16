@@ -24,7 +24,7 @@
 <meta name="author" content="Katherine Wilson" />
 
 
-<meta name="date" content="2022-02-14" />
+<meta name="date" content="2022-02-16" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -32,7 +32,7 @@
   
   
 <link rel="prev" href="interactions.html"/>
-<link rel="next" href="arima-models.html"/>
+<link rel="next" href="periodogram.html"/>
 <script src="libs/header-attrs-2.11/header-attrs.js"></script>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
@@ -181,7 +181,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ul></li>
 </ul></li>
 <li class="chapter" data-level="4" data-path="spectral-density.html"><a href="spectral-density.html"><i class="fa fa-check"></i><b>4</b> spectral density</a></li>
-<li class="chapter" data-level="5" data-path="arima-models.html"><a href="arima-models.html"><i class="fa fa-check"></i><b>5</b> ARIMA models</a></li>
+<li class="chapter" data-level="5" data-path="periodogram.html"><a href="periodogram.html"><i class="fa fa-check"></i><b>5</b> periodogram</a></li>
 <li class="chapter" data-level="6" data-path="exponential-smoothing.html"><a href="exponential-smoothing.html"><i class="fa fa-check"></i><b>6</b> exponential smoothing</a></li>
 <li class="chapter" data-level="7" data-path="combination-of-forecasts.html"><a href="combination-of-forecasts.html"><i class="fa fa-check"></i><b>7</b> combination of forecasts</a></li>
 <li class="chapter" data-level="8" data-path="arch-and-garch-models.html"><a href="arch-and-garch-models.html"><i class="fa fa-check"></i><b>8</b> ARCH and GARCH models</a></li>
@@ -208,11 +208,343 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h1><span class="header-section-number">4</span> spectral density</h1>
 <p>Spectral density is a function that you can calculative, given the autocorrelations. Spectral Density is the transform of autocorrelation. This tells you that the information content of the autocorrelation and the spectral density are the same. Overall, they give same information about the time series.</p>
 <p>Two purposes of spectral density: plot the spectrum before you analyze the time series to see what kind of structure is there.</p>
-<p>In white noise, you see all the colors. In a plot of the visual spectrum, you see all the colors… not missing colors. If there was a band of colors that was missing, then the plot would drop down to 0 until it rises again to the relative height. White light contains all the colors of the visual spectrum. So when you have a time series that consist of uncorrelated, then you have a flat spectrum. When you calculate a spectram estimate in R, you have to specify a bandwidth for the estimate. Need to choose how many raw estiamtes. The periodogram. How many raw estatimes are averaged across the frequency. Common to choose the span to be a fraction of the sqrt(length of time series). So if length of TS is 360, sqrt = 19, half of that is 9, so span ~ 9.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="spectral-density.html#cb1-1" aria-hidden="true" tabindex="-1"></a>retail <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;/cloud/project/data/retail.txt&quot;</span>)</span>
+<span id="cb1-2"><a href="spectral-density.html#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">attach</span>(retail)</span>
+<span id="cb1-3"><a href="spectral-density.html#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(retail)</span></code></pre></div>
+<pre><code>##   sales time month logsales obs96           c1          s1   c2           s2
+## 1   296    1     1 5.690359     0  8.66025e-01 5.00000e-01  0.5  8.66025e-01
+## 2   303    2     2 5.713733     0  5.00000e-01 8.66025e-01 -0.5  8.66025e-01
+## 3   365    3     3 5.899897     0  6.12000e-17 1.00000e+00 -1.0  1.22000e-16
+## 4   363    4     4 5.894403     0 -5.00000e-01 8.66025e-01 -0.5 -8.66030e-01
+## 5   417    5     5 6.033086     0 -8.66030e-01 5.00000e-01  0.5 -8.66030e-01
+## 6   421    6     6 6.042633     0 -1.00000e+00 1.22000e-16  1.0 -2.40000e-16
+##          c3        s3   c4           s4           c5          s5 c6 wtgrant
+## 1  6.12e-17  1.00e+00 -0.5  8.66025e-01 -8.66030e-01  5.0000e-01 -1       0
+## 2 -1.00e+00  1.22e-16 -0.5 -8.66030e-01  5.00000e-01 -8.6603e-01  1       0
+## 3 -1.80e-16 -1.00e+00  1.0 -2.40000e-16  3.06000e-16  1.0000e+00 -1       0
+## 4  1.00e+00 -2.40e-16 -0.5  8.66025e-01 -5.00000e-01 -8.6603e-01  1       0
+## 5  3.06e-16  1.00e+00 -0.5 -8.66030e-01  8.66025e-01  5.0000e-01 -1       0
+## 6 -1.00e+00  3.67e-16  1.0 -4.90000e-16 -1.00000e+00  6.1200e-16  1       0</code></pre>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="spectral-density.html#cb3-1" aria-hidden="true" tabindex="-1"></a>sales.ts <span class="ot">&lt;-</span> <span class="fu">ts</span>(sales, <span class="at">start =</span> <span class="fu">c</span>(<span class="dv">1967</span>,<span class="dv">1</span>), <span class="at">freq =</span> <span class="dv">12</span>)</span>
+<span id="cb3-2"><a href="spectral-density.html#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ts.plot</span>(sales.ts,<span class="at">xlab=</span><span class="st">&quot;time&quot;</span>,<span class="at">ylab=</span><span class="st">&quot;sales&quot;</span>,<span class="at">main=</span><span class="st">&quot;variety store monthly </span></span>
+<span id="cb3-3"><a href="spectral-density.html#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="st">sales, in millions&quot;</span>) </span></code></pre></div>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="spectral-density.html#cb4-1" aria-hidden="true" tabindex="-1"></a>fmonth <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(month)</span>
+<span id="cb4-2"><a href="spectral-density.html#cb4-2" aria-hidden="true" tabindex="-1"></a>time<span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(time)</span>
+<span id="cb4-3"><a href="spectral-density.html#cb4-3" aria-hidden="true" tabindex="-1"></a>time2 <span class="ot">&lt;-</span>time<span class="sc">*</span>time</span>
+<span id="cb4-4"><a href="spectral-density.html#cb4-4" aria-hidden="true" tabindex="-1"></a>model<span class="ot">&lt;-</span> <span class="fu">lm</span>(sales<span class="sc">~</span>time<span class="sc">+</span>time2<span class="sc">+</span>fmonth<span class="sc">+</span>wtgrant<span class="sc">+</span>wtgrant<span class="sc">*</span>time<span class="sc">+</span>wtgrant<span class="sc">*</span>time2,</span>
+<span id="cb4-5"><a href="spectral-density.html#cb4-5" aria-hidden="true" tabindex="-1"></a>           <span class="at">data =</span> retail)</span>
+<span id="cb4-6"><a href="spectral-density.html#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = sales ~ time + time2 + fmonth + wtgrant + wtgrant * 
+##     time + wtgrant * time2, data = retail)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -104.037  -10.734    0.402   12.583  100.846 
+## 
+## Coefficients:
+##                 Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)   262.527114  10.120004  25.941  &lt; 2e-16 ***
+## time            2.056086   0.315487   6.517 1.29e-09 ***
+## time2           0.006260   0.002729   2.293   0.0234 *  
+## fmonth2        13.411342  10.310653   1.301   0.1956    
+## fmonth3        96.632212  10.312129   9.371  &lt; 2e-16 ***
+## fmonth4       113.473174  10.359085  10.954  &lt; 2e-16 ***
+## fmonth5       164.995654  10.353761  15.936  &lt; 2e-16 ***
+## fmonth6       147.550395  10.351017  14.255  &lt; 2e-16 ***
+## fmonth7       125.291246  10.350735  12.105  &lt; 2e-16 ***
+## fmonth8       167.448974  10.352909  16.174  &lt; 2e-16 ***
+## fmonth9       123.792810  10.357640  11.952  &lt; 2e-16 ***
+## fmonth10      154.878407  10.538115  14.697  &lt; 2e-16 ***
+## fmonth11      221.696168  10.537139  21.040  &lt; 2e-16 ***
+## fmonth12      727.558629  10.537037  69.048  &lt; 2e-16 ***
+## wtgrant       969.282000 547.285610   1.771   0.0788 .  
+## time:wtgrant  -15.624940   8.315833  -1.879   0.0624 .  
+## time2:wtgrant   0.052230   0.031467   1.660   0.0993 .  
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 26.29 on 136 degrees of freedom
+## Multiple R-squared:  0.984,  Adjusted R-squared:  0.9821 
+## F-statistic: 521.5 on 16 and 136 DF,  p-value: &lt; 2.2e-16</code></pre>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="spectral-density.html#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">predict</span>(model),<span class="fu">resid</span>(model),<span class="at">xlab=</span><span class="st">&quot;predicted sales&quot;</span>,<span class="at">ylab=</span><span class="st">&quot;sales </span></span>
+<span id="cb6-2"><a href="spectral-density.html#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="st">residual&quot;</span>,<span class="at">main=</span><span class="st">&quot;Residual by Predicted Plot&quot;</span>)</span></code></pre></div>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-1-2.png" width="672" /></p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="spectral-density.html#cb7-1" aria-hidden="true" tabindex="-1"></a>model2<span class="ot">&lt;-</span><span class="fu">lm</span>(logsales<span class="sc">~</span>time<span class="sc">+</span>time2<span class="sc">+</span>fmonth<span class="sc">+</span>wtgrant<span class="sc">+</span>wtgrant<span class="sc">*</span>time<span class="sc">+</span>wtgrant<span class="sc">*</span>time2)</span>
+<span id="cb7-2"><a href="spectral-density.html#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model2) </span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = logsales ~ time + time2 + fmonth + wtgrant + wtgrant * 
+##     time + wtgrant * time2)
+## 
+## Residuals:
+##       Min        1Q    Median        3Q       Max 
+## -0.072088 -0.015601 -0.000901  0.014866  0.076454 
+## 
+## Coefficients:
+##                 Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)    5.705e+00  1.106e-02 515.896  &lt; 2e-16 ***
+## time           5.655e-03  3.447e-04  16.404  &lt; 2e-16 ***
+## time2         -5.803e-06  2.982e-06  -1.946  0.05372 .  
+## fmonth2        3.409e-02  1.127e-02   3.026  0.00296 ** 
+## fmonth3        2.083e-01  1.127e-02  18.485  &lt; 2e-16 ***
+## fmonth4        2.378e-01  1.132e-02  21.008  &lt; 2e-16 ***
+## fmonth5        3.310e-01  1.131e-02  29.257  &lt; 2e-16 ***
+## fmonth6        3.025e-01  1.131e-02  26.747  &lt; 2e-16 ***
+## fmonth7        2.625e-01  1.131e-02  23.209  &lt; 2e-16 ***
+## fmonth8        3.350e-01  1.131e-02  29.617  &lt; 2e-16 ***
+## fmonth9        2.602e-01  1.132e-02  22.993  &lt; 2e-16 ***
+## fmonth10       3.146e-01  1.151e-02  27.325  &lt; 2e-16 ***
+## fmonth11       4.247e-01  1.151e-02  36.888  &lt; 2e-16 ***
+## fmonth12       1.003e+00  1.151e-02  87.083  &lt; 2e-16 ***
+## wtgrant        1.709e+00  5.980e-01   2.858  0.00493 ** 
+## time:wtgrant  -2.860e-02  9.087e-03  -3.148  0.00202 ** 
+## time2:wtgrant  1.045e-04  3.438e-05   3.038  0.00285 ** 
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.02872 on 136 degrees of freedom
+## Multiple R-squared:  0.9908, Adjusted R-squared:  0.9898 
+## F-statistic: 920.3 on 16 and 136 DF,  p-value: &lt; 2.2e-16</code></pre>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="spectral-density.html#cb9-1" aria-hidden="true" tabindex="-1"></a>b1<span class="ot">&lt;-</span><span class="fu">coef</span>(model2)[<span class="dv">1</span>] </span>
+<span id="cb9-2"><a href="spectral-density.html#cb9-2" aria-hidden="true" tabindex="-1"></a>b2<span class="ot">&lt;-</span><span class="fu">coef</span>(model2)[<span class="dv">4</span><span class="sc">:</span><span class="dv">14</span>]<span class="sc">+</span>b1 </span>
+<span id="cb9-3"><a href="spectral-density.html#cb9-3" aria-hidden="true" tabindex="-1"></a>b3<span class="ot">&lt;-</span><span class="fu">c</span>(b1,b2) </span>
+<span id="cb9-4"><a href="spectral-density.html#cb9-4" aria-hidden="true" tabindex="-1"></a>newintrcpt<span class="ot">&lt;-</span>b1<span class="sc">-</span>(b3<span class="sc">-</span><span class="fu">mean</span>(b3))[<span class="dv">1</span>] </span>
+<span id="cb9-5"><a href="spectral-density.html#cb9-5" aria-hidden="true" tabindex="-1"></a>newintrcpt </span></code></pre></div>
+<pre><code>## (Intercept) 
+##    6.014189</code></pre>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="spectral-density.html#cb11-1" aria-hidden="true" tabindex="-1"></a>wtgrant2<span class="ot">&lt;-</span>wtgrant<span class="sc">*</span>time;wtgrant3<span class="ot">&lt;-</span>wtgrant<span class="sc">*</span>time2 </span>
+<span id="cb11-2"><a href="spectral-density.html#cb11-2" aria-hidden="true" tabindex="-1"></a>xmatrix<span class="ot">&lt;-</span><span class="fu">matrix</span>(<span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">1</span>,<span class="fu">length</span>(sales)),time,time2,wtgrant,wtgrant2,wtgrant3),<span class="at">ncol=</span><span class="dv">6</span>) </span>
+<span id="cb11-3"><a href="spectral-density.html#cb11-3" aria-hidden="true" tabindex="-1"></a>sub<span class="ot">&lt;-</span><span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">15</span>,<span class="dv">16</span>,<span class="dv">17</span>) </span>
+<span id="cb11-4"><a href="spectral-density.html#cb11-4" aria-hidden="true" tabindex="-1"></a>betaest<span class="ot">&lt;-</span><span class="fu">c</span>(newintrcpt,<span class="fu">coef</span>(model2)[sub]) </span>
+<span id="cb11-5"><a href="spectral-density.html#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">ts</span>(<span class="fu">exp</span>(xmatrix<span class="sc">%*%</span>betaest)),<span class="at">xlab=</span><span class="st">&quot;time&quot;</span>,<span class="at">ylab=</span><span class="st">&quot;estimated </span></span>
+<span id="cb11-6"><a href="spectral-density.html#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="st">trend&quot;</span>,<span class="at">main=</span><span class="st">&quot;estimated sales trend for model 2&quot;</span>) </span></code></pre></div>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-1-3.png" width="672" /></p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="spectral-density.html#cb12-1" aria-hidden="true" tabindex="-1"></a>seas<span class="ot">&lt;-</span><span class="fu">exp</span>(b3<span class="sc">-</span><span class="fu">mean</span>(b3)) </span>
+<span id="cb12-2"><a href="spectral-density.html#cb12-2" aria-hidden="true" tabindex="-1"></a>seas </span></code></pre></div>
+<pre><code>## (Intercept)     fmonth2     fmonth3     fmonth4     fmonth5     fmonth6 
+##   0.7338478   0.7592983   0.9037831   0.9308487   1.0217711   0.9930875 
+##     fmonth7     fmonth8     fmonth9    fmonth10    fmonth11    fmonth12 
+##   0.9541214   1.0259164   0.9519653   1.0052024   1.1221733   2.0000783</code></pre>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="spectral-density.html#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># cosm&lt;-matrix(nrow=length(sales),ncol=6) </span></span>
+<span id="cb14-2"><a href="spectral-density.html#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="co"># sinm&lt;-matrix(nrow=length(sales),ncol=5) </span></span>
+<span id="cb14-3"><a href="spectral-density.html#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="co"># for(j in 1:5){ </span></span>
+<span id="cb14-4"><a href="spectral-density.html#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="co">#   cosm[,j]&lt;-cos(freq*j*time) </span></span>
+<span id="cb14-5"><a href="spectral-density.html#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="co">#   sinm[,j]&lt;-sin(freq*j*time) </span></span>
+<span id="cb14-6"><a href="spectral-density.html#cb14-6" aria-hidden="true" tabindex="-1"></a><span class="co">#  } </span></span>
+<span id="cb14-7"><a href="spectral-density.html#cb14-7" aria-hidden="true" tabindex="-1"></a><span class="co"># cosm[,6]&lt;-cos(freq*6*time) </span></span>
+<span id="cb14-8"><a href="spectral-density.html#cb14-8" aria-hidden="true" tabindex="-1"></a><span class="co">#  </span></span>
+<span id="cb14-9"><a href="spectral-density.html#cb14-9" aria-hidden="true" tabindex="-1"></a><span class="co"># model3&lt;- lm(logsales~time+time2+wtgrant+wtgrant2+wtgrant3+cosm[,1]+sinm[,1]+cosm</span></span>
+<span id="cb14-10"><a href="spectral-density.html#cb14-10" aria-hidden="true" tabindex="-1"></a><span class="co"># [,2]+sinm[,2]+cosm[,3]+sinm[,3]+cosm[,4]+sinm[,4]+cosm[,5]+sinm[,5]+cos</span></span>
+<span id="cb14-11"><a href="spectral-density.html#cb14-11" aria-hidden="true" tabindex="-1"></a><span class="co"># m[,6]);summary(model3) </span></span>
+<span id="cb14-12"><a href="spectral-density.html#cb14-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-13"><a href="spectral-density.html#cb14-13" aria-hidden="true" tabindex="-1"></a>time3<span class="ot">&lt;-</span>time<span class="sc">*</span>time2;time4<span class="ot">&lt;-</span>time<span class="sc">*</span>time3;time5<span class="ot">&lt;-</span>time<span class="sc">*</span>time4 </span>
+<span id="cb14-14"><a href="spectral-density.html#cb14-14" aria-hidden="true" tabindex="-1"></a>model4<span class="ot">&lt;-</span><span class="fu">lm</span>(logsales<span class="sc">~</span>time<span class="sc">+</span>time2<span class="sc">+</span>time3<span class="sc">+</span>time4<span class="sc">+</span>time5<span class="sc">+</span>wtgrant<span class="sc">+</span>wtgrant2<span class="sc">+</span>wtgrant3<span class="sc">+</span>obs96<span class="sc">+</span>fmonth)</span>
+<span id="cb14-15"><a href="spectral-density.html#cb14-15" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model4) </span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = logsales ~ time + time2 + time3 + time4 + time5 + 
+##     wtgrant + wtgrant2 + wtgrant3 + obs96 + fmonth)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -0.05523 -0.01590 -0.00218  0.01162  0.09083 
+## 
+## Coefficients:
+##               Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  5.647e+00  1.491e-02 378.866  &lt; 2e-16 ***
+## time         1.663e-02  2.020e-03   8.233 1.55e-13 ***
+## time2       -4.943e-04  9.168e-05  -5.391 3.13e-07 ***
+## time3        8.306e-06  1.753e-06   4.739 5.49e-06 ***
+## time4       -5.822e-08  1.511e-08  -3.853 0.000181 ***
+## time5        1.372e-10  4.907e-11   2.797 0.005935 ** 
+## wtgrant      2.555e+00  2.530e+00   1.010 0.314420    
+## wtgrant2    -4.913e-02  4.362e-02  -1.126 0.262035    
+## wtgrant3     2.225e-04  1.892e-04   1.176 0.241648    
+## obs96       -9.089e-02  2.673e-02  -3.400 0.000892 ***
+## fmonth2      3.366e-02  9.869e-03   3.411 0.000860 ***
+## fmonth3      2.076e-01  9.875e-03  21.018  &lt; 2e-16 ***
+## fmonth4      2.348e-01  9.949e-03  23.597  &lt; 2e-16 ***
+## fmonth5      3.274e-01  9.936e-03  32.952  &lt; 2e-16 ***
+## fmonth6      2.985e-01  9.932e-03  30.055  &lt; 2e-16 ***
+## fmonth7      2.581e-01  9.935e-03  25.979  &lt; 2e-16 ***
+## fmonth8      3.303e-01  9.946e-03  33.214  &lt; 2e-16 ***
+## fmonth9      2.553e-01  9.966e-03  25.615  &lt; 2e-16 ***
+## fmonth10     3.102e-01  1.012e-02  30.662  &lt; 2e-16 ***
+## fmonth11     4.203e-01  1.011e-02  41.557  &lt; 2e-16 ***
+## fmonth12     1.006e+00  1.035e-02  97.194  &lt; 2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.02516 on 132 degrees of freedom
+## Multiple R-squared:  0.9932, Adjusted R-squared:  0.9922 
+## F-statistic:   962 on 20 and 132 DF,  p-value: &lt; 2.2e-16</code></pre>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="spectral-density.html#cb16-1" aria-hidden="true" tabindex="-1"></a>model5<span class="ot">&lt;-</span><span class="fu">lm</span>(logsales<span class="sc">~</span>time<span class="sc">+</span>time2<span class="sc">+</span>time3<span class="sc">+</span>time4<span class="sc">+</span>time5<span class="sc">+</span>wtgrant<span class="sc">+</span>obs96<span class="sc">+</span>fmonth) </span>
+<span id="cb16-2"><a href="spectral-density.html#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="fu">anova</span>(model5,model4) </span></code></pre></div>
+<pre><code>## Analysis of Variance Table
+## 
+## Model 1: logsales ~ time + time2 + time3 + time4 + time5 + wtgrant + obs96 + 
+##     fmonth
+## Model 2: logsales ~ time + time2 + time3 + time4 + time5 + wtgrant + wtgrant2 + 
+##     wtgrant3 + obs96 + fmonth
+##   Res.Df      RSS Df Sum of Sq     F Pr(&gt;F)
+## 1    134 0.085307                          
+## 2    132 0.083540  2  0.001767 1.396 0.2512</code></pre>
+<p>White noise light contains all the colors of the visual spectrum. A times seris that consist of uncorrelated points, results in a flat spectrum. When you calculate a spectram estimate in R, specify a bandwidth for the estimate: the periodogram. Number of raw estatimes are averaged across the frequency. Common to choose the span to be a fraction of the sqrt(length of time series). So if length of TS is 360, sqrt = 19, half of that is 9, so span ~ 9.</p>
 <p>Here, don’t see a flat spectral density. Peak at the low frequencies (left end), meaning that there is remaining trend structure that the model does not capture. Also some spectral activity around frequencies around 432. Peaks are important, not the valleys. Peaks measure spectral power and the contribution to the variance. Half of the variance is equal to the area under the spectral curve. Still some variance attributable to trend because of peak at the low end.</p>
 <p>Is there any seasonal structure? at 1/12? Not a peak but some height. Take the length of the blue line segment, above the knot, and find if the length of that line segment is greater than the distance from the highest to lowest point. Looks like no, in this case, highest to lowest point exceeds twice that line segment length, so this does not invole reduction to white noise. Fluctuations like this show us that we haven’t reduced to white noise. The distances are small enough.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="spectral-density.html#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">spectrum</span>(<span class="fu">resid</span>(model5), <span class="at">span =</span> <span class="dv">8</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="spectral-density.html#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">spectrum</span>(<span class="fu">resid</span>(model5), <span class="at">span =</span> <span class="dv">8</span>)</span></code></pre></div>
 <p><img src="bookdownproj_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<p>Same time series, without the use of a span. This is too variable. The span averages the vertical heights over a certain horizontal width.</p>
+<p>If you add lag 1,2,3 residuals to model 5, this improves the fit.</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="spectral-density.html#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">spectrum</span>(<span class="fu">resid</span>(model5))</span></code></pre></div>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<p>In Beer example, trend estimation is strong. Possible outlier in 1973. Estimated autocorrelations of the residuals. Clear remaining seasonal structure. Is there remaining trend? Possibly indicated. Strong action around lag 12 and lag 24 and also lag 6 and 18. The seasonal structure is very strong.. but the calendar structure, not sure.</p>
+<p>Length of the time series is 476. Sqrt(476) = 22… Half of that is 11. Go to a span of 8…</p>
+<p>Calendar frequencies in blue, and seasonal frequencies in red. At the left end, little remaining trend. Pearks for the red lines are for seasonal structure that is not built into the model. Peaks at 1,2,3 and 5/12. No peak at 4/12, and no peak at 6/12.</p>
+<p>The blue lines -&gt; don’t consider frequency 220 to be important, because no peak. But 348 is prominent. Takeaway: we need to add seasonal structure, and the calendar pair with 438. Proability also the calendar pair with frequencye 432.</p>
+<p>The residual spectrum pinpoints what additional structure we should put in the model.</p>
+<p>The square root of the length of the time series is 22, half of that is 11. Why use a lower value for the span (8 instead of 11)? Because he is concerned about the closeness of two frequencies that may play a role. Frequencies 4/12… 333 and 348, they are close to eachother. If you choose too large of a span, then it will look wider. It will not seperate or resolve these two different components which are close in frequency. Similar to “resolution”. Goal here is to see fine structure</p>
+<p>Add calendar structure certainly with 348 and maybe with 342</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="spectral-density.html#cb20-1" aria-hidden="true" tabindex="-1"></a>ausbeer <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;/cloud/project/data/beeraustralia.txt&quot;</span>)</span>
+<span id="cb20-2"><a href="spectral-density.html#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="fu">attach</span>(ausbeer)</span></code></pre></div>
+<pre><code>## The following object is masked from retail:
+## 
+##     month</code></pre>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="spectral-density.html#cb22-1" aria-hidden="true" tabindex="-1"></a>fmonth <span class="ot">&lt;-</span> <span class="fu">factor</span>(month)</span>
+<span id="cb22-2"><a href="spectral-density.html#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(ausbeer)</span></code></pre></div>
+<pre><code>##   year month beer    dlogbeer obs317 obs318
+## 1 1956     1 93.2          NA      0      0
+## 2 1956     2 96.0  0.02960047      0      0
+## 3 1956     3 95.2 -0.00836825      0      0
+## 4 1956     4 77.1 -0.21087666      0      0
+## 5 1956     5 70.9 -0.08383285      0      0
+## 6 1956     6 64.8 -0.08996483      0      0</code></pre>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="spectral-density.html#cb24-1" aria-hidden="true" tabindex="-1"></a>time<span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(beer))</span>
+<span id="cb24-2"><a href="spectral-density.html#cb24-2" aria-hidden="true" tabindex="-1"></a>time <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(beer))</span>
+<span id="cb24-3"><a href="spectral-density.html#cb24-3" aria-hidden="true" tabindex="-1"></a>model1<span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="fu">log</span>(beer) <span class="sc">~</span> time <span class="sc">+</span><span class="fu">I</span>(time<span class="sc">^</span><span class="dv">2</span>) <span class="sc">+</span> <span class="fu">I</span>(time<span class="sc">^</span><span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb24-4"><a href="spectral-density.html#cb24-4" aria-hidden="true" tabindex="-1"></a>              <span class="fu">I</span>(time<span class="sc">^</span><span class="dv">4</span>) <span class="sc">+</span> <span class="fu">I</span>(time<span class="sc">^</span><span class="dv">5</span>) <span class="sc">+</span> <span class="fu">I</span>(time<span class="sc">^</span><span class="dv">6</span>) <span class="sc">+</span></span>
+<span id="cb24-5"><a href="spectral-density.html#cb24-5" aria-hidden="true" tabindex="-1"></a>              obs317);<span class="fu">summary</span>(model1)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = log(beer) ~ time + I(time^2) + I(time^3) + I(time^4) + 
+##     I(time^5) + I(time^6) + obs317)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -0.41511 -0.09595 -0.01442  0.08669  0.32406 
+## 
+## Coefficients:
+##               Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  4.410e+00  4.414e-02  99.908  &lt; 2e-16 ***
+## time         2.798e-03  2.551e-03   1.097  0.27332    
+## I(time^2)   -4.905e-05  4.642e-05  -1.057  0.29119    
+## I(time^3)    6.837e-07  3.648e-07   1.874  0.06156 .  
+## I(time^4)   -3.352e-09  1.390e-09  -2.411  0.01628 *  
+## I(time^5)    6.831e-12  2.530e-12   2.700  0.00718 ** 
+## I(time^6)   -5.012e-15  1.762e-15  -2.844  0.00465 ** 
+## obs317      -3.381e-01  1.348e-01  -2.508  0.01248 *  
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.1341 on 468 degrees of freedom
+## Multiple R-squared:  0.747,  Adjusted R-squared:  0.7432 
+## F-statistic: 197.4 on 7 and 468 DF,  p-value: &lt; 2.2e-16</code></pre>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="spectral-density.html#cb26-1" aria-hidden="true" tabindex="-1"></a>resids1.ts<span class="ot">&lt;-</span><span class="fu">ts</span>(<span class="fu">resid</span>(model1),<span class="at">start=</span><span class="fu">c</span>(<span class="dv">1956</span>,<span class="dv">1</span>),<span class="at">freq=</span><span class="dv">12</span>) </span>
+<span id="cb26-2"><a href="spectral-density.html#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(resids1.ts,<span class="at">xlab=</span><span class="st">&quot;time&quot;</span>,<span class="at">ylab=</span><span class="st">&quot;residual&quot;</span>,<span class="at">main=</span><span class="st">&quot;Model 1 residuals&quot;</span>)</span></code></pre></div>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="spectral-density.html#cb27-1" aria-hidden="true" tabindex="-1"></a>resids1<span class="ot">&lt;-</span><span class="fu">resid</span>(model1) </span>
+<span id="cb27-2"><a href="spectral-density.html#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(resids1) </span></code></pre></div>
+<pre><code>## [1] &quot;numeric&quot;</code></pre>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="spectral-density.html#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">spectrum</span>(resids1,<span class="at">span=</span><span class="dv">8</span>)</span>
+<span id="cb29-2"><a href="spectral-density.html#cb29-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-3"><a href="spectral-density.html#cb29-3" aria-hidden="true" tabindex="-1"></a>resids1<span class="ot">&lt;-</span><span class="fu">resid</span>(model1) </span>
+<span id="cb29-4"><a href="spectral-density.html#cb29-4" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(resids1) </span></code></pre></div>
+<pre><code>## [1] &quot;numeric&quot;</code></pre>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="spectral-density.html#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">spectrum</span>(resids1,<span class="at">span=</span><span class="dv">8</span>) </span>
+<span id="cb31-2"><a href="spectral-density.html#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v=</span><span class="fu">c</span>(<span class="dv">1</span><span class="sc">/</span><span class="dv">12</span>,<span class="dv">2</span><span class="sc">/</span><span class="dv">12</span>,<span class="dv">3</span><span class="sc">/</span><span class="dv">12</span>,<span class="dv">4</span><span class="sc">/</span><span class="dv">12</span>,<span class="dv">5</span><span class="sc">/</span><span class="dv">12</span>,<span class="dv">6</span><span class="sc">/</span><span class="dv">12</span>),<span class="at">col=</span><span class="st">&quot;red&quot;</span>,<span class="at">lty=</span><span class="dv">2</span>) </span>
+<span id="cb31-3"><a href="spectral-density.html#cb31-3" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v=</span><span class="fu">c</span>(<span class="fl">0.220</span>,<span class="fl">0.348</span>,<span class="fl">0.432</span>),<span class="at">col=</span><span class="st">&quot;blue&quot;</span>,<span class="at">lty=</span><span class="dv">2</span>) </span></code></pre></div>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-4-2.png" width="672" /></p>
+<p>Refined model (with seasonal structure added, AND calendar trigonometric pairs)</p>
+<p>Fundamental pair is sig. 220 pair is not sig. 432 pair is sig. You can do a partial F for the 432 pair if you want to be sure.</p>
+<p>Plot: instead of going up to .1, we go up only to .010, so everything has come down substantially. The peak at the low end -&gt; there is remaining seasonal trend. Is there remaining seasonal structure? Yes, at 1/12 and 1/12. The model did not pick up dynamic structure. What about the calendar frequencies? See at 348, the large peak. At 432, there is no peak, and argue with 220, a tiny peak, but not large enough to matter.</p>
+<p>Is there reduction to white noise? No. If you double the length of this segment, it does not exceed the distance from the top to the bottom. Maybe, take the distance from the top to something a bit more down. This would also not reduce to white noise.</p>
+<p>Conclude from this that there is more trend not yet captured, and that there is dynamic seasonal structure. There is one peak, and that looks like it is above .38</p>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="spectral-density.html#cb32-1" aria-hidden="true" tabindex="-1"></a>cosm<span class="ot">&lt;-</span><span class="fu">matrix</span>(<span class="at">nrow=</span><span class="fu">length</span>(time),<span class="at">ncol=</span><span class="dv">6</span>) </span>
+<span id="cb32-2"><a href="spectral-density.html#cb32-2" aria-hidden="true" tabindex="-1"></a>sinm<span class="ot">&lt;-</span><span class="fu">matrix</span>(<span class="at">nrow=</span><span class="fu">length</span>(time),<span class="at">ncol=</span><span class="dv">5</span>) </span>
+<span id="cb32-3"><a href="spectral-density.html#cb32-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>){ </span>
+<span id="cb32-4"><a href="spectral-density.html#cb32-4" aria-hidden="true" tabindex="-1"></a> cosm[,i]<span class="ot">&lt;-</span><span class="fu">cos</span>(<span class="dv">2</span><span class="sc">*</span>pi<span class="sc">*</span>i<span class="sc">*</span>time<span class="sc">/</span><span class="dv">12</span>) </span>
+<span id="cb32-5"><a href="spectral-density.html#cb32-5" aria-hidden="true" tabindex="-1"></a> sinm[,i]<span class="ot">&lt;-</span><span class="fu">sin</span>(<span class="dv">2</span><span class="sc">*</span>pi<span class="sc">*</span>i<span class="sc">*</span>time<span class="sc">/</span><span class="dv">12</span>) </span>
+<span id="cb32-6"><a href="spectral-density.html#cb32-6" aria-hidden="true" tabindex="-1"></a> } </span>
+<span id="cb32-7"><a href="spectral-density.html#cb32-7" aria-hidden="true" tabindex="-1"></a>cosm[,<span class="dv">6</span>]<span class="ot">&lt;-</span><span class="fu">cos</span>(pi<span class="sc">*</span>time) </span>
+<span id="cb32-8"><a href="spectral-density.html#cb32-8" aria-hidden="true" tabindex="-1"></a>c1<span class="ot">&lt;-</span>cosm[,<span class="dv">1</span>];c2<span class="ot">&lt;-</span>cosm[,<span class="dv">2</span>];c3<span class="ot">&lt;-</span>cosm[,<span class="dv">3</span>];c4<span class="ot">&lt;-</span>cosm[,<span class="dv">4</span>];c5<span class="ot">&lt;-</span>cosm[,<span class="dv">5</span>];c6<span class="ot">&lt;-</span></span>
+<span id="cb32-9"><a href="spectral-density.html#cb32-9" aria-hidden="true" tabindex="-1"></a>cosm[,<span class="dv">6</span>] </span>
+<span id="cb32-10"><a href="spectral-density.html#cb32-10" aria-hidden="true" tabindex="-1"></a>s1<span class="ot">&lt;-</span>sinm[,<span class="dv">1</span>];s2<span class="ot">&lt;-</span>sinm[,<span class="dv">2</span>];s3<span class="ot">&lt;-</span>sinm[,<span class="dv">3</span>];s4<span class="ot">&lt;-</span>sinm[,<span class="dv">4</span>];s5<span class="ot">&lt;-</span>sinm[,<span class="dv">5</span>] </span>
+<span id="cb32-11"><a href="spectral-density.html#cb32-11" aria-hidden="true" tabindex="-1"></a>c220<span class="ot">&lt;-</span><span class="fu">cos</span>(<span class="fl">0.440</span><span class="sc">*</span>pi<span class="sc">*</span>time);s220<span class="ot">&lt;-</span><span class="fu">sin</span>(<span class="fl">0.440</span><span class="sc">*</span>pi<span class="sc">*</span>time);c348<span class="ot">&lt;-</span></span>
+<span id="cb32-12"><a href="spectral-density.html#cb32-12" aria-hidden="true" tabindex="-1"></a><span class="fu">cos</span>(<span class="fl">0.696</span><span class="sc">*</span>pi<span class="sc">*</span>time);s348<span class="ot">&lt;-</span><span class="fu">sin</span>(<span class="fl">0.696</span><span class="sc">*</span>pi<span class="sc">*</span>time);c432<span class="ot">&lt;-</span></span>
+<span id="cb32-13"><a href="spectral-density.html#cb32-13" aria-hidden="true" tabindex="-1"></a><span class="fu">cos</span>(<span class="fl">0.864</span><span class="sc">*</span>pi<span class="sc">*</span>time);s432<span class="ot">&lt;-</span><span class="fu">sin</span>(<span class="fl">0.864</span><span class="sc">*</span>pi<span class="sc">*</span>time) </span>
+<span id="cb32-14"><a href="spectral-density.html#cb32-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-15"><a href="spectral-density.html#cb32-15" aria-hidden="true" tabindex="-1"></a>model2<span class="ot">&lt;-</span><span class="fu">lm</span>(<span class="fu">log</span>(beer)<span class="sc">~</span>time<span class="sc">+</span><span class="fu">I</span>(time<span class="sc">^</span><span class="dv">2</span>)<span class="sc">+</span><span class="fu">I</span>(time<span class="sc">^</span><span class="dv">3</span>)<span class="sc">+</span><span class="fu">I</span>(time<span class="sc">^</span><span class="dv">4</span>)<span class="sc">+</span><span class="fu">I</span>(time<span class="sc">^</span><span class="dv">5</span>)<span class="sc">+</span><span class="fu">I</span>(time<span class="sc">^</span><span class="dv">6</span>)<span class="sc">+</span>obs317<span class="sc">+</span>c1<span class="sc">+</span>s1<span class="sc">+</span>c2<span class="sc">+</span>s2<span class="sc">+</span>c3<span class="sc">+</span>s3<span class="sc">+</span>c4<span class="sc">+</span>s4<span class="sc">+</span>c5<span class="sc">+</span>s5<span class="sc">+</span>c6<span class="sc">+</span>c220<span class="sc">+</span>s220<span class="sc">+</span>c348<span class="sc">+</span>s348<span class="sc">+</span>c432<span class="sc">+</span>s432);<span class="fu">summary</span>(model2) </span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = log(beer) ~ time + I(time^2) + I(time^3) + I(time^4) + 
+##     I(time^5) + I(time^6) + obs317 + c1 + s1 + c2 + s2 + c3 + 
+##     s3 + c4 + s4 + c5 + s5 + c6 + c220 + s220 + c348 + s348 + 
+##     c432 + s432)
+## 
+## Residuals:
+##       Min        1Q    Median        3Q       Max 
+## -0.185913 -0.036013 -0.000215  0.037196  0.168246 
+## 
+## Coefficients:
+##               Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  4.430e+00  1.959e-02 226.107  &lt; 2e-16 ***
+## time         1.680e-03  1.132e-03   1.485 0.138326    
+## I(time^2)   -2.909e-05  2.059e-05  -1.413 0.158380    
+## I(time^3)    5.270e-07  1.618e-07   3.257 0.001213 ** 
+## I(time^4)   -2.750e-09  6.165e-10  -4.460 1.04e-05 ***
+## I(time^5)    5.718e-12  1.122e-12   5.096 5.11e-07 ***
+## I(time^6)   -4.221e-15  7.815e-16  -5.402 1.07e-07 ***
+## obs317      -2.244e-01  6.083e-02  -3.688 0.000254 ***
+## c1           1.447e-01  3.862e-03  37.465  &lt; 2e-16 ***
+## s1          -9.851e-03  3.858e-03  -2.554 0.010987 *  
+## c2           5.935e-03  3.859e-03   1.538 0.124803    
+## s2          -4.430e-02  3.856e-03 -11.488  &lt; 2e-16 ***
+## c3           3.989e-02  3.854e-03  10.352  &lt; 2e-16 ***
+## s3          -2.805e-02  3.862e-03  -7.263 1.67e-12 ***
+## c4           1.210e-02  3.859e-03   3.135 0.001828 ** 
+## s4          -2.992e-03  3.855e-03  -0.776 0.438038    
+## c5           3.046e-02  3.861e-03   7.887 2.35e-14 ***
+## s5           2.450e-02  3.858e-03   6.350 5.25e-10 ***
+## c6          -2.209e-03  2.728e-03  -0.810 0.418400    
+## c220        -3.353e-03  3.857e-03  -0.869 0.385145    
+## s220         3.743e-04  3.858e-03   0.097 0.922772    
+## c348        -2.239e-02  3.858e-03  -5.803 1.23e-08 ***
+## s348        -3.342e-02  3.856e-03  -8.667  &lt; 2e-16 ***
+## c432        -1.228e-02  3.869e-03  -3.174 0.001608 ** 
+## s432         5.222e-03  3.850e-03   1.357 0.175603    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.05943 on 451 degrees of freedom
+## Multiple R-squared:  0.9521, Adjusted R-squared:  0.9496 
+## F-statistic: 373.8 on 24 and 451 DF,  p-value: &lt; 2.2e-16</code></pre>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="spectral-density.html#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">spectrum</span>(<span class="fu">resid</span>(model2),<span class="at">span=</span><span class="dv">8</span>) </span>
+<span id="cb34-2"><a href="spectral-density.html#cb34-2" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v=</span><span class="fu">c</span>(<span class="dv">1</span><span class="sc">/</span><span class="dv">12</span>,<span class="dv">2</span><span class="sc">/</span><span class="dv">12</span>,<span class="dv">3</span><span class="sc">/</span><span class="dv">12</span>,<span class="dv">4</span><span class="sc">/</span><span class="dv">12</span>,<span class="dv">5</span><span class="sc">/</span><span class="dv">12</span>,<span class="dv">6</span><span class="sc">/</span><span class="dv">12</span>),<span class="at">col=</span><span class="st">&quot;red&quot;</span>,<span class="at">lty=</span><span class="dv">2</span>) </span>
+<span id="cb34-3"><a href="spectral-density.html#cb34-3" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v=</span><span class="fu">c</span>(<span class="fl">0.220</span>,<span class="fl">0.348</span>,<span class="fl">0.432</span>),<span class="at">col=</span><span class="st">&quot;blue&quot;</span>,<span class="at">lty=</span><span class="dv">2</span>)</span></code></pre></div>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="spectral-density.html#cb35-1" aria-hidden="true" tabindex="-1"></a>ampltd<span class="ot">&lt;-</span><span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">0</span>,<span class="at">times=</span><span class="dv">6</span>)) </span>
+<span id="cb35-2"><a href="spectral-density.html#cb35-2" aria-hidden="true" tabindex="-1"></a>b2<span class="ot">&lt;-</span><span class="fu">coef</span>(model2)[<span class="dv">9</span><span class="sc">:</span><span class="dv">19</span>] </span>
+<span id="cb35-3"><a href="spectral-density.html#cb35-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>){ </span>
+<span id="cb35-4"><a href="spectral-density.html#cb35-4" aria-hidden="true" tabindex="-1"></a> i1<span class="ot">&lt;-</span><span class="dv">2</span><span class="sc">*</span>i<span class="dv">-1</span> </span>
+<span id="cb35-5"><a href="spectral-density.html#cb35-5" aria-hidden="true" tabindex="-1"></a> i2<span class="ot">&lt;-</span>i1<span class="sc">+</span><span class="dv">1</span> </span>
+<span id="cb35-6"><a href="spectral-density.html#cb35-6" aria-hidden="true" tabindex="-1"></a> ampltd[i]<span class="ot">&lt;-</span><span class="fu">sqrt</span>(b2[i1]<span class="sc">^</span><span class="dv">2</span><span class="sc">+</span>b2[i2]<span class="sc">^</span><span class="dv">2</span>) </span>
+<span id="cb35-7"><a href="spectral-density.html#cb35-7" aria-hidden="true" tabindex="-1"></a> } </span>
+<span id="cb35-8"><a href="spectral-density.html#cb35-8" aria-hidden="true" tabindex="-1"></a>ampltd[<span class="dv">6</span>]<span class="ot">&lt;-</span><span class="fu">abs</span>(b2[<span class="dv">11</span>]) </span>
+<span id="cb35-9"><a href="spectral-density.html#cb35-9" aria-hidden="true" tabindex="-1"></a>ampltd </span></code></pre></div>
+<pre><code>## [1] 0.145011537 0.044699068 0.048768508 0.012464686 0.039084803 0.002209124</code></pre>
 
 </div>
             </section>
@@ -221,7 +553,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         </div>
       </div>
 <a href="interactions.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="arima-models.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="periodogram.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>

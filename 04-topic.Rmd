@@ -4,7 +4,7 @@ Spectral density is a function that you can calculative, given the autocorrelati
 
 Two purposes of spectral density: plot the spectrum before you analyze the time series to see what kind of structure is there. 
 
-```{r include=FALSE}
+```{r echo=TRUE}
 retail <- read.csv("/cloud/project/data/retail.txt")
 attach(retail)
 head(retail)
