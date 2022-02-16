@@ -56,11 +56,110 @@ summary(model4)
 model5<-lm(logsales~time+time2+time3+time4+time5+wtgrant+obs96+fmonth) 
 anova(model5,model4) 
 ```
+White noise light contains all the colors of the visual spectrum. A times seris that consist of uncorrelated points, results in a flat spectrum. When you calculate a spectram estimate in R, specify a bandwidth for the estimate: the periodogram. Number of raw estatimes are averaged across the frequency. Common to choose the span to be a fraction of the sqrt(length of time series). So if length of TS is 360, sqrt = 19, half of that is 9, so span ~ 9. 
+
+Here, don't see a flat spectral density. Peak at the low frequencies (left end), meaning that there is remaining trend structure that the model does not capture. Also some spectral activity around frequencies around 432. Peaks are important, not the valleys. Peaks measure spectral power and the contribution to the variance. Half of the variance is equal to the area under the spectral curve. Still some variance attributable to trend because of peak at the low end. 
+
+Is there any seasonal structure? at 1/12? Not a peak but some height. Take the length of the blue line segment, above the knot, and find if the length of that line segment is greater than the distance from the highest to lowest point. Looks like no, in this case, highest to lowest point exceeds twice that line segment length, so this does not invole reduction to white noise. Fluctuations like this show us that we haven't reduced to white noise. The distances are small enough.
 
 
 ```{r}
 spectrum(resid(model5), span = 8)
 ```
+
+Same time series, without the use of a span. This is too variable. The span averages the vertical heights over a certain horizontal width. 
+
+If you add lag 1,2,3 residuals to model 5, this improves the fit.
+
+```{r}
+spectrum(resid(model5))
+```
+
+In Beer example, trend estimation is strong. Possible outlier in 1973. Estimated autocorrelations of the residuals. Clear remaining seasonal structure. Is there remaining trend? Possibly indicated. Strong action around lag 12 and lag 24 and also lag 6 and 18. The seasonal structure is very strong.. but the calendar structure, not sure.
+
+Length of the time series is 476. Sqrt(476) = 22... Half of that is 11. Go to a span of 8...
+
+Calendar frequencies in blue, and seasonal frequencies in red. At the left end, little remaining trend. Pearks for the red lines are for seasonal structure that is not built into the model. Peaks at 1,2,3 and 5/12. No peak at 4/12, and no peak at 6/12.
+
+The blue lines -> don't consider frequency 220 to be important, because no peak. But 348 is prominent. Takeaway: we need to add seasonal structure, and the calendar pair with 438. Proability also the calendar pair with frequencye 432.
+
+The residual spectrum pinpoints what additional structure we should put in the model.
+
+The square root of the length of the time series is 22, half of that is 11. Why use a lower value for the span (8 instead of 11)? Because he is concerned about the closeness of two frequencies that may play a role. Frequencies 4/12... 333 and 348, they are close to eachother. If you choose too large of a span, then it will look wider. It will not seperate or resolve these two different components which are close in frequency. Similar to "resolution". Goal here is to see fine structure
+
+Add calendar structure certainly with 348 and maybe with 342
+
+```{r}
+
+ausbeer <- read.csv("/cloud/project/data/beeraustralia.txt")
+attach(ausbeer)
+fmonth <- factor(month)
+head(ausbeer)
+time<- as.numeric(1:length(beer))
+time <- as.numeric(1:length(beer))
+model1<- lm(log(beer) ~ time +I(time^2) + I(time^3) +
+              I(time^4) + I(time^5) + I(time^6) +
+              obs317);summary(model1)
+
+resids1.ts<-ts(resid(model1),start=c(1956,1),freq=12) 
+plot(resids1.ts,xlab="time",ylab="residual",main="Model 1 residuals")
+
+resids1<-resid(model1) 
+class(resids1) 
+spectrum(resids1,span=8)
+
+resids1<-resid(model1) 
+class(resids1) 
+
+spectrum(resids1,span=8) 
+abline(v=c(1/12,2/12,3/12,4/12,5/12,6/12),col="red",lty=2) 
+abline(v=c(0.220,0.348,0.432),col="blue",lty=2) 
+```
+
+Refined model (with seasonal structure added, AND calendar trigonometric pairs)
+
+Fundamental pair is sig. 220 pair is not sig. 432 pair is sig. You can do a partial F for the 432 pair if you want to be sure. 
+
+Plot: instead of going up to .1, we go up only to .010, so everything has come down substantially. The peak at the low end -> there is remaining seasonal trend. Is there remaining seasonal structure? Yes, at 1/12 and 1/12. The model did not pick up dynamic structure. What about the calendar frequencies? See at 348, the large peak. At 432, there is no peak, and argue with 220, a tiny peak, but not large enough to matter.
+
+Is there reduction to white noise? No. If you double the length of this segment, it does not exceed the distance from the top to the bottom. Maybe, take the distance from the top to something a bit more down. This would also not reduce to white noise. 
+
+Conclude from this that there is more trend not yet captured, and that there is dynamic seasonal structure. There is one peak, and that looks like it is above .38
+
+```{r}
+cosm<-matrix(nrow=length(time),ncol=6) 
+sinm<-matrix(nrow=length(time),ncol=5) 
+for(i in 1:5){ 
+ cosm[,i]<-cos(2*pi*i*time/12) 
+ sinm[,i]<-sin(2*pi*i*time/12) 
+ } 
+cosm[,6]<-cos(pi*time) 
+c1<-cosm[,1];c2<-cosm[,2];c3<-cosm[,3];c4<-cosm[,4];c5<-cosm[,5];c6<-
+cosm[,6] 
+s1<-sinm[,1];s2<-sinm[,2];s3<-sinm[,3];s4<-sinm[,4];s5<-sinm[,5] 
+c220<-cos(0.440*pi*time);s220<-sin(0.440*pi*time);c348<-
+cos(0.696*pi*time);s348<-sin(0.696*pi*time);c432<-
+cos(0.864*pi*time);s432<-sin(0.864*pi*time) 
+
+model2<-lm(log(beer)~time+I(time^2)+I(time^3)+I(time^4)+I(time^5)+I(time^6)+obs317+c1+s1+c2+s2+c3+s3+c4+s4+c5+s5+c6+c220+s220+c348+s348+c432+s432);summary(model2) 
+
+spectrum(resid(model2),span=8) 
+abline(v=c(1/12,2/12,3/12,4/12,5/12,6/12),col="red",lty=2) 
+abline(v=c(0.220,0.348,0.432),col="blue",lty=2)
+
+ampltd<-c(rep(0,times=6)) 
+b2<-coef(model2)[9:19] 
+for(i in 1:5){ 
+ i1<-2*i-1 
+ i2<-i1+1 
+ ampltd[i]<-sqrt(b2[i1]^2+b2[i2]^2) 
+ } 
+ampltd[6]<-abs(b2[11]) 
+ampltd 
+
+```
+
+
 
 
 
