@@ -1,5 +1,7 @@
 # periodogram 
 
+U.S. economy experienced strong rise from 1991 to start of 2001. First downturn, in year 2001 was bursting of the dot com bubble. Then, a strong increase until the middle of 2007. Etc...
+
 
 ```{r echo=TRUE}
 emp <- read.csv("/cloud/project/data/USnonfarmemp.txt")
@@ -7,4 +9,102 @@ attach(emp)
 head(emp)
 plot(ts(employees,start=c(1991,1),freq=12),xlab="Time",ylab="Employees",main=
 "US Nonfarm Employment, in Thousands")
+logemp <- log(employees)
+plot(ts(log(employees),start=c(1991,1),freq=12),xlab="Time",ylab="Employees",main=
+"Log US Nonfarm Employment, in Thousands")
 ```
+
+
+Log series looks better. Shows relatively constant volatility all the way across. Multiplicative model will be more helpful.
+
+### Spectral
+
+Look at the structure of the time series itself, to understand what is the structure of the time series, and what variable should we include. First step is to plot the spectral density. Since there is a strong seasonal component, we expect to see action at the monthly frequencies. This is monthly data, and the amount of employment is the average at the month. Rather than a snopshot, this is a representative number. Therefore, calendar frequencies are relevant. 333 and 348 are close together, so if we used a larger span, we wouldn't see that resolution.
+
+Red lines are the seasonal frequencies. As for calendar, 220 not sig, and does not appear to be a separate peak at 348. 432 might be a peak, but so low that it probably won't be sig. Yes, there is strong seasonality, and also trending (peak near 0), but calendar variables don't look to be sig.
+
+In the log version of these spectral plots, the high point in the spectrum will be dampened. And the peaks at the low end will be lower than they were before. The peaks at the high frequencies will be higher. The differencing operation downweights slow movements, and magnifies or enhances fast movements. 
+
+```{r}
+## time series had length 330, sqrt(330)/2 = 9. Use a smaller span (here, 5) to look at features of the spectrum more clearly.
+
+### marking the seasonal frequencies and the calendar frequencies.
+spectrum(logemp,span=5)
+abline(v=c(1/12,2/12,3/12,4/12,5/12,6/12),col="red",lty=2)
+abline(v=c(0.220,0.348,0.432),col="blue",lty=2)
+
+```
+
+### Multiplicative
+
+Notice on the residual plot, that the vertical scale goes from -0.03 to 0.04. That is much smaller that the range in the previous plot, which is 11.6 to 11.9. The scale in the plot makes the result look worse than it is. Still, the model can't handle the trend around the two economic downtown, but things aren't as bad as this makes it look.
+
+Seasonal index estimates are all close to 1. Greatest deviation from 1 is for January, where the employment is estimated to be about 1.5 percent below trend level. The highest point above trend level is for November, and June is also quite high. The pattern: peaks in June and November, but October, Nov, Dec are all high, and May/June also high. Dip from May June into August. Low point is January, and steady rise from January up until June.
+
+348 is sig. for the log return data because of the differencing operation, which enhances high frequency components. When we just used the log return data, then it becomes sig.
+
+Residual vs. Predictions plot might show little evidence of heterogeneity. Residuals vs. time, still can't deal effectively with the downturns. The vertical scale is in a low range. 
+
+```{r}
+Time<-as.numeric(1:length(employees))
+fMonth<-as.factor(Month)
+model1<-
+lm(logemp~Time+I(Time^2)+I(Time^3)+I(Time^4)+I(Time^5)+fMonth);summary(model1)
+ plot(ts(resid(model1),start=c(1991,1),freq=12),xlab="Time",ylab="Residual
+",main="Residuals for model1 fit to log of US employment")
+ 
+b1<-coef(model1)[1]
+b2<-coef(model1)[7:17]+b1
+b3<-c(b1,b2)
+seas<-exp(b3-mean(b3))
+cbind(seas)
+seas.ts<-ts(seas)
+plot(seas.ts,xlab="Month",ylab="Estimated seasonal index")
+```
+
+
+### next model
+
+```{r}
+obs217<-c(rep(0,216),1,rep(0,113))
+c348<-cos(pi*0.696*Time);s348<-sin(pi*0.696*Time)
+c432<-cos(pi*0.864*Time);s432<-sin(pi*0.864*Time)
+model2<-
+lm(dlogemp~Time+I(Time^2)+I(Time^3)+I(Time^4)+I(Time^5)+I(Time^6)+fMonth+obs217+c348+s348+c432+s432);summary(model2)
+model3<-
+lm(dlogemp~Time+I(Time^2)+I(Time^3)+I(Time^4)+I(Time^5)+I(Time^6)+fMonth+obs217+c348+s348);summary(model3)
+model4<-
+lm(dlogemp~Time+I(Time^2)+I(Time^3)+I(Time^4)+I(Time^5)+I(Time^6)+fMonth+obs217)
+anova(model4,model3)
+```
+
+### getting seasonal index esetimation from model 3
+
+
+```{r}
+b1<-coef(model3)[1]
+b2<-coef(model3)[8:18]+b1
+b3<-c(b1,b2)
+x<-b3-mean(b3)
+s12<-0
+for(j in 2:12){
+ xsub<-x[j:12]
+ s12<-s12+sum(xsub)
+ }
+s12<-s12/12
+s<-c(rep(0,times=12))
+s[12]<-s12
+for(j in 1:11){
+ xsub<-x[1:j]
+ s[j]<-s[12]+sum(xsub)
+}
+seas3<-exp(s)
+cbind(seas,seas3)
+```
+
+
+### smoothing technique 
+
+
+
+

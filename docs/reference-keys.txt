@@ -47,3 +47,9 @@ estimated-trends-calculating-the-interaction-terms
 spectral-density
 info
 periodogram
+spectral
+multiplicative
+next-model
+getting-seasonal-index-esetimation-from-model-3
+smoothing-technique
+rainfall

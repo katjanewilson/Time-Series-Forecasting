@@ -181,7 +181,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ul></li>
 </ul></li>
 <li class="chapter" data-level="4" data-path="spectral-density.html"><a href="spectral-density.html"><i class="fa fa-check"></i><b>4</b> spectral density</a></li>
-<li class="chapter" data-level="5" data-path="periodogram.html"><a href="periodogram.html"><i class="fa fa-check"></i><b>5</b> periodogram</a></li>
+<li class="chapter" data-level="5" data-path="periodogram.html"><a href="periodogram.html"><i class="fa fa-check"></i><b>5</b> periodogram</a>
+<ul>
+<li class="chapter" data-level="5.0.1" data-path="periodogram.html"><a href="periodogram.html#spectral"><i class="fa fa-check"></i><b>5.0.1</b> Spectral</a></li>
+<li class="chapter" data-level="5.0.2" data-path="periodogram.html"><a href="periodogram.html#multiplicative"><i class="fa fa-check"></i><b>5.0.2</b> Multiplicative</a></li>
+<li class="chapter" data-level="5.0.3" data-path="periodogram.html"><a href="periodogram.html#next-model"><i class="fa fa-check"></i><b>5.0.3</b> next model</a></li>
+<li class="chapter" data-level="5.0.4" data-path="periodogram.html"><a href="periodogram.html#getting-seasonal-index-esetimation-from-model-3"><i class="fa fa-check"></i><b>5.0.4</b> getting seasonal index esetimation from model 3</a></li>
+</ul></li>
 <li class="chapter" data-level="6" data-path="exponential-smoothing.html"><a href="exponential-smoothing.html"><i class="fa fa-check"></i><b>6</b> exponential smoothing</a></li>
 <li class="chapter" data-level="7" data-path="combination-of-forecasts.html"><a href="combination-of-forecasts.html"><i class="fa fa-check"></i><b>7</b> combination of forecasts</a></li>
 <li class="chapter" data-level="8" data-path="arch-and-garch-models.html"><a href="arch-and-garch-models.html"><i class="fa fa-check"></i><b>8</b> ARCH and GARCH models</a></li>
@@ -206,6 +212,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
             <section class="normal" id="section-">
 <div id="periodogram" class="section level1" number="5">
 <h1><span class="header-section-number">5</span> periodogram</h1>
+<p>U.S. economy experienced strong rise from 1991 to start of 2001. First downturn, in year 2001 was bursting of the dot com bubble. Then, a strong increase until the middle of 2007. Etc…</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="periodogram.html#cb1-1" aria-hidden="true" tabindex="-1"></a>emp <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;/cloud/project/data/USnonfarmemp.txt&quot;</span>)</span>
 <span id="cb1-2"><a href="periodogram.html#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">attach</span>(emp)</span>
 <span id="cb1-3"><a href="periodogram.html#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(emp)</span></code></pre></div>
@@ -219,7 +226,231 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="periodogram.html#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">ts</span>(employees,<span class="at">start=</span><span class="fu">c</span>(<span class="dv">1991</span>,<span class="dv">1</span>),<span class="at">freq=</span><span class="dv">12</span>),<span class="at">xlab=</span><span class="st">&quot;Time&quot;</span>,<span class="at">ylab=</span><span class="st">&quot;Employees&quot;</span>,<span class="at">main=</span></span>
 <span id="cb3-2"><a href="periodogram.html#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="st">&quot;US Nonfarm Employment, in Thousands&quot;</span>)</span></code></pre></div>
 <p><img src="bookdownproj_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="periodogram.html#cb4-1" aria-hidden="true" tabindex="-1"></a>logemp <span class="ot">&lt;-</span> <span class="fu">log</span>(employees)</span>
+<span id="cb4-2"><a href="periodogram.html#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">ts</span>(<span class="fu">log</span>(employees),<span class="at">start=</span><span class="fu">c</span>(<span class="dv">1991</span>,<span class="dv">1</span>),<span class="at">freq=</span><span class="dv">12</span>),<span class="at">xlab=</span><span class="st">&quot;Time&quot;</span>,<span class="at">ylab=</span><span class="st">&quot;Employees&quot;</span>,<span class="at">main=</span></span>
+<span id="cb4-3"><a href="periodogram.html#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="st">&quot;Log US Nonfarm Employment, in Thousands&quot;</span>)</span></code></pre></div>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-1-2.png" width="672" /></p>
+<p>Log series looks better. Shows relatively constant volatility all the way across. Multiplicative model will be more helpful.</p>
+<div id="spectral" class="section level3" number="5.0.1">
+<h3><span class="header-section-number">5.0.1</span> Spectral</h3>
+<p>Look at the structure of the time series itself, to understand what is the structure of the time series, and what variable should we include. First step is to plot the spectral density. Since there is a strong seasonal component, we expect to see action at the monthly frequencies. This is monthly data, and the amount of employment is the average at the month. Rather than a snopshot, this is a representative number. Therefore, calendar frequencies are relevant. 333 and 348 are close together, so if we used a larger span, we wouldn’t see that resolution.</p>
+<p>Red lines are the seasonal frequencies. As for calendar, 220 not sig, and does not appear to be a separate peak at 348. 432 might be a peak, but so low that it probably won’t be sig. Yes, there is strong seasonality, and also trending (peak near 0), but calendar variables don’t look to be sig.</p>
+<p>In the log version of these spectral plots, the high point in the spectrum will be dampened. And the peaks at the low end will be lower than they were before. The peaks at the high frequencies will be higher. The differencing operation downweights slow movements, and magnifies or enhances fast movements.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="periodogram.html#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="do">## time series had length 330, sqrt(330)/2 = 9. Use a smaller span (here, 5) to look at features of the spectrum more clearly.</span></span>
+<span id="cb5-2"><a href="periodogram.html#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="periodogram.html#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="do">### marking the seasonal frequencies and the calendar frequencies.</span></span>
+<span id="cb5-4"><a href="periodogram.html#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="fu">spectrum</span>(logemp,<span class="at">span=</span><span class="dv">5</span>)</span>
+<span id="cb5-5"><a href="periodogram.html#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v=</span><span class="fu">c</span>(<span class="dv">1</span><span class="sc">/</span><span class="dv">12</span>,<span class="dv">2</span><span class="sc">/</span><span class="dv">12</span>,<span class="dv">3</span><span class="sc">/</span><span class="dv">12</span>,<span class="dv">4</span><span class="sc">/</span><span class="dv">12</span>,<span class="dv">5</span><span class="sc">/</span><span class="dv">12</span>,<span class="dv">6</span><span class="sc">/</span><span class="dv">12</span>),<span class="at">col=</span><span class="st">&quot;red&quot;</span>,<span class="at">lty=</span><span class="dv">2</span>)</span>
+<span id="cb5-6"><a href="periodogram.html#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v=</span><span class="fu">c</span>(<span class="fl">0.220</span>,<span class="fl">0.348</span>,<span class="fl">0.432</span>),<span class="at">col=</span><span class="st">&quot;blue&quot;</span>,<span class="at">lty=</span><span class="dv">2</span>)</span></code></pre></div>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+</div>
+<div id="multiplicative" class="section level3" number="5.0.2">
+<h3><span class="header-section-number">5.0.2</span> Multiplicative</h3>
+<p>Notice on the residual plot, that the vertical scale goes from -0.03 to 0.04. That is much smaller that the range in the previous plot, which is 11.6 to 11.9. The scale in the plot makes the result look worse than it is. Still, the model can’t handle the trend around the two economic downtown, but things aren’t as bad as this makes it look.</p>
+<p>Seasonal index estimates are all close to 1. Greatest deviation from 1 is for January, where the employment is estimated to be about 1.5 percent below trend level. The highest point above trend level is for November, and June is also quite high. The pattern: peaks in June and November, but October, Nov, Dec are all high, and May/June also high. Dip from May June into August. Low point is January, and steady rise from January up until June.</p>
+<p>348 is sig. for the log return data because of the differencing operation, which enhances high frequency components. When we just used the log return data, then it becomes sig.</p>
+<p>Residual vs. Predictions plot might show little evidence of heterogeneity. Residuals vs. time, still can’t deal effectively with the downturns. The vertical scale is in a low range.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="periodogram.html#cb6-1" aria-hidden="true" tabindex="-1"></a>Time<span class="ot">&lt;-</span><span class="fu">as.numeric</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(employees))</span>
+<span id="cb6-2"><a href="periodogram.html#cb6-2" aria-hidden="true" tabindex="-1"></a>fMonth<span class="ot">&lt;-</span><span class="fu">as.factor</span>(Month)</span>
+<span id="cb6-3"><a href="periodogram.html#cb6-3" aria-hidden="true" tabindex="-1"></a>model1<span class="ot">&lt;-</span></span>
+<span id="cb6-4"><a href="periodogram.html#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="fu">lm</span>(logemp<span class="sc">~</span>Time<span class="sc">+</span><span class="fu">I</span>(Time<span class="sc">^</span><span class="dv">2</span>)<span class="sc">+</span><span class="fu">I</span>(Time<span class="sc">^</span><span class="dv">3</span>)<span class="sc">+</span><span class="fu">I</span>(Time<span class="sc">^</span><span class="dv">4</span>)<span class="sc">+</span><span class="fu">I</span>(Time<span class="sc">^</span><span class="dv">5</span>)<span class="sc">+</span>fMonth);<span class="fu">summary</span>(model1)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = logemp ~ Time + I(Time^2) + I(Time^3) + I(Time^4) + 
+##     I(Time^5) + fMonth)
+## 
+## Residuals:
+##       Min        1Q    Median        3Q       Max 
+## -0.027878 -0.006551  0.000301  0.007037  0.036591 
+## 
+## Coefficients:
+##               Estimate Std. Error  t value Pr(&gt;|t|)    
+## (Intercept)  1.157e+01  5.455e-03 2121.550  &lt; 2e-16 ***
+## Time         2.801e-05  2.962e-04    0.095 0.924732    
+## I(Time^2)    4.514e-05  5.523e-06    8.173 7.56e-15 ***
+## I(Time^3)   -3.929e-07  4.223e-08   -9.304  &lt; 2e-16 ***
+## I(Time^4)    1.217e-09  1.405e-10    8.660 2.55e-16 ***
+## I(Time^5)   -1.254e-12  1.690e-13   -7.418 1.12e-12 ***
+## fMonth2      4.278e-03  3.838e-03    1.114 0.265951    
+## fMonth3      8.972e-03  3.839e-03    2.337 0.020061 *  
+## fMonth4      1.494e-02  3.839e-03    3.891 0.000122 ***
+## fMonth5      2.047e-02  3.840e-03    5.330 1.88e-07 ***
+## fMonth6      2.327e-02  3.840e-03    6.060 3.90e-09 ***
+## fMonth7      1.360e-02  3.875e-03    3.510 0.000513 ***
+## fMonth8      1.381e-02  3.875e-03    3.563 0.000424 ***
+## fMonth9      1.796e-02  3.876e-03    4.633 5.29e-06 ***
+## fMonth10     2.266e-02  3.876e-03    5.846 1.26e-08 ***
+## fMonth11     2.389e-02  3.876e-03    6.163 2.20e-09 ***
+## fMonth12     2.174e-02  3.877e-03    5.607 4.52e-08 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.01436 on 313 degrees of freedom
+## Multiple R-squared:  0.9717, Adjusted R-squared:  0.9702 
+## F-statistic: 671.6 on 16 and 313 DF,  p-value: &lt; 2.2e-16</code></pre>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="periodogram.html#cb8-1" aria-hidden="true" tabindex="-1"></a> <span class="fu">plot</span>(<span class="fu">ts</span>(<span class="fu">resid</span>(model1),<span class="at">start=</span><span class="fu">c</span>(<span class="dv">1991</span>,<span class="dv">1</span>),<span class="at">freq=</span><span class="dv">12</span>),<span class="at">xlab=</span><span class="st">&quot;Time&quot;</span>,<span class="at">ylab=</span><span class="st">&quot;Residual</span></span>
+<span id="cb8-2"><a href="periodogram.html#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="st">&quot;</span>,<span class="at">main=</span><span class="st">&quot;Residuals for model1 fit to log of US employment&quot;</span>)</span></code></pre></div>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="periodogram.html#cb9-1" aria-hidden="true" tabindex="-1"></a>b1<span class="ot">&lt;-</span><span class="fu">coef</span>(model1)[<span class="dv">1</span>]</span>
+<span id="cb9-2"><a href="periodogram.html#cb9-2" aria-hidden="true" tabindex="-1"></a>b2<span class="ot">&lt;-</span><span class="fu">coef</span>(model1)[<span class="dv">7</span><span class="sc">:</span><span class="dv">17</span>]<span class="sc">+</span>b1</span>
+<span id="cb9-3"><a href="periodogram.html#cb9-3" aria-hidden="true" tabindex="-1"></a>b3<span class="ot">&lt;-</span><span class="fu">c</span>(b1,b2)</span>
+<span id="cb9-4"><a href="periodogram.html#cb9-4" aria-hidden="true" tabindex="-1"></a>seas<span class="ot">&lt;-</span><span class="fu">exp</span>(b3<span class="sc">-</span><span class="fu">mean</span>(b3))</span>
+<span id="cb9-5"><a href="periodogram.html#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="fu">cbind</span>(seas)</span></code></pre></div>
+<pre><code>##                  seas
+## (Intercept) 0.9846541
+## fMonth2     0.9888750
+## fMonth3     0.9935277
+## fMonth4     0.9994722
+## fMonth5     1.0050136
+## fMonth6     1.0078399
+## fMonth7     0.9981401
+## fMonth8     0.9983439
+## fMonth9     1.0024941
+## fMonth10    1.0072200
+## fMonth11    1.0084598
+## fMonth12    1.0062928</code></pre>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="periodogram.html#cb11-1" aria-hidden="true" tabindex="-1"></a>seas.ts<span class="ot">&lt;-</span><span class="fu">ts</span>(seas)</span>
+<span id="cb11-2"><a href="periodogram.html#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(seas.ts,<span class="at">xlab=</span><span class="st">&quot;Month&quot;</span>,<span class="at">ylab=</span><span class="st">&quot;Estimated seasonal index&quot;</span>)</span></code></pre></div>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-3-2.png" width="672" /></p>
+</div>
+<div id="next-model" class="section level3" number="5.0.3">
+<h3><span class="header-section-number">5.0.3</span> next model</h3>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="periodogram.html#cb12-1" aria-hidden="true" tabindex="-1"></a>obs217<span class="ot">&lt;-</span><span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">0</span>,<span class="dv">216</span>),<span class="dv">1</span>,<span class="fu">rep</span>(<span class="dv">0</span>,<span class="dv">113</span>))</span>
+<span id="cb12-2"><a href="periodogram.html#cb12-2" aria-hidden="true" tabindex="-1"></a>c348<span class="ot">&lt;-</span><span class="fu">cos</span>(pi<span class="sc">*</span><span class="fl">0.696</span><span class="sc">*</span>Time);s348<span class="ot">&lt;-</span><span class="fu">sin</span>(pi<span class="sc">*</span><span class="fl">0.696</span><span class="sc">*</span>Time)</span>
+<span id="cb12-3"><a href="periodogram.html#cb12-3" aria-hidden="true" tabindex="-1"></a>c432<span class="ot">&lt;-</span><span class="fu">cos</span>(pi<span class="sc">*</span><span class="fl">0.864</span><span class="sc">*</span>Time);s432<span class="ot">&lt;-</span><span class="fu">sin</span>(pi<span class="sc">*</span><span class="fl">0.864</span><span class="sc">*</span>Time)</span>
+<span id="cb12-4"><a href="periodogram.html#cb12-4" aria-hidden="true" tabindex="-1"></a>model2<span class="ot">&lt;-</span></span>
+<span id="cb12-5"><a href="periodogram.html#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="fu">lm</span>(dlogemp<span class="sc">~</span>Time<span class="sc">+</span><span class="fu">I</span>(Time<span class="sc">^</span><span class="dv">2</span>)<span class="sc">+</span><span class="fu">I</span>(Time<span class="sc">^</span><span class="dv">3</span>)<span class="sc">+</span><span class="fu">I</span>(Time<span class="sc">^</span><span class="dv">4</span>)<span class="sc">+</span><span class="fu">I</span>(Time<span class="sc">^</span><span class="dv">5</span>)<span class="sc">+</span><span class="fu">I</span>(Time<span class="sc">^</span><span class="dv">6</span>)<span class="sc">+</span>fMonth<span class="sc">+</span>obs217<span class="sc">+</span>c348<span class="sc">+</span>s348<span class="sc">+</span>c432<span class="sc">+</span>s432);<span class="fu">summary</span>(model2)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = dlogemp ~ Time + I(Time^2) + I(Time^3) + I(Time^4) + 
+##     I(Time^5) + I(Time^6) + fMonth + obs217 + c348 + s348 + c432 + 
+##     s432)
+## 
+## Residuals:
+##        Min         1Q     Median         3Q        Max 
+## -0.0061835 -0.0007854  0.0001046  0.0008955  0.0033661 
+## 
+## Coefficients:
+##               Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) -2.429e-02  6.728e-04 -36.100  &lt; 2e-16 ***
+## Time         2.745e-04  5.155e-05   5.325 1.95e-07 ***
+## I(Time^2)   -5.677e-06  1.349e-06  -4.209 3.38e-05 ***
+## I(Time^3)    5.358e-08  1.526e-08   3.511 0.000513 ***
+## I(Time^4)   -2.663e-10  8.375e-11  -3.180 0.001626 ** 
+## I(Time^5)    6.704e-13  2.196e-13   3.052 0.002468 ** 
+## I(Time^6)   -6.667e-16  2.204e-16  -3.024 0.002704 ** 
+## fMonth2      2.632e-02  4.177e-04  63.020  &lt; 2e-16 ***
+## fMonth3      2.672e-02  4.176e-04  63.985  &lt; 2e-16 ***
+## fMonth4      2.800e-02  4.178e-04  67.015  &lt; 2e-16 ***
+## fMonth5      2.756e-02  4.178e-04  65.980  &lt; 2e-16 ***
+## fMonth6      2.484e-02  4.179e-04  59.430  &lt; 2e-16 ***
+## fMonth7      1.190e-02  4.217e-04  28.210  &lt; 2e-16 ***
+## fMonth8      2.218e-02  4.217e-04  52.596  &lt; 2e-16 ***
+## fMonth9      2.611e-02  4.218e-04  61.885  &lt; 2e-16 ***
+## fMonth10     2.665e-02  4.218e-04  63.188  &lt; 2e-16 ***
+## fMonth11     2.320e-02  4.218e-04  55.007  &lt; 2e-16 ***
+## fMonth12     1.980e-02  4.220e-04  46.929  &lt; 2e-16 ***
+## obs217      -5.628e-03  1.596e-03  -3.527 0.000484 ***
+## c348        -1.792e-04  1.211e-04  -1.481 0.139761    
+## s348        -2.261e-04  1.205e-04  -1.876 0.061629 .  
+## c432        -1.248e-04  1.207e-04  -1.034 0.301896    
+## s432         1.197e-04  1.208e-04   0.991 0.322340    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.001548 on 307 degrees of freedom
+## Multiple R-squared:  0.9667, Adjusted R-squared:  0.9643 
+## F-statistic:   405 on 22 and 307 DF,  p-value: &lt; 2.2e-16</code></pre>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="periodogram.html#cb14-1" aria-hidden="true" tabindex="-1"></a>model3<span class="ot">&lt;-</span></span>
+<span id="cb14-2"><a href="periodogram.html#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="fu">lm</span>(dlogemp<span class="sc">~</span>Time<span class="sc">+</span><span class="fu">I</span>(Time<span class="sc">^</span><span class="dv">2</span>)<span class="sc">+</span><span class="fu">I</span>(Time<span class="sc">^</span><span class="dv">3</span>)<span class="sc">+</span><span class="fu">I</span>(Time<span class="sc">^</span><span class="dv">4</span>)<span class="sc">+</span><span class="fu">I</span>(Time<span class="sc">^</span><span class="dv">5</span>)<span class="sc">+</span><span class="fu">I</span>(Time<span class="sc">^</span><span class="dv">6</span>)<span class="sc">+</span>fMonth<span class="sc">+</span>obs217<span class="sc">+</span>c348<span class="sc">+</span>s348);<span class="fu">summary</span>(model3)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = dlogemp ~ Time + I(Time^2) + I(Time^3) + I(Time^4) + 
+##     I(Time^5) + I(Time^6) + fMonth + obs217 + c348 + s348)
+## 
+## Residuals:
+##        Min         1Q     Median         3Q        Max 
+## -0.0062743 -0.0007293  0.0001163  0.0009428  0.0032004 
+## 
+## Coefficients:
+##               Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) -2.427e-02  6.727e-04 -36.075  &lt; 2e-16 ***
+## Time         2.736e-04  5.155e-05   5.307 2.13e-07 ***
+## I(Time^2)   -5.653e-06  1.349e-06  -4.191 3.63e-05 ***
+## I(Time^3)    5.331e-08  1.526e-08   3.493 0.000547 ***
+## I(Time^4)   -2.648e-10  8.375e-11  -3.162 0.001725 ** 
+## I(Time^5)    6.664e-13  2.196e-13   3.034 0.002616 ** 
+## I(Time^6)   -6.626e-16  2.204e-16  -3.006 0.002866 ** 
+## fMonth2      2.631e-02  4.176e-04  63.001  &lt; 2e-16 ***
+## fMonth3      2.672e-02  4.176e-04  63.969  &lt; 2e-16 ***
+## fMonth4      2.798e-02  4.177e-04  67.000  &lt; 2e-16 ***
+## fMonth5      2.755e-02  4.177e-04  65.961  &lt; 2e-16 ***
+## fMonth6      2.483e-02  4.179e-04  59.417  &lt; 2e-16 ***
+## fMonth7      1.189e-02  4.217e-04  28.192  &lt; 2e-16 ***
+## fMonth8      2.217e-02  4.217e-04  52.575  &lt; 2e-16 ***
+## fMonth9      2.610e-02  4.218e-04  61.867  &lt; 2e-16 ***
+## fMonth10     2.664e-02  4.218e-04  63.170  &lt; 2e-16 ***
+## fMonth11     2.319e-02  4.218e-04  54.988  &lt; 2e-16 ***
+## fMonth12     1.979e-02  4.220e-04  46.911  &lt; 2e-16 ***
+## obs217      -5.753e-03  1.591e-03  -3.617 0.000348 ***
+## c348        -1.782e-04  1.211e-04  -1.472 0.142082    
+## s348        -2.256e-04  1.205e-04  -1.872 0.062200 .  
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.001548 on 309 degrees of freedom
+## Multiple R-squared:  0.9665, Adjusted R-squared:  0.9643 
+## F-statistic: 445.3 on 20 and 309 DF,  p-value: &lt; 2.2e-16</code></pre>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="periodogram.html#cb16-1" aria-hidden="true" tabindex="-1"></a>model4<span class="ot">&lt;-</span></span>
+<span id="cb16-2"><a href="periodogram.html#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="fu">lm</span>(dlogemp<span class="sc">~</span>Time<span class="sc">+</span><span class="fu">I</span>(Time<span class="sc">^</span><span class="dv">2</span>)<span class="sc">+</span><span class="fu">I</span>(Time<span class="sc">^</span><span class="dv">3</span>)<span class="sc">+</span><span class="fu">I</span>(Time<span class="sc">^</span><span class="dv">4</span>)<span class="sc">+</span><span class="fu">I</span>(Time<span class="sc">^</span><span class="dv">5</span>)<span class="sc">+</span><span class="fu">I</span>(Time<span class="sc">^</span><span class="dv">6</span>)<span class="sc">+</span>fMonth<span class="sc">+</span>obs217)</span>
+<span id="cb16-3"><a href="periodogram.html#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="fu">anova</span>(model4,model3)</span></code></pre></div>
+<pre><code>## Analysis of Variance Table
+## 
+## Model 1: dlogemp ~ Time + I(Time^2) + I(Time^3) + I(Time^4) + I(Time^5) + 
+##     I(Time^6) + fMonth + obs217
+## Model 2: dlogemp ~ Time + I(Time^2) + I(Time^3) + I(Time^4) + I(Time^5) + 
+##     I(Time^6) + fMonth + obs217 + c348 + s348
+##   Res.Df        RSS Df  Sum of Sq      F  Pr(&gt;F)  
+## 1    311 0.00075384                               
+## 2    309 0.00074030  2 1.3538e-05 2.8253 0.06082 .
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+</div>
+<div id="getting-seasonal-index-esetimation-from-model-3" class="section level3" number="5.0.4">
+<h3><span class="header-section-number">5.0.4</span> getting seasonal index esetimation from model 3</h3>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="periodogram.html#cb18-1" aria-hidden="true" tabindex="-1"></a>b1<span class="ot">&lt;-</span><span class="fu">coef</span>(model3)[<span class="dv">1</span>]</span>
+<span id="cb18-2"><a href="periodogram.html#cb18-2" aria-hidden="true" tabindex="-1"></a>b2<span class="ot">&lt;-</span><span class="fu">coef</span>(model3)[<span class="dv">8</span><span class="sc">:</span><span class="dv">18</span>]<span class="sc">+</span>b1</span>
+<span id="cb18-3"><a href="periodogram.html#cb18-3" aria-hidden="true" tabindex="-1"></a>b3<span class="ot">&lt;-</span><span class="fu">c</span>(b1,b2)</span>
+<span id="cb18-4"><a href="periodogram.html#cb18-4" aria-hidden="true" tabindex="-1"></a>x<span class="ot">&lt;-</span>b3<span class="sc">-</span><span class="fu">mean</span>(b3)</span>
+<span id="cb18-5"><a href="periodogram.html#cb18-5" aria-hidden="true" tabindex="-1"></a>s12<span class="ot">&lt;-</span><span class="dv">0</span></span>
+<span id="cb18-6"><a href="periodogram.html#cb18-6" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(j <span class="cf">in</span> <span class="dv">2</span><span class="sc">:</span><span class="dv">12</span>){</span>
+<span id="cb18-7"><a href="periodogram.html#cb18-7" aria-hidden="true" tabindex="-1"></a> xsub<span class="ot">&lt;-</span>x[j<span class="sc">:</span><span class="dv">12</span>]</span>
+<span id="cb18-8"><a href="periodogram.html#cb18-8" aria-hidden="true" tabindex="-1"></a> s12<span class="ot">&lt;-</span>s12<span class="sc">+</span><span class="fu">sum</span>(xsub)</span>
+<span id="cb18-9"><a href="periodogram.html#cb18-9" aria-hidden="true" tabindex="-1"></a> }</span>
+<span id="cb18-10"><a href="periodogram.html#cb18-10" aria-hidden="true" tabindex="-1"></a>s12<span class="ot">&lt;-</span>s12<span class="sc">/</span><span class="dv">12</span></span>
+<span id="cb18-11"><a href="periodogram.html#cb18-11" aria-hidden="true" tabindex="-1"></a>s<span class="ot">&lt;-</span><span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">0</span>,<span class="at">times=</span><span class="dv">12</span>))</span>
+<span id="cb18-12"><a href="periodogram.html#cb18-12" aria-hidden="true" tabindex="-1"></a>s[<span class="dv">12</span>]<span class="ot">&lt;-</span>s12</span>
+<span id="cb18-13"><a href="periodogram.html#cb18-13" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(j <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">11</span>){</span>
+<span id="cb18-14"><a href="periodogram.html#cb18-14" aria-hidden="true" tabindex="-1"></a> xsub<span class="ot">&lt;-</span>x[<span class="dv">1</span><span class="sc">:</span>j]</span>
+<span id="cb18-15"><a href="periodogram.html#cb18-15" aria-hidden="true" tabindex="-1"></a> s[j]<span class="ot">&lt;-</span>s[<span class="dv">12</span>]<span class="sc">+</span><span class="fu">sum</span>(xsub)</span>
+<span id="cb18-16"><a href="periodogram.html#cb18-16" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb18-17"><a href="periodogram.html#cb18-17" aria-hidden="true" tabindex="-1"></a>seas3<span class="ot">&lt;-</span><span class="fu">exp</span>(s)</span>
+<span id="cb18-18"><a href="periodogram.html#cb18-18" aria-hidden="true" tabindex="-1"></a><span class="fu">cbind</span>(seas,seas3)</span></code></pre></div>
+<pre><code>##                  seas     seas3
+## (Intercept) 0.9846541 0.9844692
+## fMonth2     0.9888750 0.9887860
+## fMonth3     0.9935277 0.9935282
+## fMonth4     0.9994722 0.9995595
+## fMonth5     1.0050136 1.0051960
+## fMonth6     1.0078399 1.0081125
+## fMonth7     0.9981401 0.9980382
+## fMonth8     0.9983439 0.9982765
+## fMonth9     1.0024941 1.0024441
+## fMonth10    1.0072200 1.0071789
+## fMonth11    1.0084598 1.0084519
+## fMonth12    1.0062928 1.0062989</code></pre>
 
+</div>
 </div>
             </section>
 

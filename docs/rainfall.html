@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>6 rainfall | Time Series Forecasting</title>
+  <meta name="description" content="6 rainfall | Time Series Forecasting" />
+  <meta name="generator" content="bookdown 0.24 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="6 rainfall | Time Series Forecasting" />
+  <meta property="og:type" content="book" />
+  
+  
+  
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="6 rainfall | Time Series Forecasting" />
+  
+  
+  
+
+<meta name="author" content="Katherine Wilson" />
+
+
+<meta name="date" content="2022-02-21" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="periodogram.html"/>
+<link rel="next" href="combination-of-forecasts.html"/>
+<script src="libs/header-attrs-2.11/header-attrs.js"></script>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.0.1/anchor-sections.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.0.1/anchor-sections.js"></script>
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">Time Series</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> basics</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="index.html"><a href="index.html#decomposition-models"><i class="fa fa-check"></i><b>1.1</b> Decomposition Models</a></li>
+<li class="chapter" data-level="1.2" data-path="index.html"><a href="index.html#model-assumptions"><i class="fa fa-check"></i><b>1.2</b> Model assumptions</a></li>
+<li class="chapter" data-level="1.3" data-path="index.html"><a href="index.html#examples"><i class="fa fa-check"></i><b>1.3</b> Examples</a>
+<ul>
+<li class="chapter" data-level="1.3.1" data-path="index.html"><a href="index.html#example"><i class="fa fa-check"></i><b>1.3.1</b> Example</a></li>
+<li class="chapter" data-level="1.3.2" data-path="index.html"><a href="index.html#example-1"><i class="fa fa-check"></i><b>1.3.2</b> Example</a></li>
+<li class="chapter" data-level="1.3.3" data-path="index.html"><a href="index.html#example-2"><i class="fa fa-check"></i><b>1.3.3</b> Example</a></li>
+<li class="chapter" data-level="1.3.4" data-path="index.html"><a href="index.html#example-3"><i class="fa fa-check"></i><b>1.3.4</b> Example</a></li>
+<li class="chapter" data-level="1.3.5" data-path="index.html"><a href="index.html#example-4"><i class="fa fa-check"></i><b>1.3.5</b> Example</a></li>
+<li class="chapter" data-level="1.3.6" data-path="index.html"><a href="index.html#example-5"><i class="fa fa-check"></i><b>1.3.6</b> Example</a></li>
+<li class="chapter" data-level="1.3.7" data-path="index.html"><a href="index.html#example-6"><i class="fa fa-check"></i><b>1.3.7</b> Example</a></li>
+<li class="chapter" data-level="1.3.8" data-path="index.html"><a href="index.html#example-7"><i class="fa fa-check"></i><b>1.3.8</b> Example</a></li>
+<li class="chapter" data-level="1.3.9" data-path="index.html"><a href="index.html#example-8"><i class="fa fa-check"></i><b>1.3.9</b> Example</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="multiple-regression-models.html"><a href="multiple-regression-models.html"><i class="fa fa-check"></i><b>2</b> multiple regression models</a>
+<ul>
+<li class="chapter" data-level="2.0.1" data-path="multiple-regression-models.html"><a href="multiple-regression-models.html#additivie-decomposition-model-with-a-fourth-degree-polynomial-trend"><i class="fa fa-check"></i><b>2.0.1</b> additivie decomposition model with a fourth-degree polynomial trend</a></li>
+<li class="chapter" data-level="2.0.2" data-path="multiple-regression-models.html"><a href="multiple-regression-models.html#additive-decomposition-model-with-cosine-and-sine-seasonal-dummies-and-inclusion-of-an-intercept"><i class="fa fa-check"></i><b>2.0.2</b> Additive decomposition model with cosine and sine seasonal dummies and inclusion of an intercept</a></li>
+<li class="chapter" data-level="2.0.3" data-path="multiple-regression-models.html"><a href="multiple-regression-models.html#australian-beer"><i class="fa fa-check"></i><b>2.0.3</b> Australian beer</a></li>
+<li class="chapter" data-level="2.1" data-path="multiple-regression-models.html"><a href="multiple-regression-models.html#ontario-gas"><i class="fa fa-check"></i><b>2.1</b> Ontario gas</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="interactions.html"><a href="interactions.html"><i class="fa fa-check"></i><b>3</b> interactions</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="interactions.html"><a href="interactions.html#example-9"><i class="fa fa-check"></i><b>3.1</b> Example</a>
+<ul>
+<li class="chapter" data-level="3.1.1" data-path="interactions.html"><a href="interactions.html#interaction"><i class="fa fa-check"></i><b>3.1.1</b> Interaction</a></li>
+<li class="chapter" data-level="3.1.2" data-path="interactions.html"><a href="interactions.html#example-10"><i class="fa fa-check"></i><b>3.1.2</b> example</a></li>
+<li class="chapter" data-level="3.1.3" data-path="interactions.html"><a href="interactions.html#durbin-watson-statistic"><i class="fa fa-check"></i><b>3.1.3</b> Durbin-Watson statistic</a></li>
+</ul></li>
+<li class="chapter" data-level="3.2" data-path="interactions.html"><a href="interactions.html#weekly-garbage-deposites"><i class="fa fa-check"></i><b>3.2</b> Weekly Garbage Deposites</a>
+<ul>
+<li class="chapter" data-level="3.2.1" data-path="interactions.html"><a href="interactions.html#simple-model"><i class="fa fa-check"></i><b>3.2.1</b> Simple model</a></li>
+</ul></li>
+<li class="chapter" data-level="3.3" data-path="interactions.html"><a href="interactions.html#code"><i class="fa fa-check"></i><b>3.3</b> Code</a>
+<ul>
+<li class="chapter" data-level="3.3.1" data-path="interactions.html"><a href="interactions.html#model-3"><i class="fa fa-check"></i><b>3.3.1</b> model 3</a></li>
+<li class="chapter" data-level="3.3.2" data-path="interactions.html"><a href="interactions.html#estimated-trends-calculating-the-interaction-terms"><i class="fa fa-check"></i><b>3.3.2</b> Estimated Trends (calculating the interaction terms)</a></li>
+<li class="chapter" data-level="3.3.3" data-path="interactions.html"><a href="interactions.html#visualizing-three-trends"><i class="fa fa-check"></i><b>3.3.3</b> Visualizing Three Trends</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="spectral-density.html"><a href="spectral-density.html"><i class="fa fa-check"></i><b>4</b> spectral density</a></li>
+<li class="chapter" data-level="5" data-path="periodogram.html"><a href="periodogram.html"><i class="fa fa-check"></i><b>5</b> periodogram</a>
+<ul>
+<li class="chapter" data-level="5.0.1" data-path="periodogram.html"><a href="periodogram.html#spectral"><i class="fa fa-check"></i><b>5.0.1</b> Spectral</a></li>
+<li class="chapter" data-level="5.0.2" data-path="periodogram.html"><a href="periodogram.html#multiplicative"><i class="fa fa-check"></i><b>5.0.2</b> Multiplicative</a></li>
+<li class="chapter" data-level="5.0.3" data-path="periodogram.html"><a href="periodogram.html#next-model"><i class="fa fa-check"></i><b>5.0.3</b> next model</a></li>
+<li class="chapter" data-level="5.0.4" data-path="periodogram.html"><a href="periodogram.html#getting-seasonal-index-esetimation-from-model-3"><i class="fa fa-check"></i><b>5.0.4</b> getting seasonal index esetimation from model 3</a></li>
+<li class="chapter" data-level="5.0.5" data-path="periodogram.html"><a href="periodogram.html#smoothing-technique"><i class="fa fa-check"></i><b>5.0.5</b> smoothing technique</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="rainfall.html"><a href="rainfall.html"><i class="fa fa-check"></i><b>6</b> rainfall</a></li>
+<li class="chapter" data-level="7" data-path="combination-of-forecasts.html"><a href="combination-of-forecasts.html"><i class="fa fa-check"></i><b>7</b> combination of forecasts</a></li>
+<li class="chapter" data-level="8" data-path="arch-and-garch-models.html"><a href="arch-and-garch-models.html"><i class="fa fa-check"></i><b>8</b> ARCH and GARCH models</a></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Time Series Forecasting</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="rainfall" class="section level1" number="6">
+<h1><span class="header-section-number">6</span> rainfall</h1>
+<p>Last topic on decomposition models, using regression.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="rainfall.html#cb1-1" aria-hidden="true" tabindex="-1"></a>rain <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;/cloud/project/data/rainfall.txt&quot;</span>)</span>
+<span id="cb1-2"><a href="rainfall.html#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">attach</span>(rain)</span>
+<span id="cb1-3"><a href="rainfall.html#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(rain)</span></code></pre></div>
+<pre><code>##   year month monthlength time rainfall
+## 1 1979     1          31    1       90
+## 2 1979     2          28    2      193
+## 3 1979     3          31    3       92
+## 4 1979     4          30    4      148
+## 5 1979     5          31    5        0
+## 6 1979     6          30    6       88</code></pre>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="rainfall.html#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">ts</span>(rainfall,<span class="at">start =</span> <span class="fu">c</span>(<span class="dv">1979</span>,<span class="dv">1</span>), <span class="at">freq =</span> <span class="dv">12</span>))</span></code></pre></div>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="rainfall.html#cb4-1" aria-hidden="true" tabindex="-1"></a>modrainfall<span class="ot">&lt;-</span>rainfall</span>
+<span id="cb4-2"><a href="rainfall.html#cb4-2" aria-hidden="true" tabindex="-1"></a> <span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(rainfall)){</span>
+<span id="cb4-3"><a href="rainfall.html#cb4-3" aria-hidden="true" tabindex="-1"></a> <span class="cf">if</span>(rainfall[i]<span class="sc">==</span><span class="dv">0</span>)modrainfall[i]<span class="ot">&lt;-</span>rainfall[i]<span class="sc">+</span><span class="dv">1</span></span>
+<span id="cb4-4"><a href="rainfall.html#cb4-4" aria-hidden="true" tabindex="-1"></a> }</span>
+<span id="cb4-5"><a href="rainfall.html#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">ts</span>(<span class="fu">log</span>(modrainfall),<span class="at">start=</span><span class="fu">c</span>(<span class="dv">1979</span>,<span class="dv">1</span>),<span class="at">freq=</span><span class="dv">12</span>))</span></code></pre></div>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-1-2.png" width="672" /></p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="rainfall.html#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">ts</span>(<span class="fu">sqrt</span>(modrainfall),<span class="at">start=</span><span class="fu">c</span>(<span class="dv">1979</span>,<span class="dv">1</span>),<span class="at">freq=</span><span class="dv">12</span>))</span></code></pre></div>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-1-3.png" width="672" /></p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="rainfall.html#cb6-1" aria-hidden="true" tabindex="-1"></a>time<span class="ot">&lt;-</span><span class="fu">as.numeric</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(rainfall))</span>
+<span id="cb6-2"><a href="rainfall.html#cb6-2" aria-hidden="true" tabindex="-1"></a>cosm<span class="ot">&lt;-</span><span class="fu">matrix</span>(<span class="at">nrow=</span><span class="fu">length</span>(rainfall),<span class="at">ncol=</span><span class="dv">6</span>)</span>
+<span id="cb6-3"><a href="rainfall.html#cb6-3" aria-hidden="true" tabindex="-1"></a>sinm<span class="ot">&lt;-</span><span class="fu">matrix</span>(<span class="at">nrow=</span><span class="fu">length</span>(rainfall),<span class="at">ncol=</span><span class="dv">5</span>)</span>
+<span id="cb6-4"><a href="rainfall.html#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>){</span>
+<span id="cb6-5"><a href="rainfall.html#cb6-5" aria-hidden="true" tabindex="-1"></a> cosm[,i]<span class="ot">&lt;-</span><span class="fu">cos</span>(<span class="dv">2</span><span class="sc">*</span>pi<span class="sc">*</span>i<span class="sc">*</span>time<span class="sc">/</span><span class="dv">12</span>)</span>
+<span id="cb6-6"><a href="rainfall.html#cb6-6" aria-hidden="true" tabindex="-1"></a> sinm[,i]<span class="ot">&lt;-</span><span class="fu">sin</span>(<span class="dv">2</span><span class="sc">*</span>pi<span class="sc">*</span>i<span class="sc">*</span>time<span class="sc">/</span><span class="dv">12</span>)</span>
+<span id="cb6-7"><a href="rainfall.html#cb6-7" aria-hidden="true" tabindex="-1"></a> }</span>
+<span id="cb6-8"><a href="rainfall.html#cb6-8" aria-hidden="true" tabindex="-1"></a>cosm[,<span class="dv">6</span>]<span class="ot">&lt;-</span><span class="fu">cos</span>(pi<span class="sc">*</span>time)</span>
+<span id="cb6-9"><a href="rainfall.html#cb6-9" aria-hidden="true" tabindex="-1"></a>model1<span class="ot">&lt;-</span></span>
+<span id="cb6-10"><a href="rainfall.html#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="fu">lm</span>(<span class="fu">sqrt</span>(rainfall)<span class="sc">~</span>cosm[,<span class="dv">1</span>]<span class="sc">+</span>sinm[,<span class="dv">1</span>]<span class="sc">+</span>cosm[,<span class="dv">2</span>]<span class="sc">+</span>sinm[,<span class="dv">2</span>]<span class="sc">+</span>cosm[,<span class="dv">3</span>]<span class="sc">+</span>sinm[,<span class="dv">3</span></span>
+<span id="cb6-11"><a href="rainfall.html#cb6-11" aria-hidden="true" tabindex="-1"></a>]<span class="sc">+</span>cosm[,<span class="dv">4</span>]<span class="sc">+</span>sinm[,<span class="dv">4</span>]<span class="sc">+</span>cosm[,<span class="dv">5</span>]<span class="sc">+</span>sinm[,<span class="dv">5</span>]<span class="sc">+</span>cosm[,<span class="dv">6</span>]);<span class="fu">summary</span>(model1)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = sqrt(rainfall) ~ cosm[, 1] + sinm[, 1] + cosm[, 
+##     2] + sinm[, 2] + cosm[, 3] + sinm[, 3] + cosm[, 4] + sinm[, 
+##     4] + cosm[, 5] + sinm[, 5] + cosm[, 6])
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -8.2879 -2.4459  0.0804  2.0217 11.5607 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)   8.8849     0.2732  32.518  &lt; 2e-16 ***
+## cosm[, 1]     2.7150     0.3864   7.026 4.22e-11 ***
+## sinm[, 1]     1.8291     0.3864   4.734 4.45e-06 ***
+## cosm[, 2]    -0.8887     0.3864  -2.300 0.022600 *  
+## sinm[, 2]    -1.2941     0.3864  -3.349 0.000988 ***
+## cosm[, 3]     0.5053     0.3864   1.308 0.192623    
+## sinm[, 3]    -0.2137     0.3864  -0.553 0.580835    
+## cosm[, 4]    -0.6180     0.3864  -1.599 0.111514    
+## sinm[, 4]     0.2062     0.3864   0.534 0.594282    
+## cosm[, 5]    -0.1749     0.3864  -0.453 0.651444    
+## sinm[, 5]    -0.1179     0.3864  -0.305 0.760609    
+## cosm[, 6]     0.1439     0.2732   0.526 0.599196    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 3.786 on 180 degrees of freedom
+## Multiple R-squared:  0.3424, Adjusted R-squared:  0.3022 
+## F-statistic:  8.52 on 11 and 180 DF,  p-value: 5.002e-12</code></pre>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="rainfall.html#cb8-1" aria-hidden="true" tabindex="-1"></a>model2<span class="ot">&lt;-</span></span>
+<span id="cb8-2"><a href="rainfall.html#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">lm</span>(<span class="fu">sqrt</span>(rainfall)<span class="sc">~</span>cosm[,<span class="dv">1</span>]<span class="sc">+</span>sinm[,<span class="dv">1</span>]<span class="sc">+</span>cosm[,<span class="dv">2</span>]<span class="sc">+</span>sinm[,<span class="dv">2</span>]);<span class="fu">summary</span>(model2)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = sqrt(rainfall) ~ cosm[, 1] + sinm[, 1] + cosm[, 
+##     2] + sinm[, 2])
+## 
+## Residuals:
+##    Min     1Q Median     3Q    Max 
+## -8.504 -2.386  0.132  2.157 11.344 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)   8.8849     0.2721  32.655  &lt; 2e-16 ***
+## cosm[, 1]     2.7150     0.3848   7.056 3.24e-11 ***
+## sinm[, 1]     1.8291     0.3848   4.753 3.98e-06 ***
+## cosm[, 2]    -0.8887     0.3848  -2.310 0.022001 *  
+## sinm[, 2]    -1.2941     0.3848  -3.363 0.000935 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 3.77 on 187 degrees of freedom
+## Multiple R-squared:  0.3225, Adjusted R-squared:  0.308 
+## F-statistic: 22.26 on 4 and 187 DF,  p-value: 4.806e-15</code></pre>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="rainfall.html#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">anova</span>(model2,model1)</span></code></pre></div>
+<pre><code>## Analysis of Variance Table
+## 
+## Model 1: sqrt(rainfall) ~ cosm[, 1] + sinm[, 1] + cosm[, 2] + sinm[, 2]
+## Model 2: sqrt(rainfall) ~ cosm[, 1] + sinm[, 1] + cosm[, 2] + sinm[, 2] + 
+##     cosm[, 3] + sinm[, 3] + cosm[, 4] + sinm[, 4] + cosm[, 5] + 
+##     sinm[, 5] + cosm[, 6]
+##   Res.Df    RSS Df Sum of Sq      F Pr(&gt;F)
+## 1    187 2658.0                           
+## 2    180 2580.1  7    77.885 0.7762  0.608</code></pre>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="rainfall.html#cb12-1" aria-hidden="true" tabindex="-1"></a>seas2<span class="ot">&lt;-</span>(<span class="fu">predict</span>(model2)<span class="sc">-</span><span class="fu">coef</span>(model2)[<span class="dv">1</span>])[<span class="dv">1</span><span class="sc">:</span><span class="dv">12</span>]</span>
+<span id="cb12-2"><a href="rainfall.html#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">ts</span>(seas2),<span class="at">xlab=</span><span class="st">&quot;month&quot;</span>,<span class="at">ylab=</span><span class="st">&quot;seasonal estimate&quot;</span>)</span></code></pre></div>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="rainfall.html#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cbind</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">12</span>,seas2)</span></code></pre></div>
+<pre><code>##            seas2
+## 1   1  1.7007794
+## 2   2  2.2651957
+## 3   3  2.7177618
+## 4   4  1.7915266
+## 5   5 -0.7604333
+## 6   6 -3.6037428
+## 7   7 -4.8308531
+## 8   8 -3.6178537
+## 9   9 -0.9403461
+## 10 10  1.3385472
+## 11 11  2.1130913
+## 12 12  1.8263272</code></pre>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="rainfall.html#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">qqnorm</span>(<span class="fu">resid</span>(model2))</span>
+<span id="cb15-2"><a href="rainfall.html#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">qqline</span>(<span class="fu">resid</span>(model2))</span></code></pre></div>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-2-2.png" width="672" /></p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="rainfall.html#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">shapiro.test</span>(<span class="fu">resid</span>(model2))</span></code></pre></div>
+<pre><code>## 
+##  Shapiro-Wilk normality test
+## 
+## data:  resid(model2)
+## W = 0.99356, p-value = 0.5691</code></pre>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="rainfall.html#cb18-1" aria-hidden="true" tabindex="-1"></a>model3<span class="ot">&lt;-</span></span>
+<span id="cb18-2"><a href="rainfall.html#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="fu">lm</span>(rainfall<span class="sc">~</span>cosm[,<span class="dv">1</span>]<span class="sc">+</span>sinm[,<span class="dv">1</span>]<span class="sc">+</span>cosm[,<span class="dv">2</span>]<span class="sc">+</span>sinm[,<span class="dv">2</span>]);<span class="fu">summary</span>(model3)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = rainfall ~ cosm[, 1] + sinm[, 1] + cosm[, 2] + sinm[, 
+##     2])
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -132.28  -43.80  -10.95   30.08  366.72 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)   99.375      5.487  18.112  &lt; 2e-16 ***
+## cosm[, 1]     44.334      7.759   5.714 4.30e-08 ***
+## sinm[, 1]     33.646      7.759   4.336 2.37e-05 ***
+## cosm[, 2]    -13.964      7.759  -1.800  0.07353 .  
+## sinm[, 2]    -21.227      7.759  -2.736  0.00682 ** 
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 76.02 on 187 degrees of freedom
+## Multiple R-squared:  0.2495, Adjusted R-squared:  0.2335 
+## F-statistic: 15.54 on 4 and 187 DF,  p-value: 5.379e-11</code></pre>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="rainfall.html#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">qqnorm</span>(<span class="fu">resid</span>(model3))</span>
+<span id="cb20-2"><a href="rainfall.html#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="fu">qqline</span>(<span class="fu">resid</span>(model3))</span></code></pre></div>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-2-3.png" width="672" /></p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="rainfall.html#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">predict</span>(model3),<span class="fu">resid</span>(model3),<span class="at">xlab=</span><span class="st">&quot;predicted</span></span>
+<span id="cb21-2"><a href="rainfall.html#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="st">rainfall&quot;</span>,<span class="at">ylab=</span><span class="st">&quot;rainfall residual&quot;</span>,<span class="at">main=</span><span class="st">&quot;Residual by Predicted Plot&quot;</span>)</span></code></pre></div>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-2-4.png" width="672" /></p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="rainfall.html#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">ts</span>(<span class="fu">resid</span>(model2),<span class="at">start=</span><span class="fu">c</span>(<span class="dv">1979</span>,<span class="dv">1</span>),<span class="at">freq=</span><span class="dv">12</span>))</span></code></pre></div>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-2-5.png" width="672" /></p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="rainfall.html#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">acf</span>(<span class="fu">resid</span>(model2))</span></code></pre></div>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-2-6.png" width="672" /></p>
+
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="periodogram.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="combination-of-forecasts.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"whatsapp": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": "https://github.com/katjanewilson/Time-Series-Forecasting/edit/master/06-topic.Rmd",
+"text": "Edit"
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": "https://github.com/katjanewilson/Time-Series-Forecasting/blob/master/06-topic.Rmd",
+"text": null
+},
+"download": null,
+"search": {
+"engine": "fuse",
+"options": null
+},
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+</body>
+
+</html>

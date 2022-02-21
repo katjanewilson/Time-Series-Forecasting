@@ -1,1 +1,60 @@
-# exponential smoothing
+# rainfall
+
+
+Last topic on decomposition models, using regression. 
+
+```{r echo=TRUE}
+rain <- read.csv("/cloud/project/data/rainfall.txt")
+attach(rain)
+head(rain)
+plot(ts(rainfall,start = c(1979,1), freq = 12))
+
+modrainfall<-rainfall
+ for(i in 1:length(rainfall)){
+ if(rainfall[i]==0)modrainfall[i]<-rainfall[i]+1
+ }
+plot(ts(log(modrainfall),start=c(1979,1),freq=12))
+plot(ts(sqrt(modrainfall),start=c(1979,1),freq=12))
+```
+
+```{r}
+time<-as.numeric(1:length(rainfall))
+cosm<-matrix(nrow=length(rainfall),ncol=6)
+sinm<-matrix(nrow=length(rainfall),ncol=5)
+for(i in 1:5){
+ cosm[,i]<-cos(2*pi*i*time/12)
+ sinm[,i]<-sin(2*pi*i*time/12)
+ }
+cosm[,6]<-cos(pi*time)
+model1<-
+lm(sqrt(rainfall)~cosm[,1]+sinm[,1]+cosm[,2]+sinm[,2]+cosm[,3]+sinm[,3
+]+cosm[,4]+sinm[,4]+cosm[,5]+sinm[,5]+cosm[,6]);summary(model1)
+
+model2<-
+lm(sqrt(rainfall)~cosm[,1]+sinm[,1]+cosm[,2]+sinm[,2]);summary(model2)
+
+anova(model2,model1)
+
+seas2<-(predict(model2)-coef(model2)[1])[1:12]
+plot(ts(seas2),xlab="month",ylab="seasonal estimate")
+cbind(1:12,seas2)
+qqnorm(resid(model2))
+qqline(resid(model2))
+shapiro.test(resid(model2))
+
+model3<-
+lm(rainfall~cosm[,1]+sinm[,1]+cosm[,2]+sinm[,2]);summary(model3)
+
+qqnorm(resid(model3))
+qqline(resid(model3))
+
+plot(predict(model3),resid(model3),xlab="predicted
+rainfall",ylab="rainfall residual",main="Residual by Predicted Plot")
+
+plot(ts(resid(model2),start=c(1979,1),freq=12))
+acf(resid(model2))
+
+```
+
+
+
