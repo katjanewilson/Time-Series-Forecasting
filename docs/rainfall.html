@@ -213,7 +213,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
             <section class="normal" id="section-">
 <div id="rainfall" class="section level1" number="6">
 <h1><span class="header-section-number">6</span> rainfall</h1>
-<p>Last topic on decomposition models, using regression.</p>
+<p>Last topic on decomposition models, using regression. This is monthly data, but we cannot use calendar trigonometric pairs. Months are of unequal length, and trading days don’t play a role. The length of each month is indicated in the dataset, as monthlength. The rainfall is in milimeters.</p>
+<p>Volatility changes a bit from time to time. Higher levels of rainfall mean more volatility than lower levels. Log transformation is one option, but there are a few months that have no rainfall, and can’t take the log of 0, so change these months to 1 millimeter. Log transformation is a substantial overcorrection, where the dry months have much more variability than the wet months.</p>
+<p>Power transformation. Alpha equal to a third, take the cubed root. Then fit a model with a trend component and determine trend is not sig. Reason the R-squared is so low is because not a lot of vertical dispersion. Fluctuations are relatively constant. the only significant components are the first two cosine sine pairs. Re-fit with just these pairs. In model 2, in the reduced model, it is 2.7150. Why didn’t this coefficient change when we dropped the pair? When the number of data sets is a multiple of 12, you have perfect lack of collinearity. The cosines are orthogonal to the sins, and any one pair is uncorrelated completely. Leads to a situation where there are no changes. The standard errors do change. Reduced model has lower R squared.</p>
+<p>Seasonal estimates show that rainy season spans October-April.</p>
+<p>In model 3, normal QQ plot is off. And plotting the residuals against the predicted values show megaphone shape (heteroskedasticity) so there is volatility. We need to use that square root transformation.</p>
+<p>Does model 2 reduce to white noise? Autocorrelations of the residuals indicate reducing to white noise.</p>
+<p>Amplitude and peak calculations -&gt;</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="rainfall.html#cb1-1" aria-hidden="true" tabindex="-1"></a>rain <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;/cloud/project/data/rainfall.txt&quot;</span>)</span>
 <span id="cb1-2"><a href="rainfall.html#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">attach</span>(rain)</span>
 <span id="cb1-3"><a href="rainfall.html#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(rain)</span></code></pre></div>
@@ -369,6 +375,166 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p><img src="bookdownproj_files/figure-html/unnamed-chunk-2-5.png" width="672" /></p>
 <div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="rainfall.html#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">acf</span>(<span class="fu">resid</span>(model2))</span></code></pre></div>
 <p><img src="bookdownproj_files/figure-html/unnamed-chunk-2-6.png" width="672" /></p>
+<p>Calendar adjustment: will just deal with the length of the months.</p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="rainfall.html#cb24-1" aria-hidden="true" tabindex="-1"></a>adjrainfall<span class="ot">&lt;-</span>rainfall<span class="sc">*</span><span class="fl">365.25</span><span class="sc">/</span>(<span class="dv">12</span><span class="sc">*</span>monthlength)</span>
+<span id="cb24-2"><a href="rainfall.html#cb24-2" aria-hidden="true" tabindex="-1"></a>model4<span class="ot">&lt;-</span></span>
+<span id="cb24-3"><a href="rainfall.html#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="fu">lm</span>(<span class="fu">sqrt</span>(adjrainfall)<span class="sc">~</span>cosm[,<span class="dv">1</span>]<span class="sc">+</span>sinm[,<span class="dv">1</span>]<span class="sc">+</span>cosm[,<span class="dv">2</span>]<span class="sc">+</span>sinm[,<span class="dv">2</span>]);<span class="fu">summary</span>(model4)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = sqrt(adjrainfall) ~ cosm[, 1] + sinm[, 1] + cosm[, 
+##     2] + sinm[, 2])
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -8.5007 -2.3860  0.1723  2.0834 11.7860 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)   8.8943     0.2730  32.581  &lt; 2e-16 ***
+## cosm[, 1]     2.7314     0.3861   7.075 2.91e-11 ***
+## sinm[, 1]     1.8798     0.3861   4.869 2.38e-06 ***
+## cosm[, 2]    -0.9312     0.3861  -2.412  0.01683 *  
+## sinm[, 2]    -1.2636     0.3861  -3.273  0.00127 ** 
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 3.783 on 187 degrees of freedom
+## Multiple R-squared:  0.3256, Adjusted R-squared:  0.3112 
+## F-statistic: 22.57 on 4 and 187 DF,  p-value: 3.162e-15</code></pre>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="rainfall.html#cb26-1" aria-hidden="true" tabindex="-1"></a>seas22<span class="ot">&lt;-</span><span class="dv">2</span><span class="sc">*</span>seas2<span class="sc">*</span><span class="fu">coef</span>(model2)[<span class="dv">1</span>]<span class="sc">+</span>seas2<span class="sc">*</span>seas2</span>
+<span id="cb26-2"><a href="rainfall.html#cb26-2" aria-hidden="true" tabindex="-1"></a>seas22<span class="ot">&lt;-</span>seas22<span class="sc">-</span><span class="fu">mean</span>(seas22)</span>
+<span id="cb26-3"><a href="rainfall.html#cb26-3" aria-hidden="true" tabindex="-1"></a>seas22</span></code></pre></div>
+<pre><code>##         1         2         3         4         5         6         7         8 
+##  26.52443  38.79242  49.08952  28.45390 -19.52505 -57.64120 -69.09644 -57.79004 
+##         9        10        11        12 
+## -22.41606  18.98672  35.42361  29.19820</code></pre>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="rainfall.html#cb28-1" aria-hidden="true" tabindex="-1"></a>seas4<span class="ot">&lt;-</span>(<span class="fu">predict</span>(model4)<span class="sc">-</span><span class="fu">coef</span>(model4)[<span class="dv">1</span>])[<span class="dv">1</span><span class="sc">:</span><span class="dv">12</span>]</span>
+<span id="cb28-2"><a href="rainfall.html#cb28-2" aria-hidden="true" tabindex="-1"></a>seas42<span class="ot">&lt;-</span><span class="dv">2</span><span class="sc">*</span>seas4<span class="sc">*</span><span class="fu">coef</span>(model4)[<span class="dv">1</span>]<span class="sc">+</span>seas4<span class="sc">*</span>seas4</span>
+<span id="cb28-3"><a href="rainfall.html#cb28-3" aria-hidden="true" tabindex="-1"></a>seas42<span class="ot">&lt;-</span>seas42<span class="sc">-</span><span class="fu">mean</span>(seas42)</span>
+<span id="cb28-4"><a href="rainfall.html#cb28-4" aria-hidden="true" tabindex="-1"></a>seas42</span></code></pre></div>
+<pre><code>##         1         2         3         4         5         6         7         8 
+##  27.36490  40.93254  51.17789  29.00696 -20.26817 -58.46723 -69.60506 -58.04449 
+##         9        10        11        12 
+## -22.70282  18.03920  34.03326  28.53301</code></pre>
+<p>Model 1: model without the square root transformation:</p>
+<p><span class="math display">\[
+y_t = \alpha + S_t + \epsilon_t
+\]</span></p>
+<p>Model 2: alpha hat + sub_t</p>
+<p><span class="math display">\[
+y_t = \alpha + \hat{S}_t
+\]</span></p>
+<p>Model 3: model with the square root transformation</p>
+<p><span class="math display">\[
+\sqrt(y_t) = \alpha^* + S_t^* + \epsilon_t^*
+\]</span></p>
+<p>model 4:</p>
+<p><span class="math display">\[
+pred(\sqrt(y_t) = \hat{\alpha}^* + \hat{S}^*
+\]</span></p>
+<p>Model 5</p>
+<p><span class="math display">\[
+\hat\alpha +\hat{S}_t = (\alpha + \hat{S}_t)^2 = \alpha^2
+\]</span></p>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="rainfall.html#cb30-1" aria-hidden="true" tabindex="-1"></a>seas22<span class="ot">&lt;-</span><span class="dv">2</span><span class="sc">*</span>seas2<span class="sc">*</span><span class="fu">coef</span>(model2)[<span class="dv">1</span>]<span class="sc">+</span>seas2<span class="sc">*</span>seas2</span>
+<span id="cb30-2"><a href="rainfall.html#cb30-2" aria-hidden="true" tabindex="-1"></a>seas22<span class="ot">&lt;-</span>seas22<span class="sc">-</span><span class="fu">mean</span>(seas22)</span>
+<span id="cb30-3"><a href="rainfall.html#cb30-3" aria-hidden="true" tabindex="-1"></a>seas22</span></code></pre></div>
+<pre><code>##         1         2         3         4         5         6         7         8 
+##  26.52443  38.79242  49.08952  28.45390 -19.52505 -57.64120 -69.09644 -57.79004 
+##         9        10        11        12 
+## -22.41606  18.98672  35.42361  29.19820</code></pre>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="rainfall.html#cb32-1" aria-hidden="true" tabindex="-1"></a>seas4<span class="ot">&lt;-</span>(<span class="fu">predict</span>(model4)<span class="sc">-</span><span class="fu">coef</span>(model4)[<span class="dv">1</span>])[<span class="dv">1</span><span class="sc">:</span><span class="dv">12</span>]</span>
+<span id="cb32-2"><a href="rainfall.html#cb32-2" aria-hidden="true" tabindex="-1"></a>seas42<span class="ot">&lt;-</span><span class="dv">2</span><span class="sc">*</span>seas4<span class="sc">*</span><span class="fu">coef</span>(model4)[<span class="dv">1</span>]<span class="sc">+</span>seas4<span class="sc">*</span>seas4</span>
+<span id="cb32-3"><a href="rainfall.html#cb32-3" aria-hidden="true" tabindex="-1"></a>seas42<span class="ot">&lt;-</span>seas42<span class="sc">-</span><span class="fu">mean</span>(seas42)</span>
+<span id="cb32-4"><a href="rainfall.html#cb32-4" aria-hidden="true" tabindex="-1"></a>seas42</span></code></pre></div>
+<pre><code>##         1         2         3         4         5         6         7         8 
+##  27.36490  40.93254  51.17789  29.00696 -20.26817 -58.46723 -69.60506 -58.04449 
+##         9        10        11        12 
+## -22.70282  18.03920  34.03326  28.53301</code></pre>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="rainfall.html#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">boxplot</span>(adjrainfall<span class="sc">~</span>month)</span></code></pre></div>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="rainfall.html#cb35-1" aria-hidden="true" tabindex="-1"></a>means<span class="ot">&lt;-</span><span class="fu">tapply</span>(adjrainfall,month,mean)</span>
+<span id="cb35-2"><a href="rainfall.html#cb35-2" aria-hidden="true" tabindex="-1"></a>stddevs<span class="ot">&lt;-</span><span class="fu">tapply</span>(adjrainfall,month,sd)</span>
+<span id="cb35-3"><a href="rainfall.html#cb35-3" aria-hidden="true" tabindex="-1"></a><span class="fu">cbind</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">12</span>,means,stddevs)</span></code></pre></div>
+<pre><code>##           means   stddevs
+## 1   1 125.00239  72.88222
+## 2   2 156.10230 137.80490
+## 3   3 126.29108  70.94935
+## 4   4 159.67005  89.63917
+## 5   5  76.58468  69.14656
+## 6   6  31.70573  36.94440
+## 7   7  27.98286  23.97281
+## 8   8  42.71069  32.26306
+## 9   9  68.29414  67.18730
+## 10 10 118.25214  94.88598
+## 11 11 137.66628  61.98290
+## 12 12 127.02747  96.22035</code></pre>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="rainfall.html#cb37-1" aria-hidden="true" tabindex="-1"></a>wts<span class="ot">&lt;-</span><span class="fu">rep</span>(<span class="dv">1</span><span class="sc">/</span>stddevs,<span class="at">times=</span><span class="dv">16</span>)</span>
+<span id="cb37-2"><a href="rainfall.html#cb37-2" aria-hidden="true" tabindex="-1"></a>modelw1<span class="ot">&lt;-</span><span class="fu">lm</span>(adjrainfall<span class="sc">~</span>cosm[,<span class="dv">1</span>]<span class="sc">+</span>sinm[,<span class="dv">1</span>]<span class="sc">+</span>cosm[,<span class="dv">2</span>]<span class="sc">+</span>sinm[,<span class="dv">2</span>]<span class="sc">+</span>cosm[,<span class="dv">3</span>]<span class="sc">+</span>sinm[,<span class="dv">3</span>]<span class="sc">+</span>cosm[,<span class="dv">4</span>]<span class="sc">+</span>sinm[,<span class="dv">4</span>]<span class="sc">+</span>cosm[,<span class="dv">5</span>]<span class="sc">+</span>sinm[,<span class="dv">5</span>]<span class="sc">+</span>cosm[,<span class="dv">6</span>],<span class="at">weights=</span>wts)</span>
+<span id="cb37-3"><a href="rainfall.html#cb37-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(modelw1</span>
+<span id="cb37-4"><a href="rainfall.html#cb37-4" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = adjrainfall ~ cosm[, 1] + sinm[, 1] + cosm[, 2] + 
+##     sinm[, 2] + cosm[, 3] + sinm[, 3] + cosm[, 4] + sinm[, 4] + 
+##     cosm[, 5] + sinm[, 5] + cosm[, 6], weights = wts)
+## 
+## Weighted Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -15.364  -5.702  -1.373   3.389  31.943 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  99.7742     5.1353  19.429  &lt; 2e-16 ***
+## cosm[, 1]    44.7047     6.9660   6.418 1.19e-09 ***
+## sinm[, 1]    35.0058     7.5472   4.638 6.74e-06 ***
+## cosm[, 2]   -15.1003     7.1769  -2.104  0.03677 *  
+## sinm[, 2]   -20.2614     7.3469  -2.758  0.00642 ** 
+## cosm[, 3]     3.8913     7.7624   0.501  0.61677    
+## sinm[, 3]    -3.6765     6.7253  -0.547  0.58528    
+## cosm[, 4]   -11.4445     7.1769  -1.595  0.11255    
+## sinm[, 4]     2.5755     7.3469   0.351  0.72633    
+## cosm[, 5]    -0.9352     6.9660  -0.134  0.89336    
+## sinm[, 5]    -9.6838     7.5472  -1.283  0.20110    
+## cosm[, 6]     6.1372     5.1353   1.195  0.23362    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 8.435 on 180 degrees of freedom
+## Multiple R-squared:  0.3767, Adjusted R-squared:  0.3386 
+## F-statistic: 9.887 on 11 and 180 DF,  p-value: 6.135e-14</code></pre>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="rainfall.html#cb39-1" aria-hidden="true" tabindex="-1"></a>modelw2<span class="ot">&lt;-</span></span>
+<span id="cb39-2"><a href="rainfall.html#cb39-2" aria-hidden="true" tabindex="-1"></a><span class="fu">lm</span>(adjrainfall<span class="sc">~</span>cosm[,<span class="dv">1</span>]<span class="sc">+</span>sinm[,<span class="dv">1</span>]<span class="sc">+</span>cosm[,<span class="dv">2</span>]<span class="sc">+</span>sinm[,<span class="dv">2</span>],<span class="at">weights=</span>wts);summary</span></code></pre></div>
+<pre><code>## function (object, ...) 
+## UseMethod(&quot;summary&quot;)
+## &lt;bytecode: 0x55cd892811a0&gt;
+## &lt;environment: namespace:base&gt;</code></pre>
+<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="rainfall.html#cb41-1" aria-hidden="true" tabindex="-1"></a>(modelw2)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = adjrainfall ~ cosm[, 1] + sinm[, 1] + cosm[, 2] + 
+##     sinm[, 2], weights = wts)
+## 
+## Coefficients:
+## (Intercept)    cosm[, 1]    sinm[, 1]    cosm[, 2]    sinm[, 2]  
+##       99.10        44.33        31.62       -14.13       -18.40</code></pre>
+<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="rainfall.html#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">ts</span>(<span class="fu">resid</span>(modelw2),<span class="at">start=</span><span class="fu">c</span>(<span class="dv">1979</span>,<span class="dv">1</span>),<span class="at">freq=</span><span class="dv">12</span>))</span></code></pre></div>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-4-2.png" width="672" /></p>
+<div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb44-1"><a href="rainfall.html#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="fu">acf</span>(<span class="fu">ts</span>(<span class="fu">resid</span>(modelw2)))</span></code></pre></div>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-4-3.png" width="672" /></p>
+<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb45-1"><a href="rainfall.html#cb45-1" aria-hidden="true" tabindex="-1"></a> seasw2<span class="ot">&lt;-</span>(<span class="fu">predict</span>(modelw2)<span class="sc">-</span><span class="fu">coef</span>(modelw2)[<span class="dv">1</span>])[<span class="dv">1</span><span class="sc">:</span><span class="dv">12</span>]</span>
+<span id="cb45-2"><a href="rainfall.html#cb45-2" aria-hidden="true" tabindex="-1"></a> seasw2</span></code></pre></div>
+<pre><code>##         1         2         3         4         5         6         7         8 
+##  31.19822  40.67765  45.75326  28.22648 -13.70213 -58.45500 -77.20206 -58.42431 
+##         9        10        11        12 
+## -17.49609  17.77735  31.44880  30.19783</code></pre>
+<div class="sourceCode" id="cb47"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb47-1"><a href="rainfall.html#cb47-1" aria-hidden="true" tabindex="-1"></a> <span class="fu">plot</span>(<span class="fu">ts</span>(seas22),<span class="at">lty=</span><span class="dv">1</span>,<span class="at">lwd=</span><span class="dv">2</span>,<span class="at">xlab=</span><span class="st">&quot;month&quot;</span>,<span class="at">ylab=</span><span class="st">&quot;seasonal&quot;</span>,<span class="at">main=</span><span class="st">&quot;seasonal</span></span>
+<span id="cb47-2"><a href="rainfall.html#cb47-2" aria-hidden="true" tabindex="-1"></a><span class="st">estimations&quot;</span>,<span class="at">col=</span><span class="st">&quot;red&quot;</span>)</span>
+<span id="cb47-3"><a href="rainfall.html#cb47-3" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(<span class="fu">ts</span>(seas42),<span class="at">lty=</span><span class="dv">2</span>,<span class="at">lwd=</span><span class="dv">2</span>,<span class="at">col=</span><span class="st">&quot;blue&quot;</span>)</span>
+<span id="cb47-4"><a href="rainfall.html#cb47-4" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(<span class="fu">ts</span>(seasw2),<span class="at">lty=</span><span class="dv">3</span>,<span class="at">lwd=</span><span class="dv">2</span>,<span class="at">col=</span><span class="st">&quot;green&quot;</span>)</span></code></pre></div>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-4-4.png" width="672" /></p>
+<p>We haven’t reduced the trend in the model.</p>
+<p>In the table: Seasonal index estimates for the sqrt, for the adj sqrt, and for the weighted least squares.</p>
 
 </div>
             </section>
@@ -431,6 +597,20 @@ gitbook.start({
 });
 </script>
 
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
 </body>
 
 </html>

@@ -1,7 +1,18 @@
 # rainfall
 
+Last topic on decomposition models, using regression. This is monthly data, but we cannot use calendar trigonometric pairs. Months are of unequal length, and trading days don't play a role. The length of each month is indicated in the dataset, as monthlength. The rainfall is in milimeters. 
 
-Last topic on decomposition models, using regression. 
+Volatility changes a bit from time to time. Higher levels of rainfall mean more volatility than lower levels. Log transformation is one option, but there are a few months that have no rainfall, and can't take the log of 0, so change these months to 1 millimeter. Log transformation is a substantial overcorrection, where the dry months have much more variability than the wet months.
+
+Power transformation. Alpha equal to a third, take the cubed root. Then fit a model with a trend component and determine trend is not sig. Reason the R-squared is so low is because not a lot of vertical dispersion. Fluctuations are relatively constant. the only significant components are the first two cosine sine pairs. Re-fit with just these pairs. In model 2, in the reduced model, it is 2.7150. Why didn't this coefficient change when we dropped the pair? When the number of data sets is a multiple of 12, you have perfect lack of collinearity. The cosines are orthogonal to the sins, and any one pair is uncorrelated completely. Leads to a situation where there are no changes. The standard errors do change. Reduced model has lower R squared.
+
+Seasonal estimates show that rainy season spans October-April. 
+
+In model 3, normal QQ plot is off. And plotting the residuals against the predicted values show megaphone shape (heteroskedasticity) so there is volatility. We need to use that square root transformation.
+
+Does model 2 reduce to white noise? Autocorrelations of the residuals indicate reducing to white noise. 
+
+Amplitude and peak calculations -> 
 
 ```{r echo=TRUE}
 rain <- read.csv("/cloud/project/data/rainfall.txt")
@@ -55,6 +66,90 @@ plot(ts(resid(model2),start=c(1979,1),freq=12))
 acf(resid(model2))
 
 ```
+
+Calendar adjustment: will just deal with the length of the months. 
+```{r}
+adjrainfall<-rainfall*365.25/(12*monthlength)
+model4<-
+lm(sqrt(adjrainfall)~cosm[,1]+sinm[,1]+cosm[,2]+sinm[,2]);summary(model4)
+seas22<-2*seas2*coef(model2)[1]+seas2*seas2
+seas22<-seas22-mean(seas22)
+seas22
+seas4<-(predict(model4)-coef(model4)[1])[1:12]
+seas42<-2*seas4*coef(model4)[1]+seas4*seas4
+seas42<-seas42-mean(seas42)
+seas42
+
+```
+
+
+Model 1: model without the square root transformation:
+
+$$
+y_t = \alpha + S_t + \epsilon_t
+$$
+
+Model 2: alpha hat + sub_t
+
+$$
+y_t = \alpha + \hat{S}_t
+$$
+
+Model 3: model with the square root transformation
+
+$$
+\sqrt(y_t) = \alpha^* + S_t^* + \epsilon_t^*
+$$
+
+model 4:
+
+$$
+pred(\sqrt(y_t) = \hat{\alpha}^* + \hat{S}^*
+$$
+
+Model 5
+
+$$
+\hat\alpha +\hat{S}_t = (\alpha + \hat{S}_t)^2 = \alpha^2
+$$
+```{r}
+seas22<-2*seas2*coef(model2)[1]+seas2*seas2
+seas22<-seas22-mean(seas22)
+seas22
+
+seas4<-(predict(model4)-coef(model4)[1])[1:12]
+seas42<-2*seas4*coef(model4)[1]+seas4*seas4
+seas42<-seas42-mean(seas42)
+seas42
+boxplot(adjrainfall~month)
+means<-tapply(adjrainfall,month,mean)
+stddevs<-tapply(adjrainfall,month,sd)
+cbind(1:12,means,stddevs)
+wts<-rep(1/stddevs,times=16)
+modelw1<-lm(adjrainfall~cosm[,1]+sinm[,1]+cosm[,2]+sinm[,2]+cosm[,3]+sinm[,3]+cosm[,4]+sinm[,4]+cosm[,5]+sinm[,5]+cosm[,6],weights=wts)
+summary(modelw1
+)
+modelw2<-
+lm(adjrainfall~cosm[,1]+sinm[,1]+cosm[,2]+sinm[,2],weights=wts);summary
+(modelw2)
+plot(ts(resid(modelw2),start=c(1979,1),freq=12))
+acf(ts(resid(modelw2)))
+ seasw2<-(predict(modelw2)-coef(modelw2)[1])[1:12]
+ seasw2
+ plot(ts(seas22),lty=1,lwd=2,xlab="month",ylab="seasonal",main="seasonal
+estimations",col="red")
+lines(ts(seas42),lty=2,lwd=2,col="blue")
+lines(ts(seasw2),lty=3,lwd=2,col="green")
+
+```
+
+We haven't reduced the trend in the model. 
+
+In the table: Seasonal index estimates for the sqrt, for the adj sqrt, and for the weighted least squares. 
+
+
+## last example on decomposition model
+
 
 
 
