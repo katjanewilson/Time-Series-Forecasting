@@ -53,3 +53,113 @@ The lag one value of the DV appears on the right hand side as an explanatory var
 When geometric decay prevails, there is this simpler way to write the model. 
 
 Notes: the x's have different lags. There is a lot of correlation. High degree of collinearity makes it difficult to interpret the beta coefficient. Consider a simpler formulation if geometric decay prevails.  
+
+
+Analysis: how to modify the data so that we can get reduction to white noise when we fit a model.
+
+
+```{r}
+lydia <- read.csv("/cloud/project/data/Lydia.txt")
+attach(lydia)
+head(lydia)
+sales<- lydia$sales
+ad<- lydia$advrtsng
+plot(ts(sales,start=1907),ylim=c(0,4000),
+     xlab="year",main="Sales and
+Advertising vs. Year",lty=1,lwd=2,col="red")
+lines(ts(ad,start=c(1907,1)),lty=2,lwd=2,col="blue")
+
+```
+
+Sales and advertising series have similar traces. Advertising series appears to lag the sales series by perhaps a year in its pattern.
+
+The model below is simply $$sales_t = \alpha +\beta_1{advrtsng} +\epsilon_t$$. Contemporaneous advertising is highly significant.
+
+```{r}
+model1<-lm(sales~advrtsng);summary(model1)
+```
+
+Residual plot
+```{r}
+plot(ts(resid(model1),start=1907),xlab="year",ylab="residual",main="mo
+del 1 residuals vs. year")
+```
+
+Adding a factor variable for advcopy.
+
+```{r}
+fadvcopy<-as.factor(advcopy)
+model2<-lm(sales~advrtsng+fadvcopy);summary(model2)
+```
+
+
+```{r}
+ model3<-lm(sales~advrtsng+Ind1+Ind2+Ind3);summary(model3)
+```
+
+
+```{r}
+lag2adv<-c(NA,NA,head(advrtsng,-2))
+lag3adv<-c(NA,NA,NA,head(advrtsng,-3))
+lag4adv<-c(NA,NA,NA,NA,head(advrtsng,-4))
+lag5adv<-c(NA,NA,NA,NA,NA,head(advrtsng,-5))
+plot(lagadv,sales)
+abline(lm(sales~lagadv))
+plot(lag2adv,sales)
+abline(lm(sales~lag2adv))
+plot(lag3adv,sales)
+abline(lm(sales~lag3adv))
+plot(lag4adv,sales)
+abline(lm(sales~lag4adv))
+```
+
+Fit a distributed lag model with geometric decay
+
+$$
+S_t = \alpha + \beta(A_t + \gamma{A_{t-1}} + \gamma^2{A_{t-2}} + \gamma^3{A_{t-3}}) + \epsilon_t \\
+= \alpha +\beta(1-\gamma{\beta})^{-1}A_{t} + \epsilon_t
+$$
+
+where B is the backward shift operator. Recall that this formulation is equivalent to the autoregressive representation
+
+$$
+S_t = (1-\gamma)\alpha+\gamma{S_{t-1}} + \beta{A_t} + \epsilon_t - \gamma{\epsilon}_{t-1}
+$$
+
+In this model the contemporaenous effect of advertising is $\Beta$, the cumulative effect after one more time period is $\beta(1+\gamma)$, and the cumulatibe effect after m-1 more time periods is 
+
+$$
+\beta(1+\lambda + \lambda^2+...+\lambda^{m-1}) = \beta(1-\lambda^{m})/(1-\lambda)
+$$
+
+As m increases, this converged to $\beta/(1-\lambda)$. Thus, the proportion fo the long-run cumulative effect of advertising upon sales realized after m time periods is $1-\lambda^m$. Given p, the solution for m is
+
+$$
+m = log_e(1-p)/log_ey
+$$
+
+The model below is 
+
+$$
+S_t = \alpha+\beta_1{A_t} + \beta_2{S_{t-1}} + \beta_3{Ind1_t} + \beta_4{Ind2_t}
++ \beta_5{Ind3_t} + \epsilon_t
+$$
+
+```{r}
+lagsales<-c(NA,head(sales,-1))
+lag2sales<-c(NA,NA,head(sales,-2))
+model4<-lm(sales~lagsales+advrtsng+Ind1+Ind2+Ind3);summary(model4)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -55,6 +55,70 @@
 <script src="libs/anchor-sections-1.0.1/anchor-sections.js"></script>
 
 
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
 
 
 <link rel="stylesheet" href="style.css" type="text/css" />
@@ -186,6 +250,160 @@ y_t = \alpha&#39; + \gamma{y_{t-1}} + \beta{x_t} + \epsilon&#39;_t
 <p>when geometric decay prevails to define the Beta_k’s. When the betas decrease in a geometric fashion, then you can re-write the model in this way. Second term is the auto-regressive term. Only have contemporaenous x. Also has an altered error structure. The original error structure is just epsilon_t.</p>
 <p>The lag one value of the DV appears on the right hand side as an explanatory variables, and the x variable appears only contemperaneously. The structure is first order auto-regressive structure. It is an arx model. Autoregressive becayse y is regressed back on itself, and the x denote the fact that there is an explanatory x variable. The epsilon is different from the original epsilon.</p>
 <p>When geometric decay prevails, there is this simpler way to write the model.</p>
+<p>Notes: the x’s have different lags. There is a lot of correlation. High degree of collinearity makes it difficult to interpret the beta coefficient. Consider a simpler formulation if geometric decay prevails.</p>
+<p>Analysis: how to modify the data so that we can get reduction to white noise when we fit a model.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="distributed-lag-models.html#cb1-1" aria-hidden="true" tabindex="-1"></a>lydia <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;/cloud/project/data/Lydia.txt&quot;</span>)</span>
+<span id="cb1-2"><a href="distributed-lag-models.html#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">attach</span>(lydia)</span>
+<span id="cb1-3"><a href="distributed-lag-models.html#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(lydia)</span></code></pre></div>
+<pre><code>##   year sales advrtsng advcopy Ind1 Ind2 Ind3 lagsales lag2sales lagadv
+## 1 1907  1016      608       1    1    0    0       NA        NA     NA
+## 2 1908   921      451       1    1    0    0     1016        NA    608
+## 3 1909   934      529       1    1    0    0      921      1016    451
+## 4 1910   976      543       1    1    0    0      934       921    529
+## 5 1911   930      525       1    1    0    0      976       934    543
+## 6 1912  1052      549       1    1    0    0      930       976    525</code></pre>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="distributed-lag-models.html#cb3-1" aria-hidden="true" tabindex="-1"></a>sales<span class="ot">&lt;-</span> lydia<span class="sc">$</span>sales</span>
+<span id="cb3-2"><a href="distributed-lag-models.html#cb3-2" aria-hidden="true" tabindex="-1"></a>ad<span class="ot">&lt;-</span> lydia<span class="sc">$</span>advrtsng</span>
+<span id="cb3-3"><a href="distributed-lag-models.html#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">ts</span>(sales,<span class="at">start=</span><span class="dv">1907</span>),<span class="at">ylim=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">4000</span>),</span>
+<span id="cb3-4"><a href="distributed-lag-models.html#cb3-4" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab=</span><span class="st">&quot;year&quot;</span>,<span class="at">main=</span><span class="st">&quot;Sales and</span></span>
+<span id="cb3-5"><a href="distributed-lag-models.html#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="st">Advertising vs. Year&quot;</span>,<span class="at">lty=</span><span class="dv">1</span>,<span class="at">lwd=</span><span class="dv">2</span>,<span class="at">col=</span><span class="st">&quot;red&quot;</span>)</span>
+<span id="cb3-6"><a href="distributed-lag-models.html#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(<span class="fu">ts</span>(ad,<span class="at">start=</span><span class="fu">c</span>(<span class="dv">1907</span>,<span class="dv">1</span>)),<span class="at">lty=</span><span class="dv">2</span>,<span class="at">lwd=</span><span class="dv">2</span>,<span class="at">col=</span><span class="st">&quot;blue&quot;</span>)</span></code></pre></div>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
+<p>Sales and advertising series have similar traces. Advertising series appears to lag the sales series by perhaps a year in its pattern.</p>
+<p>The model below is simply <span class="math display">\[sales_t = \alpha +\beta_1{advrtsng} +\epsilon_t\]</span>. Contemporaneous advertising is highly significant.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="distributed-lag-models.html#cb4-1" aria-hidden="true" tabindex="-1"></a>model1<span class="ot">&lt;-</span><span class="fu">lm</span>(sales<span class="sc">~</span>advrtsng);<span class="fu">summary</span>(model1)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = sales ~ advrtsng)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -876.45 -222.95  -12.24  221.09  611.77 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) 488.8327   127.4390   3.836  0.00034 ***
+## advrtsng      1.4346     0.1269  11.308 1.26e-15 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 343.5 on 52 degrees of freedom
+## Multiple R-squared:  0.7109, Adjusted R-squared:  0.7053 
+## F-statistic: 127.9 on 1 and 52 DF,  p-value: 1.259e-15</code></pre>
+<p>Residual plot</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="distributed-lag-models.html#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">ts</span>(<span class="fu">resid</span>(model1),<span class="at">start=</span><span class="dv">1907</span>),<span class="at">xlab=</span><span class="st">&quot;year&quot;</span>,<span class="at">ylab=</span><span class="st">&quot;residual&quot;</span>,<span class="at">main=</span><span class="st">&quot;mo</span></span>
+<span id="cb6-2"><a href="distributed-lag-models.html#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="st">del 1 residuals vs. year&quot;</span>)</span></code></pre></div>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<p>Adding a factor variable for advcopy.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="distributed-lag-models.html#cb7-1" aria-hidden="true" tabindex="-1"></a>fadvcopy<span class="ot">&lt;-</span><span class="fu">as.factor</span>(advcopy)</span>
+<span id="cb7-2"><a href="distributed-lag-models.html#cb7-2" aria-hidden="true" tabindex="-1"></a>model2<span class="ot">&lt;-</span><span class="fu">lm</span>(sales<span class="sc">~</span>advrtsng<span class="sc">+</span>fadvcopy);<span class="fu">summary</span>(model2)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = sales ~ advrtsng + fadvcopy)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -606.08 -115.16   10.76  177.56  389.25 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) 271.8320   107.9132   2.519 0.015082 *  
+## advrtsng      1.3759     0.1098  12.533  &lt; 2e-16 ***
+## fadvcopy2   583.3284   130.9357   4.455 4.87e-05 ***
+## fadvcopy3    16.8703   128.6327   0.131 0.896193    
+## fadvcopy4   400.5189   113.7859   3.520 0.000943 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 255.3 on 49 degrees of freedom
+## Multiple R-squared:  0.8494, Adjusted R-squared:  0.8371 
+## F-statistic: 69.11 on 4 and 49 DF,  p-value: &lt; 2.2e-16</code></pre>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="distributed-lag-models.html#cb9-1" aria-hidden="true" tabindex="-1"></a> model3<span class="ot">&lt;-</span><span class="fu">lm</span>(sales<span class="sc">~</span>advrtsng<span class="sc">+</span>Ind1<span class="sc">+</span>Ind2<span class="sc">+</span>Ind3);<span class="fu">summary</span>(model3)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = sales ~ advrtsng + Ind1 + Ind2 + Ind3)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -606.08 -115.16   10.76  177.56  389.25 
+## 
+## Coefficients:
+##              Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  672.3509   113.6994   5.913 3.18e-07 ***
+## advrtsng       1.3759     0.1098  12.533  &lt; 2e-16 ***
+## Ind1        -400.5189   113.7859  -3.520 0.000943 ***
+## Ind2         182.8095    97.2061   1.881 0.065971 .  
+## Ind3        -383.6485    90.5743  -4.236 1.00e-04 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 255.3 on 49 degrees of freedom
+## Multiple R-squared:  0.8494, Adjusted R-squared:  0.8371 
+## F-statistic: 69.11 on 4 and 49 DF,  p-value: &lt; 2.2e-16</code></pre>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="distributed-lag-models.html#cb11-1" aria-hidden="true" tabindex="-1"></a>lag2adv<span class="ot">&lt;-</span><span class="fu">c</span>(<span class="cn">NA</span>,<span class="cn">NA</span>,<span class="fu">head</span>(advrtsng,<span class="sc">-</span><span class="dv">2</span>))</span>
+<span id="cb11-2"><a href="distributed-lag-models.html#cb11-2" aria-hidden="true" tabindex="-1"></a>lag3adv<span class="ot">&lt;-</span><span class="fu">c</span>(<span class="cn">NA</span>,<span class="cn">NA</span>,<span class="cn">NA</span>,<span class="fu">head</span>(advrtsng,<span class="sc">-</span><span class="dv">3</span>))</span>
+<span id="cb11-3"><a href="distributed-lag-models.html#cb11-3" aria-hidden="true" tabindex="-1"></a>lag4adv<span class="ot">&lt;-</span><span class="fu">c</span>(<span class="cn">NA</span>,<span class="cn">NA</span>,<span class="cn">NA</span>,<span class="cn">NA</span>,<span class="fu">head</span>(advrtsng,<span class="sc">-</span><span class="dv">4</span>))</span>
+<span id="cb11-4"><a href="distributed-lag-models.html#cb11-4" aria-hidden="true" tabindex="-1"></a>lag5adv<span class="ot">&lt;-</span><span class="fu">c</span>(<span class="cn">NA</span>,<span class="cn">NA</span>,<span class="cn">NA</span>,<span class="cn">NA</span>,<span class="cn">NA</span>,<span class="fu">head</span>(advrtsng,<span class="sc">-</span><span class="dv">5</span>))</span>
+<span id="cb11-5"><a href="distributed-lag-models.html#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(lagadv,sales)</span>
+<span id="cb11-6"><a href="distributed-lag-models.html#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="fu">lm</span>(sales<span class="sc">~</span>lagadv))</span></code></pre></div>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="distributed-lag-models.html#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(lag2adv,sales)</span>
+<span id="cb12-2"><a href="distributed-lag-models.html#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="fu">lm</span>(sales<span class="sc">~</span>lag2adv))</span></code></pre></div>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-6-2.png" width="672" /></p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="distributed-lag-models.html#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(lag3adv,sales)</span>
+<span id="cb13-2"><a href="distributed-lag-models.html#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="fu">lm</span>(sales<span class="sc">~</span>lag3adv))</span></code></pre></div>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-6-3.png" width="672" /></p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="distributed-lag-models.html#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(lag4adv,sales)</span>
+<span id="cb14-2"><a href="distributed-lag-models.html#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="fu">lm</span>(sales<span class="sc">~</span>lag4adv))</span></code></pre></div>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-6-4.png" width="672" /></p>
+<p>Fit a distributed lag model with geometric decay</p>
+<p><span class="math display">\[
+S_t = \alpha + \beta(A_t + \gamma{A_{t-1}} + \gamma^2{A_{t-2}} + \gamma^3{A_{t-3}}) + \epsilon_t \\
+= \alpha +\beta(1-\gamma{\beta})^{-1}A_{t} + \epsilon_t
+\]</span></p>
+<p>where B is the backward shift operator. Recall that this formulation is equivalent to the autoregressive representation</p>
+<p><span class="math display">\[
+S_t = (1-\gamma)\alpha+\gamma{S_{t-1}} + \beta{A_t} + \epsilon_t - \gamma{\epsilon}_{t-1}
+\]</span></p>
+<p>In this model the contemporaenous effect of advertising is <span class="math inline">\(\Beta\)</span>, the cumulative effect after one more time period is <span class="math inline">\(\beta(1+\gamma)\)</span>, and the cumulatibe effect after m-1 more time periods is</p>
+<p><span class="math display">\[
+\beta(1+\lambda + \lambda^2+...+\lambda^{m-1}) = \beta(1-\lambda^{m})/(1-\lambda)
+\]</span></p>
+<p>As m increases, this converged to <span class="math inline">\(\beta/(1-\lambda)\)</span>. Thus, the proportion fo the long-run cumulative effect of advertising upon sales realized after m time periods is <span class="math inline">\(1-\lambda^m\)</span>. Given p, the solution for m is</p>
+<p><span class="math display">\[
+m = log_e(1-p)/log_ey
+\]</span></p>
+<p>The model below is</p>
+<p><span class="math display">\[
+S_t = \alpha+\beta_1{A_t} + \beta_2{S_{t-1}} + \beta_3{Ind1_t} + \beta_4{Ind2_t}
++ \beta_5{Ind3_t} + \epsilon_t
+\]</span></p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="distributed-lag-models.html#cb15-1" aria-hidden="true" tabindex="-1"></a>lagsales<span class="ot">&lt;-</span><span class="fu">c</span>(<span class="cn">NA</span>,<span class="fu">head</span>(sales,<span class="sc">-</span><span class="dv">1</span>))</span>
+<span id="cb15-2"><a href="distributed-lag-models.html#cb15-2" aria-hidden="true" tabindex="-1"></a>lag2sales<span class="ot">&lt;-</span><span class="fu">c</span>(<span class="cn">NA</span>,<span class="cn">NA</span>,<span class="fu">head</span>(sales,<span class="sc">-</span><span class="dv">2</span>))</span>
+<span id="cb15-3"><a href="distributed-lag-models.html#cb15-3" aria-hidden="true" tabindex="-1"></a>model4<span class="ot">&lt;-</span><span class="fu">lm</span>(sales<span class="sc">~</span>lagsales<span class="sc">+</span>advrtsng<span class="sc">+</span>Ind1<span class="sc">+</span>Ind2<span class="sc">+</span>Ind3);<span class="fu">summary</span>(model4)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = sales ~ lagsales + advrtsng + Ind1 + Ind2 + Ind3)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -371.39 -103.57  -30.79   88.24  389.88 
+## 
+## Coefficients:
+##               Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  254.63920   96.30805   2.644 0.011101 *  
+## lagsales       0.60734    0.08142   7.459 1.65e-09 ***
+## advrtsng       0.53450    0.13604   3.929 0.000278 ***
+## Ind1        -133.34673   88.95563  -1.499 0.140555    
+## Ind2         216.83964   67.21894   3.226 0.002288 ** 
+## Ind3        -202.50459   67.05600  -3.020 0.004079 ** 
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 176.2 on 47 degrees of freedom
+##   (1 observation deleted due to missingness)
+## Multiple R-squared:  0.929,  Adjusted R-squared:  0.9215 
+## F-statistic:   123 on 5 and 47 DF,  p-value: &lt; 2.2e-16</code></pre>
 
 </div>
             </section>
