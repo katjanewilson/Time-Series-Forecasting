@@ -1,1 +1,55 @@
-# printing and wri
+# distributed lag models
+
+Let y be a dependent variable and x an independent variable. The model
+
+$$
+y = \alpha +\sum_{k=0}^{\infty}\beta_kx_{t-k} +\epsilon_t
+$$
+
+is called a distributed lag model. The effect of the IV on the DV is distributed over a number of lags (e.g., y is sales and x is advertising). 
+
+Weighted sum of the value of the X's at time T and at previous times. Number of terms in the sum is infinite. Current and past advertising influences sales today. The x's are being lagged. X_t - 1,2, etc. When k=0, then we have X_t.
+
+A special case (geometric decay) is given by
+
+$$
+\beta_k = \beta\gamma^k
+$$
+
+Some constnat Beta, and a gamma raised to the power k. If gamam is 1/2, then the weights are beta when k=0, then a half beta, quarter beta, 1/8 beta, etc. If the weights decrease in this geometric pattern, we call this geometric decay. 
+
+For this case the model becomes 
+
+$$
+y_t = \alpha + \beta(x_t + \gamma*X_{t-1}
+$$
+
+The backward shift operator B is defined by...
+$$
+$$
+
+If you operate with B3, you shift backwards 3 times... Let's substitue the backwards shift operator into the expression. Then, for geometric decay, the model is ...
+
+$$
+y_t = \alpha +\beta(1+\gamma\beta + \gamma^2\beta^2+...) \\
+=\alpha+\beta(1-\gamma\beta)^{-1}x_t + \epsilon_t
+$$
+
+by use of the geometric series summation. Now multiply on both sides by the oeprator 1-$\gamma\beta$. This yields
+
+$$
+y_t = (1-\gamma)\alpha + \gamma{y_{t-1}} + \beta{x_t} + \epsilon_t - \gamma\epsilon_{t-1}
+$$
+or
+
+$$
+y_t = \alpha' + \gamma{y_{t-1}} + \beta{x_t} + \epsilon'_t
+$$
+
+when geometric decay prevails to define the Beta_k's. When the betas decrease in a geometric fashion, then you can re-write the model in this way. Second term is the auto-regressive term. Only have contemporaenous x. Also has an altered error structure. The original error structure is just epsilon_t.
+
+The lag one value of the DV appears on the right hand side as an explanatory variables, and the x variable appears only contemperaneously. The structure is first order auto-regressive structure. It is an arx model. Autoregressive becayse y is regressed back on itself, and the x denote the fact that there is an explanatory x variable. The epsilon is different from the original epsilon.
+
+When geometric decay prevails, there is this simpler way to write the model. 
+
+Notes: the x's have different lags. There is a lot of correlation. High degree of collinearity makes it difficult to interpret the beta coefficient. Consider a simpler formulation if geometric decay prevails.  

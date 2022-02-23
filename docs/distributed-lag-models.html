@@ -4,11 +4,11 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>4 distributed lag models | Time Series Forecasting</title>
-  <meta name="description" content="4 distributed lag models | Time Series Forecasting" />
+  <title>7 distributed lag models | Time Series Forecasting</title>
+  <meta name="description" content="7 distributed lag models | Time Series Forecasting" />
   <meta name="generator" content="bookdown 0.24 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="4 distributed lag models | Time Series Forecasting" />
+  <meta property="og:title" content="7 distributed lag models | Time Series Forecasting" />
   <meta property="og:type" content="book" />
   
   
@@ -16,7 +16,7 @@
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="4 distributed lag models | Time Series Forecasting" />
+  <meta name="twitter:title" content="7 distributed lag models | Time Series Forecasting" />
   
   
   
@@ -24,15 +24,15 @@
 <meta name="author" content="Katherine Wilson" />
 
 
-<meta name="date" content="2022-01-19" />
+<meta name="date" content="2022-02-23" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-<link rel="prev" href="trends-and-seasonality.html"/>
-<link rel="next" href="trends-and-seasonality-1.html"/>
+<link rel="prev" href="rainfall.html"/>
+<link rel="next" href="arch-and-garch-models.html"/>
 <script src="libs/header-attrs-2.11/header-attrs.js"></script>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
@@ -90,11 +90,47 @@
 <li class="chapter" data-level="1.3.9" data-path="index.html"><a href="index.html#example-8"><i class="fa fa-check"></i><b>1.3.9</b> Example</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="2" data-path="multiple-regression-models.html"><a href="multiple-regression-models.html"><i class="fa fa-check"></i><b>2</b> multiple regression models</a></li>
-<li class="chapter" data-level="3" data-path="trends-and-seasonality.html"><a href="trends-and-seasonality.html"><i class="fa fa-check"></i><b>3</b> trends and seasonality</a></li>
-<li class="chapter" data-level="4" data-path="distributed-lag-models.html"><a href="distributed-lag-models.html"><i class="fa fa-check"></i><b>4</b> distributed lag models</a></li>
-<li class="chapter" data-level="5" data-path="trends-and-seasonality-1.html"><a href="trends-and-seasonality-1.html"><i class="fa fa-check"></i><b>5</b> trends and seasonality</a></li>
-<li class="chapter" data-level="6" data-path="trends-and-seasonality-2.html"><a href="trends-and-seasonality-2.html"><i class="fa fa-check"></i><b>6</b> trends and seasonality</a></li>
+<li class="chapter" data-level="2" data-path="multiple-regression-models.html"><a href="multiple-regression-models.html"><i class="fa fa-check"></i><b>2</b> multiple regression models</a>
+<ul>
+<li class="chapter" data-level="2.0.1" data-path="multiple-regression-models.html"><a href="multiple-regression-models.html#additivie-decomposition-model-with-a-fourth-degree-polynomial-trend"><i class="fa fa-check"></i><b>2.0.1</b> additivie decomposition model with a fourth-degree polynomial trend</a></li>
+<li class="chapter" data-level="2.0.2" data-path="multiple-regression-models.html"><a href="multiple-regression-models.html#additive-decomposition-model-with-cosine-and-sine-seasonal-dummies-and-inclusion-of-an-intercept"><i class="fa fa-check"></i><b>2.0.2</b> Additive decomposition model with cosine and sine seasonal dummies and inclusion of an intercept</a></li>
+<li class="chapter" data-level="2.0.3" data-path="multiple-regression-models.html"><a href="multiple-regression-models.html#australian-beer"><i class="fa fa-check"></i><b>2.0.3</b> Australian beer</a></li>
+<li class="chapter" data-level="2.1" data-path="multiple-regression-models.html"><a href="multiple-regression-models.html#ontario-gas"><i class="fa fa-check"></i><b>2.1</b> Ontario gas</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="interactions.html"><a href="interactions.html"><i class="fa fa-check"></i><b>3</b> interactions</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="interactions.html"><a href="interactions.html#example-9"><i class="fa fa-check"></i><b>3.1</b> Example</a>
+<ul>
+<li class="chapter" data-level="3.1.1" data-path="interactions.html"><a href="interactions.html#interaction"><i class="fa fa-check"></i><b>3.1.1</b> Interaction</a></li>
+<li class="chapter" data-level="3.1.2" data-path="interactions.html"><a href="interactions.html#example-10"><i class="fa fa-check"></i><b>3.1.2</b> example</a></li>
+<li class="chapter" data-level="3.1.3" data-path="interactions.html"><a href="interactions.html#durbin-watson-statistic"><i class="fa fa-check"></i><b>3.1.3</b> Durbin-Watson statistic</a></li>
+</ul></li>
+<li class="chapter" data-level="3.2" data-path="interactions.html"><a href="interactions.html#weekly-garbage-deposites"><i class="fa fa-check"></i><b>3.2</b> Weekly Garbage Deposites</a>
+<ul>
+<li class="chapter" data-level="3.2.1" data-path="interactions.html"><a href="interactions.html#simple-model"><i class="fa fa-check"></i><b>3.2.1</b> Simple model</a></li>
+</ul></li>
+<li class="chapter" data-level="3.3" data-path="interactions.html"><a href="interactions.html#code"><i class="fa fa-check"></i><b>3.3</b> Code</a>
+<ul>
+<li class="chapter" data-level="3.3.1" data-path="interactions.html"><a href="interactions.html#model-3"><i class="fa fa-check"></i><b>3.3.1</b> model 3</a></li>
+<li class="chapter" data-level="3.3.2" data-path="interactions.html"><a href="interactions.html#estimated-trends-calculating-the-interaction-terms"><i class="fa fa-check"></i><b>3.3.2</b> Estimated Trends (calculating the interaction terms)</a></li>
+<li class="chapter" data-level="3.3.3" data-path="interactions.html"><a href="interactions.html#visualizing-three-trends"><i class="fa fa-check"></i><b>3.3.3</b> Visualizing Three Trends</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="spectral-density.html"><a href="spectral-density.html"><i class="fa fa-check"></i><b>4</b> spectral density</a></li>
+<li class="chapter" data-level="5" data-path="periodogram.html"><a href="periodogram.html"><i class="fa fa-check"></i><b>5</b> periodogram</a>
+<ul>
+<li class="chapter" data-level="5.0.1" data-path="periodogram.html"><a href="periodogram.html#spectral"><i class="fa fa-check"></i><b>5.0.1</b> Spectral</a></li>
+<li class="chapter" data-level="5.0.2" data-path="periodogram.html"><a href="periodogram.html#multiplicative"><i class="fa fa-check"></i><b>5.0.2</b> Multiplicative</a></li>
+<li class="chapter" data-level="5.0.3" data-path="periodogram.html"><a href="periodogram.html#next-model"><i class="fa fa-check"></i><b>5.0.3</b> next model</a></li>
+<li class="chapter" data-level="5.0.4" data-path="periodogram.html"><a href="periodogram.html#getting-seasonal-index-esetimation-from-model-3"><i class="fa fa-check"></i><b>5.0.4</b> getting seasonal index esetimation from model 3</a></li>
+<li class="chapter" data-level="5.0.5" data-path="periodogram.html"><a href="periodogram.html#smoothing-technique"><i class="fa fa-check"></i><b>5.0.5</b> smoothing technique</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="rainfall.html"><a href="rainfall.html"><i class="fa fa-check"></i><b>6</b> rainfall</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="rainfall.html"><a href="rainfall.html#last-example-on-decomposition-model"><i class="fa fa-check"></i><b>6.1</b> last example on decomposition model</a></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="distributed-lag-models.html"><a href="distributed-lag-models.html"><i class="fa fa-check"></i><b>7</b> distributed lag models</a></li>
+<li class="chapter" data-level="8" data-path="arch-and-garch-models.html"><a href="arch-and-garch-models.html"><i class="fa fa-check"></i><b>8</b> ARCH and GARCH models</a></li>
 <li class="divider"></li>
 <li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
 </ul>
@@ -114,8 +150,42 @@
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="distributed-lag-models" class="section level1" number="4">
-<h1><span class="header-section-number">4</span> distributed lag models</h1>
+<div id="distributed-lag-models" class="section level1" number="7">
+<h1><span class="header-section-number">7</span> distributed lag models</h1>
+<p>Let y be a dependent variable and x an independent variable. The model</p>
+<p><span class="math display">\[
+y = \alpha +\sum_{k=0}^{\infty}\beta_kx_{t-k} +\epsilon_t
+\]</span></p>
+<p>is called a distributed lag model. The effect of the IV on the DV is distributed over a number of lags (e.g., y is sales and x is advertising).</p>
+<p>Weighted sum of the value of the X’s at time T and at previous times. Number of terms in the sum is infinite. Current and past advertising influences sales today. The x’s are being lagged. X_t - 1,2, etc. When k=0, then we have X_t.</p>
+<p>A special case (geometric decay) is given by</p>
+<p><span class="math display">\[
+\beta_k = \beta\gamma^k
+\]</span></p>
+<p>Some constnat Beta, and a gamma raised to the power k. If gamam is 1/2, then the weights are beta when k=0, then a half beta, quarter beta, 1/8 beta, etc. If the weights decrease in this geometric pattern, we call this geometric decay.</p>
+<p>For this case the model becomes</p>
+<p><span class="math display">\[
+y_t = \alpha + \beta(x_t + \gamma*X_{t-1}
+\]</span></p>
+<p>The backward shift operator B is defined by…
+<span class="math display">\[
+\]</span></p>
+<p>If you operate with B3, you shift backwards 3 times… Let’s substitue the backwards shift operator into the expression. Then, for geometric decay, the model is …</p>
+<p><span class="math display">\[
+y_t = \alpha +\beta(1+\gamma\beta + \gamma^2\beta^2+...) \\
+=\alpha+\beta(1-\gamma\beta)^{-1}x_t + \epsilon_t
+\]</span></p>
+<p>by use of the geometric series summation. Now multiply on both sides by the oeprator 1-<span class="math inline">\(\gamma\beta\)</span>. This yields</p>
+<p><span class="math display">\[
+y_t = (1-\gamma)\alpha + \gamma{y_{t-1}} + \beta{x_t} + \epsilon_t - \gamma\epsilon_{t-1}
+\]</span>
+or</p>
+<p><span class="math display">\[
+y_t = \alpha&#39; + \gamma{y_{t-1}} + \beta{x_t} + \epsilon&#39;_t
+\]</span></p>
+<p>when geometric decay prevails to define the Beta_k’s. When the betas decrease in a geometric fashion, then you can re-write the model in this way. Second term is the auto-regressive term. Only have contemporaenous x. Also has an altered error structure. The original error structure is just epsilon_t.</p>
+<p>The lag one value of the DV appears on the right hand side as an explanatory variables, and the x variable appears only contemperaneously. The structure is first order auto-regressive structure. It is an arx model. Autoregressive becayse y is regressed back on itself, and the x denote the fact that there is an explanatory x variable. The epsilon is different from the original epsilon.</p>
+<p>When geometric decay prevails, there is this simpler way to write the model.</p>
 
 </div>
             </section>
@@ -123,8 +193,8 @@
           </div>
         </div>
       </div>
-<a href="trends-and-seasonality.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="trends-and-seasonality-1.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="rainfall.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="arch-and-garch-models.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
@@ -155,7 +225,7 @@ gitbook.start({
 "size": 2
 },
 "edit": {
-"link": "https://github.com/katjanewilson/Time-Series-Forecasting/edit/master/04-topic.Rmd",
+"link": "https://github.com/katjanewilson/Time-Series-Forecasting/edit/master/07-topic.Rmd",
 "text": "Edit"
 },
 "history": {
@@ -163,7 +233,7 @@ gitbook.start({
 "text": null
 },
 "view": {
-"link": "https://github.com/katjanewilson/Time-Series-Forecasting/blob/master/04-topic.Rmd",
+"link": "https://github.com/katjanewilson/Time-Series-Forecasting/blob/master/07-topic.Rmd",
 "text": null
 },
 "download": null,
@@ -178,6 +248,20 @@ gitbook.start({
 });
 </script>
 
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
 </body>
 
 </html>

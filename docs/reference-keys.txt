@@ -53,3 +53,4 @@ next-model
 getting-seasonal-index-esetimation-from-model-3
 smoothing-technique
 rainfall
+last-example-on-decomposition-model
