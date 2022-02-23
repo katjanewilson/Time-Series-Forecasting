@@ -91,12 +91,14 @@ Adding a factor variable for advcopy.
 fadvcopy<-as.factor(advcopy)
 model2<-lm(sales~advrtsng+fadvcopy);summary(model2)
 ```
-
+Same fit as before, just using dummy variables
 
 ```{r}
  model3<-lm(sales~advrtsng+Ind1+Ind2+Ind3);summary(model3)
 ```
+Goal is to reduce to white noise so that we explain as much autocorrelation as possible. 
 
+To what extend do sales depend on advertising from last year? Lag advertising by 2,3,4,5 years. Sales vs. advertising for 1 year is sig, 2 years is sig, 3, sig, 4 not sig. So, start with geometric decay model, and then add to the regression, advertising that is only contemporaenous. If geometric doesn't work, add advertising only by 1 year, or by 2 years. 
 
 ```{r}
 lag2adv<-c(NA,NA,head(advrtsng,-2))
@@ -125,6 +127,8 @@ where B is the backward shift operator. Recall that this formulation is equivale
 $$
 S_t = (1-\gamma)\alpha+\gamma{S_{t-1}} + \beta{A_t} + \epsilon_t - \gamma{\epsilon}_{t-1}
 $$
+In model above, sales is regressed on sales 1 last year, plus contemporaenous advertising, plus the error term, and the different dummies for time regimes. Effect of advertising is the Beta coefficient. Want to measure the impact of advertising today and in the past on current sales. The effect of advertising in the same year, contemporaneously, is Beta. The effect of advertising on sales this year from the precious year is BetaXGamma. Effect of advertising from two years ago is Beta*Gamm squared. Effect of three years ago is BetaXGamma Q. 
+
 
 In this model the contemporaenous effect of advertising is $\Beta$, the cumulative effect after one more time period is $\beta(1+\gamma)$, and the cumulatibe effect after m-1 more time periods is 
 
@@ -137,6 +141,8 @@ As m increases, this converged to $\beta/(1-\lambda)$. Thus, the proportion fo t
 $$
 m = log_e(1-p)/log_ey
 $$
+
+Model above is a way to measure long run effect of advertising when geometric decay prevails. From here, we can ask "how many time periods does it take to achieve 90% of this long term impact?"
 
 The model below is 
 
