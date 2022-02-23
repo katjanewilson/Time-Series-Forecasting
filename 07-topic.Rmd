@@ -151,6 +151,47 @@ lag2sales<-c(NA,NA,head(sales,-2))
 model4<-lm(sales~lagsales+advrtsng+Ind1+Ind2+Ind3);summary(model4)
 ```
 
+Add lag two of sales as an explanatory variable
+
+```{r}
+model5<-
+lm(sales~lagsales+lag2sales+advrtsng+Ind1+Ind2+Ind3);summary(model5)
+```
+
+Fit another model. Add lag one advertising to the precious fit
+
+```{r}
+options(digits=9)
+model6<-
+lm(sales~lagsales+lag2sales+advrtsng+lagadv+Ind1+Ind2+Ind3);summary(model6)
+plot(ts(resid(model6),start=c(1907,1)),xlab="year",ylab="residual",main="model 6 residuals vs. year")
+```
+
+
+Calculate the 90% duration interval. Determine the first two deltas by hand calculation
+
+```{r}
+deltapartial<-delta<-c(rep(0,times=500))
+#deltapartial is the partial sum of the deltas
+delta[1]<-0.549964;delta[2]<-0.186242
+deltapartial[1]<-delta[1]
+deltapartial[2]<-deltapartial[1]+delta[2]
+for(j in 3:500){
+j1<-j-1;j2<-j-2
+delta[j]<-0.965412*delta[j1]-0.205023*delta[j2]
+deltapartial[j]<-deltapartial[j1]+delta[j]
+}
+deltapartial[500]*0.9
+deltapartial[1:20]
+
+```
+
+
+
+
+
+
+
 
 
 

@@ -1,1 +1,1 @@
-# ARCH and GARCH models
+# Granger causality 
