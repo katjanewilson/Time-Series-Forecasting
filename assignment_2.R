@@ -104,8 +104,14 @@ summary(model3)
 
 model4<-
   lm(logsales ~ Time +I(Time^2) + I(Time^3) + I(Time^4) +
+       I(Time^5) + I(Time^6) + fMonth+ small_sales$obs4+
+       c348 + s348)
+model4a<-
+  lm(logsales ~ Time +I(Time^2) + I(Time^3) + I(Time^4) +
        I(Time^5) + I(Time^6) + fMonth+ small_sales$obs4)
 summary(model4)
+
+anova(model4,model4a)
 
 ### QUESTION 3.a
 
@@ -127,6 +133,7 @@ qqline(resids)
 # there is evidence of mild heteroscdasticity
 plot(ts(resids))
 acf(ts(resids))
+shapiro.test(resid(model4))
 
 ## residual spectural plots
 spectrum(resids, span = 9)
@@ -138,7 +145,7 @@ abline(v=c(0.220,0.348,0.432),col="blue",lty=2)
 model5<-
   lm(logsales ~ Time +I(Time^2) + I(Time^3) + I(Time^4) +
        I(Time^5) + I(Time^6) + fMonth+ small_sales$obs4 +
-       Dynamic + Dynamic*fMonth)
+       Dynamic + Dynamic*fMonth +c348 + s348)
 summary(model5)
 
 ### 4a
@@ -166,9 +173,22 @@ qqnorm(resids)
 qqline(resids)
 plot(ts(resids))
 acf(ts(resids))
+shapiro.test(resids)
 
 
 cbind(seas, seas1, seas2)
+
+seas.ts <- ts(seas)
+plot(seas.ts, col = "blue", xlab = "Month", ylab = "Estimated seasonal index",
+     main = "Model 3 Estimates")
+seas.ts <- ts(seas1)
+lines(seas.ts, col = "red")
+seas.ts <- ts(seas2)
+lines(seas.ts, col = "green")
+legend("bottomright", legend = c("Model 3 Estimates", "Model4 - Part 1",
+                             "Model 4 - Part 2"),
+       col = c("blue", "red", "green"), lty = 1, cex = 0.6,
+       pt.cex = 6, pch = 20)
 
 ### QUESTION 5
 
@@ -183,7 +203,8 @@ lag1resid
 model6<-
   lm(logsales ~ Time +I(Time^2) + I(Time^3) + I(Time^4) +
        I(Time^5) + I(Time^6) + fMonth+ small_sales$obs4 +
-       Dynamic + Dynamic*fMonth + lag1resid[1:336] + lag2resid[1:336])
+       Dynamic + Dynamic*fMonth + lag1resid[1:336] + lag2resid[1:336]
+     ++c348 + s348)
 summary(model6)
 resids <- resid(model6)
 qqnorm(resids)

@@ -142,7 +142,7 @@ $$
 m = log_e(1-p)/log_ey
 $$
 
-Model above is a way to measure long run effect of advertising when geometric decay prevails. From here, we can ask "how many time periods does it take to achieve 90% of this long term impact?"
+Model above is a way to measure long run effect of advertising when geometric decay prevails. From here, we can ask "how many time periods does it take to achieve 90% of this long term impact?" How far back in the past do we have to go to capture 90% of that impact? p = .9, if it is 90%.
 
 The model below is 
 
@@ -150,6 +150,8 @@ $$
 S_t = \alpha+\beta_1{A_t} + \beta_2{S_{t-1}} + \beta_3{Ind1_t} + \beta_4{Ind2_t}
 + \beta_5{Ind3_t} + \epsilon_t
 $$
+
+So, fit a model with geometric decay. The error term is just epsilon. Put in dummy variables for the time regine. Sales regressed on advertising, and sales for the previous years. 
 
 ```{r}
 lagsales<-c(NA,head(sales,-1))
@@ -164,7 +166,7 @@ model5<-
 lm(sales~lagsales+lag2sales+advrtsng+Ind1+Ind2+Ind3);summary(model5)
 ```
 
-Fit another model. Add lag one advertising to the precious fit
+Fit another model. Add lag one advertising to the precious fit. Recall that this model does not correspond to geometric decay. We have taken the basic geometric decay and added to it sales and advertising lag. 
 
 ```{r}
 options(digits=9)
@@ -174,7 +176,11 @@ plot(ts(resid(model6),start=c(1907,1)),xlab="year",ylab="residual",main="model 6
 ```
 
 
-Calculate the 90% duration interval. Determine the first two deltas by hand calculation
+Calculate the 90% duration interval. Duration interval gives some indication of how past advertising continues to have an impact on sales currently. Current sales could be impacted by current advertising, but also previous advertising. Question is -> how far into the past do you have to go to collect 90% of the impact on advertising for current sales?
+
+The deltas are the impact of past advertising on current sales. Add them up, take 90% of that sum, then ask how far down the delta sequence do we march to accumulate 90% of the long run impact of advertising upon current sales?
+
+Determine the first two deltas by hand calculation. 
 
 ```{r}
 deltapartial<-delta<-c(rep(0,times=500))

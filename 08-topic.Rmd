@@ -1,1 +1,56 @@
 # Granger causality 
+
+Is advertising generating sales or if it going in the other direction? 
+
+
+```{r}
+lydia <- read.csv("/cloud/project/data/Lydia.txt")
+attach(lydia)
+head(lydia)
+lag2adv<-c(NA,NA,head(advrtsng,-2))
+lag3adv<-c(NA,NA,NA,head(advrtsng,-3))
+lag4adv<-c(NA,NA,NA,NA,head(advrtsng,-4))
+lag5adv<-c(NA,NA,NA,NA,NA,head(advrtsng,-5))
+fadvcopy<-as.factor(advcopy)
+sales<- lydia$sales
+ad<- lydia$advrtsng
+lag3sales<-c(NA,NA,NA,head(sales,-3)) 
+lag4sales<-c(NA,NA,NA,NA,head(sales,-4))
+
+modelG1<-
+lm(advrtsng~lagadv+lag2adv+lag3adv+lag4adv+lagsales+lag2sales+lag3sales  
++lag4sales+Ind1+Ind2+Ind3);summary(modelG1)
+modelG2<-
+lm(advrtsng~lagadv+lag2adv+lag3adv+lag4adv+Ind1+Ind2+Ind3)
+summary(modelG2) 
+anova(modelG2,modelG1)
+ 
+```
+
+
+```{r}
+modelintrctn1<- lm(sales~advrtsng+lagsales+Ind1+Ind2+Ind3+advrtsng*Ind1+advrtsng*Ind2+advrtsng*Ind3+lagsales*Ind1+lagsales*Ind2+lagsales*Ind3)
+summary(modelintrctn1)
+
+modelintrctn2<-
+lm(sales~advrtsng+lagsales+Ind1+Ind2+Ind3+lagsales*Ind1+lagsales*Ind2+lagsales*Ind3)
+summary(modelintrctn2) 
+
+modelintrctn3<-lm(sales~advrtsng+lagsales+Ind1+Ind2+Ind3+advrtsng*Ind1+advrtsng*Ind2+advrtsng*Ind3)
+summary(modelintrctn3)
+
+anova(modelintrctn2,modelintrctn1)
+
+anova(modelintrctn3,modelintrctn1)
+
+model71<-
+lm(sales~fadvcopy+advrtsng+lagsales+lag2sales+lagadv);summary(model71) 
+
+fadvcopy2<-factor(fadvcopy,levels=c(2,1,3,4)) 
+
+
+```
+
+
+
+

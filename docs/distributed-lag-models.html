@@ -24,7 +24,7 @@
 <meta name="author" content="Katherine Wilson" />
 
 
-<meta name="date" content="2022-02-23" />
+<meta name="date" content="2022-03-02" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -377,11 +377,13 @@ In model above, sales is regressed on sales 1 last year, plus contemporaenous ad
 <p><span class="math display">\[
 m = log_e(1-p)/log_ey
 \]</span></p>
+<p>Model above is a way to measure long run effect of advertising when geometric decay prevails. From here, we can ask “how many time periods does it take to achieve 90% of this long term impact?” How far back in the past do we have to go to capture 90% of that impact? p = .9, if it is 90%.</p>
 <p>The model below is</p>
 <p><span class="math display">\[
 S_t = \alpha+\beta_1{A_t} + \beta_2{S_{t-1}} + \beta_3{Ind1_t} + \beta_4{Ind2_t}
 + \beta_5{Ind3_t} + \epsilon_t
 \]</span></p>
+<p>So, fit a model with geometric decay. The error term is just epsilon. Put in dummy variables for the time regine. Sales regressed on advertising, and sales for the previous years.</p>
 <div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="distributed-lag-models.html#cb15-1" aria-hidden="true" tabindex="-1"></a>lagsales<span class="ot">&lt;-</span><span class="fu">c</span>(<span class="cn">NA</span>,<span class="fu">head</span>(sales,<span class="sc">-</span><span class="dv">1</span>))</span>
 <span id="cb15-2"><a href="distributed-lag-models.html#cb15-2" aria-hidden="true" tabindex="-1"></a>lag2sales<span class="ot">&lt;-</span><span class="fu">c</span>(<span class="cn">NA</span>,<span class="cn">NA</span>,<span class="fu">head</span>(sales,<span class="sc">-</span><span class="dv">2</span>))</span>
 <span id="cb15-3"><a href="distributed-lag-models.html#cb15-3" aria-hidden="true" tabindex="-1"></a>model4<span class="ot">&lt;-</span><span class="fu">lm</span>(sales<span class="sc">~</span>lagsales<span class="sc">+</span>advrtsng<span class="sc">+</span>Ind1<span class="sc">+</span>Ind2<span class="sc">+</span>Ind3);<span class="fu">summary</span>(model4)</span></code></pre></div>

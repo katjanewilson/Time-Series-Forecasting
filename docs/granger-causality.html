@@ -24,7 +24,7 @@
 <meta name="author" content="Katherine Wilson" />
 
 
-<meta name="date" content="2022-02-23" />
+<meta name="date" content="2022-03-02" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -55,6 +55,70 @@
 <script src="libs/anchor-sections-1.0.1/anchor-sections.js"></script>
 
 
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
 
 
 <link rel="stylesheet" href="style.css" type="text/css" />
@@ -152,6 +216,249 @@
             <section class="normal" id="section-">
 <div id="granger-causality" class="section level1" number="8">
 <h1><span class="header-section-number">8</span> Granger causality</h1>
+<p>Is advertising generating sales or if it going in the other direction?</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="granger-causality.html#cb1-1" aria-hidden="true" tabindex="-1"></a>lydia <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;/cloud/project/data/Lydia.txt&quot;</span>)</span>
+<span id="cb1-2"><a href="granger-causality.html#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">attach</span>(lydia)</span>
+<span id="cb1-3"><a href="granger-causality.html#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(lydia)</span></code></pre></div>
+<pre><code>##   year sales advrtsng advcopy Ind1 Ind2 Ind3 lagsales lag2sales lagadv
+## 1 1907  1016      608       1    1    0    0       NA        NA     NA
+## 2 1908   921      451       1    1    0    0     1016        NA    608
+## 3 1909   934      529       1    1    0    0      921      1016    451
+## 4 1910   976      543       1    1    0    0      934       921    529
+## 5 1911   930      525       1    1    0    0      976       934    543
+## 6 1912  1052      549       1    1    0    0      930       976    525</code></pre>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="granger-causality.html#cb3-1" aria-hidden="true" tabindex="-1"></a>lag2adv<span class="ot">&lt;-</span><span class="fu">c</span>(<span class="cn">NA</span>,<span class="cn">NA</span>,<span class="fu">head</span>(advrtsng,<span class="sc">-</span><span class="dv">2</span>))</span>
+<span id="cb3-2"><a href="granger-causality.html#cb3-2" aria-hidden="true" tabindex="-1"></a>lag3adv<span class="ot">&lt;-</span><span class="fu">c</span>(<span class="cn">NA</span>,<span class="cn">NA</span>,<span class="cn">NA</span>,<span class="fu">head</span>(advrtsng,<span class="sc">-</span><span class="dv">3</span>))</span>
+<span id="cb3-3"><a href="granger-causality.html#cb3-3" aria-hidden="true" tabindex="-1"></a>lag4adv<span class="ot">&lt;-</span><span class="fu">c</span>(<span class="cn">NA</span>,<span class="cn">NA</span>,<span class="cn">NA</span>,<span class="cn">NA</span>,<span class="fu">head</span>(advrtsng,<span class="sc">-</span><span class="dv">4</span>))</span>
+<span id="cb3-4"><a href="granger-causality.html#cb3-4" aria-hidden="true" tabindex="-1"></a>lag5adv<span class="ot">&lt;-</span><span class="fu">c</span>(<span class="cn">NA</span>,<span class="cn">NA</span>,<span class="cn">NA</span>,<span class="cn">NA</span>,<span class="cn">NA</span>,<span class="fu">head</span>(advrtsng,<span class="sc">-</span><span class="dv">5</span>))</span>
+<span id="cb3-5"><a href="granger-causality.html#cb3-5" aria-hidden="true" tabindex="-1"></a>fadvcopy<span class="ot">&lt;-</span><span class="fu">as.factor</span>(advcopy)</span>
+<span id="cb3-6"><a href="granger-causality.html#cb3-6" aria-hidden="true" tabindex="-1"></a>sales<span class="ot">&lt;-</span> lydia<span class="sc">$</span>sales</span>
+<span id="cb3-7"><a href="granger-causality.html#cb3-7" aria-hidden="true" tabindex="-1"></a>ad<span class="ot">&lt;-</span> lydia<span class="sc">$</span>advrtsng</span>
+<span id="cb3-8"><a href="granger-causality.html#cb3-8" aria-hidden="true" tabindex="-1"></a>lag3sales<span class="ot">&lt;-</span><span class="fu">c</span>(<span class="cn">NA</span>,<span class="cn">NA</span>,<span class="cn">NA</span>,<span class="fu">head</span>(sales,<span class="sc">-</span><span class="dv">3</span>)) </span>
+<span id="cb3-9"><a href="granger-causality.html#cb3-9" aria-hidden="true" tabindex="-1"></a>lag4sales<span class="ot">&lt;-</span><span class="fu">c</span>(<span class="cn">NA</span>,<span class="cn">NA</span>,<span class="cn">NA</span>,<span class="cn">NA</span>,<span class="fu">head</span>(sales,<span class="sc">-</span><span class="dv">4</span>))</span>
+<span id="cb3-10"><a href="granger-causality.html#cb3-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-11"><a href="granger-causality.html#cb3-11" aria-hidden="true" tabindex="-1"></a>modelG1<span class="ot">&lt;-</span></span>
+<span id="cb3-12"><a href="granger-causality.html#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="fu">lm</span>(advrtsng<span class="sc">~</span>lagadv<span class="sc">+</span>lag2adv<span class="sc">+</span>lag3adv<span class="sc">+</span>lag4adv<span class="sc">+</span>lagsales<span class="sc">+</span>lag2sales<span class="sc">+</span>lag3sales  </span>
+<span id="cb3-13"><a href="granger-causality.html#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>lag4sales<span class="sc">+</span>Ind1<span class="sc">+</span>Ind2<span class="sc">+</span>Ind3);<span class="fu">summary</span>(modelG1)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = advrtsng ~ lagadv + lag2adv + lag3adv + lag4adv + 
+##     lagsales + lag2sales + lag3sales + lag4sales + Ind1 + Ind2 + 
+##     Ind3)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -319.76  -68.73   -9.47  104.03  305.05 
+## 
+## Coefficients:
+##               Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) -1.802e+02  1.100e+02  -1.639 0.109441    
+## lagadv       3.737e-01  1.830e-01   2.042 0.048142 *  
+## lag2adv     -3.120e-01  1.821e-01  -1.713 0.094825 .  
+## lag3adv      1.146e-01  1.786e-01   0.642 0.524997    
+## lag4adv      1.580e-01  1.773e-01   0.891 0.378432    
+## lagsales     5.970e-01  1.465e-01   4.076 0.000225 ***
+## lag2sales   -4.588e-01  2.152e-01  -2.132 0.039526 *  
+## lag3sales    2.672e-01  2.217e-01   1.205 0.235543    
+## lag4sales   -5.637e-03  1.586e-01  -0.036 0.971832    
+## Ind1         1.313e+02  1.019e+02   1.288 0.205596    
+## Ind2         1.236e+02  6.987e+01   1.769 0.084942 .  
+## Ind3         1.051e+02  8.848e+01   1.188 0.242198    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 163.9 on 38 degrees of freedom
+##   (4 observations deleted due to missingness)
+## Multiple R-squared:  0.8459, Adjusted R-squared:  0.8012 
+## F-statistic: 18.96 on 11 and 38 DF,  p-value: 3.609e-12</code></pre>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="granger-causality.html#cb5-1" aria-hidden="true" tabindex="-1"></a>modelG2<span class="ot">&lt;-</span></span>
+<span id="cb5-2"><a href="granger-causality.html#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">lm</span>(advrtsng<span class="sc">~</span>lagadv<span class="sc">+</span>lag2adv<span class="sc">+</span>lag3adv<span class="sc">+</span>lag4adv<span class="sc">+</span>Ind1<span class="sc">+</span>Ind2<span class="sc">+</span>Ind3)</span>
+<span id="cb5-3"><a href="granger-causality.html#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(modelG2) </span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = advrtsng ~ lagadv + lag2adv + lag3adv + lag4adv + 
+##     Ind1 + Ind2 + Ind3)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -472.77 -113.07   22.23  125.10  352.17 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  -8.6272   123.2128  -0.070   0.9445    
+## lagadv        0.8880     0.1492   5.954 4.63e-07 ***
+## lag2adv      -0.3726     0.2010  -1.854   0.0707 .  
+## lag3adv       0.2808     0.1969   1.426   0.1612    
+## lag4adv       0.1958     0.1673   1.170   0.2486    
+## Ind1         29.1848   119.5617   0.244   0.8083    
+## Ind2        192.7088    81.9106   2.353   0.0234 *  
+## Ind3        -84.2094    85.2865  -0.987   0.3291    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 200 on 42 degrees of freedom
+##   (4 observations deleted due to missingness)
+## Multiple R-squared:  0.7463, Adjusted R-squared:  0.704 
+## F-statistic: 17.65 on 7 and 42 DF,  p-value: 1.151e-10</code></pre>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="granger-causality.html#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">anova</span>(modelG2,modelG1)</span></code></pre></div>
+<pre><code>## Analysis of Variance Table
+## 
+## Model 1: advrtsng ~ lagadv + lag2adv + lag3adv + lag4adv + Ind1 + Ind2 + 
+##     Ind3
+## Model 2: advrtsng ~ lagadv + lag2adv + lag3adv + lag4adv + lagsales + 
+##     lag2sales + lag3sales + lag4sales + Ind1 + Ind2 + Ind3
+##   Res.Df     RSS Df Sum of Sq      F    Pr(&gt;F)    
+## 1     42 1679599                                  
+## 2     38 1020341  4    659258 6.1381 0.0006524 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="granger-causality.html#cb9-1" aria-hidden="true" tabindex="-1"></a>modelintrctn1<span class="ot">&lt;-</span> <span class="fu">lm</span>(sales<span class="sc">~</span>advrtsng<span class="sc">+</span>lagsales<span class="sc">+</span>Ind1<span class="sc">+</span>Ind2<span class="sc">+</span>Ind3<span class="sc">+</span>advrtsng<span class="sc">*</span>Ind1<span class="sc">+</span>advrtsng<span class="sc">*</span>Ind2<span class="sc">+</span>advrtsng<span class="sc">*</span>Ind3<span class="sc">+</span>lagsales<span class="sc">*</span>Ind1<span class="sc">+</span>lagsales<span class="sc">*</span>Ind2<span class="sc">+</span>lagsales<span class="sc">*</span>Ind3)</span>
+<span id="cb9-2"><a href="granger-causality.html#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(modelintrctn1)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = sales ~ advrtsng + lagsales + Ind1 + Ind2 + Ind3 + 
+##     advrtsng * Ind1 + advrtsng * Ind2 + advrtsng * Ind3 + lagsales * 
+##     Ind1 + lagsales * Ind2 + lagsales * Ind3)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -265.83  -67.05  -18.07   67.72  440.64 
+## 
+## Coefficients:
+##                Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)   -182.4488   180.7390  -1.009  0.31867    
+## advrtsng         1.6753     0.3270   5.123 7.55e-06 ***
+## lagsales         0.3042     0.1506   2.020  0.04998 *  
+## Ind1           247.2927   920.2953   0.269  0.78950    
+## Ind2           403.9173   217.3517   1.858  0.07031 .  
+## Ind3           629.2076   218.6483   2.878  0.00633 ** 
+## advrtsng:Ind1   -0.7603     1.5671  -0.485  0.63012    
+## advrtsng:Ind2   -1.5474     0.4814  -3.214  0.00255 ** 
+## advrtsng:Ind3   -1.2114     0.3506  -3.455  0.00129 ** 
+## lagsales:Ind1    0.1588     0.6539   0.243  0.80937    
+## lagsales:Ind2    0.6277     0.2428   2.585  0.01340 *  
+## lagsales:Ind3    0.1403     0.1758   0.798  0.42925    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 141.9 on 41 degrees of freedom
+##   (1 observation deleted due to missingness)
+## Multiple R-squared:  0.9598, Adjusted R-squared:  0.949 
+## F-statistic: 89.03 on 11 and 41 DF,  p-value: &lt; 2.2e-16</code></pre>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="granger-causality.html#cb11-1" aria-hidden="true" tabindex="-1"></a>modelintrctn2<span class="ot">&lt;-</span></span>
+<span id="cb11-2"><a href="granger-causality.html#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">lm</span>(sales<span class="sc">~</span>advrtsng<span class="sc">+</span>lagsales<span class="sc">+</span>Ind1<span class="sc">+</span>Ind2<span class="sc">+</span>Ind3<span class="sc">+</span>lagsales<span class="sc">*</span>Ind1<span class="sc">+</span>lagsales<span class="sc">*</span>Ind2<span class="sc">+</span>lagsales<span class="sc">*</span>Ind3)</span>
+<span id="cb11-3"><a href="granger-causality.html#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(modelintrctn2) </span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = sales ~ advrtsng + lagsales + Ind1 + Ind2 + Ind3 + 
+##     lagsales * Ind1 + lagsales * Ind2 + lagsales * Ind3)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -302.51  -88.35  -30.19   90.71  460.24 
+## 
+## Coefficients:
+##                Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)     7.71624  192.71383   0.040  0.96824    
+## advrtsng        0.57365    0.12440   4.611 3.44e-05 ***
+## lagsales        0.71720    0.10817   6.631 3.99e-08 ***
+## Ind1          203.00323  718.96761   0.282  0.77900    
+## Ind2          227.37512  235.17049   0.967  0.33890    
+## Ind3          429.98714  235.59575   1.825  0.07478 .  
+## lagsales:Ind1  -0.21977    0.69612  -0.316  0.75371    
+## lagsales:Ind2  -0.01568    0.11611  -0.135  0.89317    
+## lagsales:Ind3  -0.33134    0.12021  -2.756  0.00848 ** 
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 158.3 on 44 degrees of freedom
+##   (1 observation deleted due to missingness)
+## Multiple R-squared:  0.9463, Adjusted R-squared:  0.9366 
+## F-statistic: 97.01 on 8 and 44 DF,  p-value: &lt; 2.2e-16</code></pre>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="granger-causality.html#cb13-1" aria-hidden="true" tabindex="-1"></a>modelintrctn3<span class="ot">&lt;-</span><span class="fu">lm</span>(sales<span class="sc">~</span>advrtsng<span class="sc">+</span>lagsales<span class="sc">+</span>Ind1<span class="sc">+</span>Ind2<span class="sc">+</span>Ind3<span class="sc">+</span>advrtsng<span class="sc">*</span>Ind1<span class="sc">+</span>advrtsng<span class="sc">*</span>Ind2<span class="sc">+</span>advrtsng<span class="sc">*</span>Ind3)</span>
+<span id="cb13-2"><a href="granger-causality.html#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(modelintrctn3)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = sales ~ advrtsng + lagsales + Ind1 + Ind2 + Ind3 + 
+##     advrtsng * Ind1 + advrtsng * Ind2 + advrtsng * Ind3)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -324.46  -66.60   -8.68   84.38  448.72 
+## 
+## Coefficients:
+##                 Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)   -243.81773  182.87655  -1.333 0.189316    
+## advrtsng         1.36155    0.23859   5.707 9.09e-07 ***
+## lagsales         0.48173    0.07471   6.448 7.40e-08 ***
+## Ind1           295.67391  843.89700   0.350 0.727735    
+## Ind2           565.20546  216.45901   2.611 0.012294 *  
+## Ind3           661.73670  212.08477   3.120 0.003187 ** 
+## advrtsng:Ind1   -0.45759    1.57013  -0.291 0.772088    
+## advrtsng:Ind2   -0.43302    0.22475  -1.927 0.060498 .  
+## advrtsng:Ind3   -0.93641    0.22406  -4.179 0.000137 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 148.4 on 44 degrees of freedom
+##   (1 observation deleted due to missingness)
+## Multiple R-squared:  0.9528, Adjusted R-squared:  0.9442 
+## F-statistic: 111.1 on 8 and 44 DF,  p-value: &lt; 2.2e-16</code></pre>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="granger-causality.html#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">anova</span>(modelintrctn2,modelintrctn1)</span></code></pre></div>
+<pre><code>## Analysis of Variance Table
+## 
+## Model 1: sales ~ advrtsng + lagsales + Ind1 + Ind2 + Ind3 + lagsales * 
+##     Ind1 + lagsales * Ind2 + lagsales * Ind3
+## Model 2: sales ~ advrtsng + lagsales + Ind1 + Ind2 + Ind3 + advrtsng * 
+##     Ind1 + advrtsng * Ind2 + advrtsng * Ind3 + lagsales * Ind1 + 
+##     lagsales * Ind2 + lagsales * Ind3
+##   Res.Df     RSS Df Sum of Sq      F   Pr(&gt;F)   
+## 1     44 1102297                                
+## 2     41  825567  3    276730 4.5811 0.007411 **
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="granger-causality.html#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">anova</span>(modelintrctn3,modelintrctn1)</span></code></pre></div>
+<pre><code>## Analysis of Variance Table
+## 
+## Model 1: sales ~ advrtsng + lagsales + Ind1 + Ind2 + Ind3 + advrtsng * 
+##     Ind1 + advrtsng * Ind2 + advrtsng * Ind3
+## Model 2: sales ~ advrtsng + lagsales + Ind1 + Ind2 + Ind3 + advrtsng * 
+##     Ind1 + advrtsng * Ind2 + advrtsng * Ind3 + lagsales * Ind1 + 
+##     lagsales * Ind2 + lagsales * Ind3
+##   Res.Df    RSS Df Sum of Sq      F Pr(&gt;F)  
+## 1     44 969425                             
+## 2     41 825567  3    143858 2.3815 0.0834 .
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="granger-causality.html#cb19-1" aria-hidden="true" tabindex="-1"></a>model71<span class="ot">&lt;-</span></span>
+<span id="cb19-2"><a href="granger-causality.html#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="fu">lm</span>(sales<span class="sc">~</span>fadvcopy<span class="sc">+</span>advrtsng<span class="sc">+</span>lagsales<span class="sc">+</span>lag2sales<span class="sc">+</span>lagadv);<span class="fu">summary</span>(model71) </span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = sales ~ fadvcopy + advrtsng + lagsales + lag2sales + 
+##     lagadv)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -333.56  -98.41  -12.37   85.55  436.33 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) 143.3039    80.0307   1.791 0.080237 .  
+## fadvcopy2   275.0504    97.9004   2.809 0.007376 ** 
+## fadvcopy3    28.1850    96.9147   0.291 0.772553    
+## fadvcopy4   116.5564    88.3765   1.319 0.194038    
+## advrtsng      0.5500     0.1339   4.109 0.000171 ***
+## lagsales      0.9654     0.1503   6.425    8e-08 ***
+## lag2sales    -0.2050     0.1163  -1.763 0.084863 .  
+## lagadv       -0.3447     0.1510  -2.282 0.027377 *  
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 165 on 44 degrees of freedom
+##   (2 observations deleted due to missingness)
+## Multiple R-squared:  0.9391, Adjusted R-squared:  0.9294 
+## F-statistic: 96.96 on 7 and 44 DF,  p-value: &lt; 2.2e-16</code></pre>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="granger-causality.html#cb21-1" aria-hidden="true" tabindex="-1"></a>fadvcopy2<span class="ot">&lt;-</span><span class="fu">factor</span>(fadvcopy,<span class="at">levels=</span><span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">1</span>,<span class="dv">3</span>,<span class="dv">4</span>)) </span></code></pre></div>
 
 </div>
             </section>
