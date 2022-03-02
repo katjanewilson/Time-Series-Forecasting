@@ -216,7 +216,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
             <section class="normal" id="section-">
 <div id="granger-causality" class="section level1" number="8">
 <h1><span class="header-section-number">8</span> Granger causality</h1>
-<p>Is advertising generating sales or if it going in the other direction?</p>
+<p>Is advertising generating sales or is it going in the other direction? Do past values help us get better prediction of sales today than we would get if we did not use these past values of advertising?</p>
+<p>Granger causality model:</p>
+<p><span class="math display">\[
+Adv_t = \alpha + \sum_{i=1}^{I}\beta_iAdv_{t-i} + \sum_{j=1}^{J}\gamma_jSales_{t-j} + \epsilon_t
+\]</span></p>
+<p>where <span class="math inline">\(\epsilon_t\)</span> is white noise error term. Advertising today is impacted by previous advertising plus previous sales. Capital I (number of years capital advertising), Capital J (number of years past sales). In order to do it, we choose capital I and capital J so that they are large enough to accomodate rich autocorrelation structure to model current advertising. Partial F of the null that <span class="math inline">\(\gamma_j = 0\)</span>… that we do not need past values of sales in order to forecast current advertising.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="granger-causality.html#cb1-1" aria-hidden="true" tabindex="-1"></a>lydia <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;/cloud/project/data/Lydia.txt&quot;</span>)</span>
 <span id="cb1-2"><a href="granger-causality.html#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">attach</span>(lydia)</span>
 <span id="cb1-3"><a href="granger-causality.html#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(lydia)</span></code></pre></div>
@@ -521,6 +526,20 @@ gitbook.start({
 });
 </script>
 
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
 </body>
 
 </html>

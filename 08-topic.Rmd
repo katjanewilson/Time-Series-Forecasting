@@ -1,6 +1,14 @@
 # Granger causality 
 
-Is advertising generating sales or if it going in the other direction? 
+Is advertising generating sales or is it going in the other direction? Do past values help us get better prediction of sales today than we would get if we did not use these past values of advertising?
+
+Granger causality model:
+
+$$
+Adv_t = \alpha + \sum_{i=1}^{I}\beta_iAdv_{t-i} + \sum_{j=1}^{J}\gamma_jSales_{t-j} + \epsilon_t
+$$
+
+where $\epsilon_t$ is white noise error term. Advertising today is impacted by previous advertising plus previous sales. Capital I (number of years capital advertising), Capital J (number of years past sales). In order to do it, we choose capital I and capital J so that they are large enough to accomodate rich autocorrelation structure to model current advertising. Partial F of the null that $\gamma_j = 0$... that we do not need past values of sales in order to forecast current advertising. 
 
 
 ```{r}
